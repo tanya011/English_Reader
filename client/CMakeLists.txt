@@ -15,26 +15,27 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
-        main.cpp
-        readnow.h
-        readnow.ui
-        library.h
-        library.ui
-        collection.h
-        collection.ui
-        dictionary.h
-        dictionary.ui
-        cards.h
-        cards.ui
-        settings.h
-        settings.ui
-        entrance.h
-        entrance.ui
+        src/main.cpp
         sectionbase.cpp
-        sectionbase.h
-        sectionbase.ui
-        menuconnectuons.h
 
+        include/readnow.h
+        include/library.h
+        include/collection.h
+        include/dictionary.h
+        include/cards.h
+        include/settings.h
+        include/entrance.h
+        include/sectionbase.h
+        include/menuconnectuons.h
+
+        library.ui
+        collection.ui
+        dictionary.ui
+        cards.ui
+        settings.ui
+        entrance.ui
+        sectionbase.ui
+        readnow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -43,7 +44,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET YAFR APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET client APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()

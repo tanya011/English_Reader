@@ -2,13 +2,13 @@
 #define MENUCONNECTUONS_H
 
 
-#include "collection.h"
-#include "library.h"
-#include "readnow.h"
-#include "dictionary.h"
-#include "cards.h"
-#include "settings.h"
-#include "entrance.h"
+#include "include/collection.h"
+#include "include/library.h"
+#include "include/readnow.h"
+#include "include/dictionary.h"
+#include "include/cards.h"
+#include "include/settings.h"
+#include "include/entrance.h"
 
 #include <vector>
 #include <QApplication>
