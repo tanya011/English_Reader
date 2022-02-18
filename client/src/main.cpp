@@ -23,13 +23,14 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //Создаём окна разделов
-    Collection* cll = new Collection;
-    Library *lib = new Library;
-    ReadingNow *rdn = new ReadingNow;
-    Dictionary *dic = new Dictionary;
-    Cards *crd = new Cards;
-    Settings *stt = new Settings;
-    Entrance *ent = new Entrance;
+    auto* cll = new Collection;
+    auto *lib = new Library;
+    auto *rdn = new ReadingNow;
+    rdn->showMaximized();
+    auto *dic = new Dictionary;
+    auto *crd = new Cards;
+    auto *stt = new Settings;
+    auto *ent = new Entrance;
 
     rdn->show();
 

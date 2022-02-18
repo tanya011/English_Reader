@@ -64,7 +64,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(YAFR PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(YAFR PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${CONAN_LIBS})
 
 set_target_properties(YAFR PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
