@@ -14,6 +14,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 set(PROJECT_SOURCES
         src/main.cpp
         sectionbase.cpp
@@ -36,7 +39,7 @@ set(PROJECT_SOURCES
         entrance.ui
         sectionbase.ui
         readnow.ui
-)
+        src/translater.cpp)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(YAFR
