@@ -1,8 +1,12 @@
 #include <string>
 #include <curl/curl.h>
 
-size_t curlWriteFunc(char *data, size_t size, size_t nmemb, std::string *buffer)
-{
+namespace translate {
+
+size_t curlWriteFunc(char *data,
+                     size_t size,
+                     size_t nmemb,
+                     std::string *buffer) {
     size_t result = 0;
     if (buffer) {
         buffer->append(data, size * nmemb);
@@ -11,8 +15,7 @@ size_t curlWriteFunc(char *data, size_t size, size_t nmemb, std::string *buffer)
     return result;
 }
 
-
-std::string translate (const std::string &text){
+std::string translate(const std::string &text) {
     CURL *curl = curl_easy_init();
     std::string url_enc = curl_easy_escape(curl, text.c_str(), text.size());
     std::string urlStr;
@@ -30,11 +33,12 @@ std::string translate (const std::string &text){
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteFunc);
         CURLcode curlResult = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
-        if (curlResult == CURLE_OK){
+        if (curlResult == CURLE_OK) {
             return answer;
         } else {
             return "Error!";
         }
     }
     return "Error";
+}
 }
