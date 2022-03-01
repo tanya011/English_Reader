@@ -1,15 +1,12 @@
-#include <QApplication>
-#include "include/collection.h"
-#include "include/library_window.h"
-#include "include/readnow.h"
-#include "include/dictionary.h"
-#include "include/cards.h"
-#include "include/settings.h"
-#include "include/entrance.h"
-#include "include/menuconnectuons.h"
 
-void set_titles(Collection* cll,
-                LibraryWindow *lib, ReadingNow *rdn, Dictionary *dic, Cards *crd, Settings *stt, Entrance *ent){
+/*
+void set_titles(Collection *cll,
+                LibraryWindow *lib,
+                ReadNow *rdn,
+                Dictionary *dic,
+                Cards *crd,
+                Settings *stt,
+                Entrance *ent) {
     cll->setWindowTitle("Коллекция");
     lib->setWindowTitle("Библиотека");
     rdn->setWindowTitle("Читаю сейчас");
@@ -17,26 +14,14 @@ void set_titles(Collection* cll,
     crd->setWindowTitle("Карточки");
     stt->setWindowTitle("Настройки");
     ent->setWindowTitle("Вход/Выход");
-}
+}*/
 
-int main(int argc, char *argv[])
-{
+#include <QApplication>
+#include "include/sectionbase.h"
+
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-
-    //Создаём окна разделов
-    Collection* cll = new Collection;
-    LibraryWindow *lib = new LibraryWindow;
-    ReadingNow *rdn = new ReadingNow;
-    Dictionary *dic = new Dictionary;
-    Cards *crd = new Cards;
-    Settings *stt = new Settings;
-    Entrance *ent = new Entrance;
-
-    lib->show();
-
-    set_titles(cll, lib, rdn, dic, crd, stt, ent);
-
-    all_connections(cll, lib, rdn, dic, crd, stt, ent);
-
+    SectionBase mainWindow;
+    mainWindow.show();
     return a.exec();
 }
