@@ -1,6 +1,6 @@
 #include <QApplication>
 #include "include/collection.h"
-#include "include/library.h"
+#include "include/library_window.h"
 #include "include/readnow.h"
 #include "include/dictionary.h"
 #include "include/cards.h"
@@ -8,9 +8,10 @@
 #include "include/entrance.h"
 #include "include/menuconnectuons.h"
 
-void set_titles(Collection* cll, Library *lib, ReadingNow *rdn, Dictionary *dic, Cards *crd, Settings *stt, Entrance *ent){
+void set_titles(Collection* cll,
+                LibraryWindow *lib, ReadingNow *rdn, Dictionary *dic, Cards *crd, Settings *stt, Entrance *ent){
     cll->setWindowTitle("Коллекция");
-    lib->setWindowTitle("Каталог");
+    lib->setWindowTitle("Библиотека");
     rdn->setWindowTitle("Читаю сейчас");
     dic->setWindowTitle("Словарь");
     crd->setWindowTitle("Карточки");
@@ -24,14 +25,14 @@ int main(int argc, char *argv[])
 
     //Создаём окна разделов
     Collection* cll = new Collection;
-    Library *lib = new Library;
+    LibraryWindow *lib = new LibraryWindow;
     ReadingNow *rdn = new ReadingNow;
     Dictionary *dic = new Dictionary;
     Cards *crd = new Cards;
     Settings *stt = new Settings;
     Entrance *ent = new Entrance;
 
-    rdn->show();
+    lib->show();
 
     set_titles(cll, lib, rdn, dic, crd, stt, ent);
 

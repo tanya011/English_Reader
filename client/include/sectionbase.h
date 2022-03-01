@@ -28,7 +28,7 @@ public:
 private:
     QMenu* sections;
 
-    Ui::SectionBase *ui;
+    Ui::SectionBase *ui; // TODO: better scoped_ptr
 };
 
 #endif // SECTIONBASE_H
