@@ -6,6 +6,7 @@
 class Collection: public SectionBase{
 public:
     Collection(QWidget *parent = nullptr): SectionBase(parent){};
+
 };
 
 

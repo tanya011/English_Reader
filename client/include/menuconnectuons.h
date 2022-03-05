@@ -3,8 +3,8 @@
 
 
 #include "include/collection.h"
-#include "include/library.h"
-#include "include/readnow.h"
+#include "include/library_window.h"
+#include "readnow.h"
 #include "include/dictionary.h"
 #include "include/cards.h"
 #include "include/settings.h"
