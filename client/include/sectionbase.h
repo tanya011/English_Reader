@@ -1,18 +1,16 @@
 #ifndef SECTIONBASE_H
 #define SECTIONBASE_H
 
+#include <QMainWindow>
 #include "library_window.h"
 #include "readnow.h"
 #include "db_manager.h"
-
-#include <QMainWindow>
 
 namespace Ui {
 class SectionBase;
 }
 
-class SectionBase : public QMainWindow
-{
+class SectionBase : public QMainWindow {
     Q_OBJECT
 
 private:
@@ -25,11 +23,10 @@ public:
     SectionBase(DBManager& m, QWidget *parent = nullptr);
     ~SectionBase();
 
-
     //кнопки на меню
- //   QAction* collection;
-    QAction* library;
-    QAction* reading_now;
+    //   QAction* collection;
+    QAction *library;
+    QAction *reading_now;
     /*
     QAction* dictionary;
     QAction* cards;
@@ -37,9 +34,9 @@ public:
     QAction* entrance_exit;
 */
 private:
-    QMenu* sections;
+    QMenu *sections;
 
-    Ui::SectionBase *ui; // TODO: better scoped_ptr
+    Ui::SectionBase *ui;  // TODO: better scoped_ptr
 };
 
-#endif // SECTIONBASE_H
+#endif  // SECTIONBASE_H

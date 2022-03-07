@@ -1,5 +1,5 @@
-#ifndef LIBRARY_H
-#define LIBRARY_H
+#ifndef LIBRARY_WINDOW_H
+#define LIBRARY_WINDOW_H
 
 #include <QGridLayout>
 #include <QGroupBox>
@@ -41,4 +41,5 @@ public:
     }
 };
 
-#endif  // LIBRARY_H
+#endif  // LIBRARY_WINDOW_H
+
