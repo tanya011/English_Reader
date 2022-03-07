@@ -3,20 +3,41 @@
 
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QLabel>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QString>
+#include "include/book_rep.h"
+#include "include/library.h"
 
 class LibraryWindow : public QWidget {
 public:
-    explicit LibraryWindow(QWidget *parent = nullptr) : QWidget(parent){
-        auto horizontalGroupBox = new QGroupBox("Библиотека", this);
-        QHBoxLayout *layout = new QHBoxLayout;
-        std::vector<QPushButton *> buttons(3);
-        for (int i = 0; i < 3; ++i) {
-            buttons[i] = new QPushButton(tr("Button %1").arg(i + 1));
-            layout->addWidget(buttons[i]);
+
+    explicit LibraryWindow(QWidget *parent = nullptr) : QWidget(parent) {
+    }
+    explicit LibraryWindow(DBManager &dbManager, QWidget *parent = nullptr)
+        : LibraryWindow(parent) {
+        BookRep bookRep(dbManager);
+        Library library(bookRep.getBookPreview());
+        auto box = new QWidget;
+        auto layout = new QGridLayout;
+        std::vector<BookPreview> bookPreviews(library.getBooks());
+        std::vector<QLabel *> titleLabels(bookPreviews.size());
+        std::vector<QPushButton*> readBtns(bookPreviews.size());
+        for (int i = 0; i < bookPreviews.size(); i++) {
+            titleLabels[i] =
+                new QLabel(QString("Name: %1 \n Author: %2")
+                               .arg(bookPreviews[i].getName().c_str(),
+                                    bookPreviews[i].getAuthor().c_str()));
+            layout->addWidget(titleLabels[i], i, 0);
+            readBtns[i] = new QPushButton(tr("Read"));
+            layout->addWidget(readBtns[i], i, 1);
         }
-        horizontalGroupBox->setLayout(layout);
+        box->setLayout(layout);
+
+        auto scrollArea = new QScrollArea(this);
+        scrollArea->setWidget(box);
+        // scrollArea->setWidgetResizable(false);
     }
 };
 

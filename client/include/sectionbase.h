@@ -3,6 +3,7 @@
 
 #include "library_window.h"
 #include "readnow.h"
+#include "db_manager.h"
 
 #include <QMainWindow>
 
@@ -17,9 +18,11 @@ class SectionBase : public QMainWindow
 private:
     LibraryWindow libraryWindow;
     ReadNow readNow;
+    DBManager& dbManager;
 
 public:
-    explicit SectionBase(QWidget *parent = nullptr);
+
+    SectionBase(DBManager& m, QWidget *parent = nullptr);
     ~SectionBase();
 
 

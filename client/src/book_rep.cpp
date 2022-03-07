@@ -1,8 +1,8 @@
-#include "book_rep.h"
+#include "include/book_rep.h"
 
 
 
-BookRep::BookRep(dbManager &m)
+BookRep::BookRep(DBManager &m)
     : manager(m), stmt(manager.getConnection().createStatement()) {
     stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName +
                   "("

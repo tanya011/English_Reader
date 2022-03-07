@@ -18,10 +18,13 @@ void set_titles(Collection *cll,
 
 #include <QApplication>
 #include "include/sectionbase.h"
+#include "include/db_manager.h"
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    SectionBase mainWindow;
+    DBManager dbManager;
+    SectionBase mainWindow(dbManager);
     mainWindow.show();
+
     return a.exec();
 }

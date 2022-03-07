@@ -8,25 +8,31 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
+include_directories(${MYSQL_CONCPP_DIR}/include)
+link_directories(${MYSQL_CONCPP_DIR}/lib64)
+
+
+
 set(PROJECT_SOURCES
         src/main.cpp
+        src/book_rep.cpp
+        src/library.cpp
         sectionbase.cpp
 
-        include/readnow.h
-        include/library.h
-        include/collection.h
-        include/dictionary.h
-        include/cards.h
-        include/settings.h
-        include/entrance.h
+        include/library_window.h
         include/sectionbase.h
-        include/menuconnectuons.h
+
+        include/book.h
+        include/book_rep.h
+        include/db_manager.h
+        include/library.h
 
         library.ui
         collection.ui
@@ -62,6 +68,7 @@ else()
 endif()
 
 target_link_libraries(YAFR PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(YAFR PRIVATE mysqlcppconn)
 
 set_target_properties(YAFR PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

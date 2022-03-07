@@ -3,8 +3,8 @@
 #include <QMenuBar>
 #include "ui_sectionbase.h"
 
-SectionBase::SectionBase(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow() {
+SectionBase::SectionBase(DBManager& m, QWidget *parent)
+    : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow(m) {
     ui->setupUi(this);
 
     //инициализация кнопок, если сделать класс для QActions - реализовать
@@ -28,7 +28,7 @@ SectionBase::SectionBase(QWidget *parent)
     //    sections->addAction(settings);
     //    sections->addAction(entrance_exit);
 
-    setCentralWidget(&readNow);
+    setCentralWidget(&libraryWindow);
 
     QObject::connect(reading_now, &QAction::triggered, this, [&]() {
         takeCentralWidget();

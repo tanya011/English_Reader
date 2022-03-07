@@ -23,13 +23,13 @@ struct BookRep {  // throws sql::SQLException& and BookRepException(see above)
     // TODO: The possibility of interrupting the connection is not handled
     // TODO: Adding of large textes isn't supposed to work good. See TODO below
 private:
-    dbManager &manager;
+    DBManager &manager;
     std::unique_ptr<sql::Statement> stmt;
     std::string tableName = "books";
     int freeId = 0;
 
 public:
-    explicit BookRep(dbManager &m);
+    explicit BookRep(DBManager &m);
 
     std::vector<BookPreview> getBookPreview();
 
