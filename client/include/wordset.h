@@ -42,8 +42,12 @@ public:
         words.erase(wordId);
     }
 
-    [[nodiscard]]int getId() const{
+    [[nodiscard]] int getId() const{
         return id;
+    }
+
+    [[nodiscard]] std::string getTitle() const{
+        return title;
     }
 
     ~WordSet(){

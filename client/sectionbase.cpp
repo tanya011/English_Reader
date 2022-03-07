@@ -14,7 +14,7 @@ SectionBase::SectionBase(QWidget *parent)
     reading_now = new QAction("Читаю сейчас", this);
     //     collection = new QAction("Коллекция", parent);
     //     dictionary = new QAction("Словарь", parent);
-    //     cards = new QAction("Карточки", parent);
+    cards_action = new QAction("Карточки", parent);
     //     settings = new QAction("Настройки", parent);
     //     entrance_exit = new QAction("Вход/Выход", parent);
 
@@ -24,11 +24,11 @@ SectionBase::SectionBase(QWidget *parent)
     sections->addAction(reading_now);
     //    sections->addAction(collection);
     //    sections->addAction(dictionary);
-    //    sections->addAction(cards);
+    sections->addAction(cards_action);
     //    sections->addAction(settings);
     //    sections->addAction(entrance_exit);
 
-    setCentralWidget(&readNow);
+    setCentralWidget(&cards);
 
     QObject::connect(reading_now, &QAction::triggered, this, [&]() {
         takeCentralWidget();
@@ -37,6 +37,10 @@ SectionBase::SectionBase(QWidget *parent)
     QObject::connect(library, &QAction::triggered, this, [&]() {
         takeCentralWidget();
         setCentralWidget(&libraryWindow);
+    });
+    QObject::connect(cards_action, &QAction::triggered, this, [&]() {
+        takeCentralWidget();
+        setCentralWidget(&cards);
     });
 }
 

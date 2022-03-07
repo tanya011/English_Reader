@@ -3,6 +3,7 @@
 
 #include "library_window.h"
 #include "readnow.h"
+#include "cards.h"
 
 #include <QMainWindow>
 
@@ -17,6 +18,7 @@ class SectionBase : public QMainWindow
 private:
     LibraryWindow libraryWindow;
     ReadNow readNow;
+    Cards cards;
 
 public:
     explicit SectionBase(QWidget *parent = nullptr);
@@ -27,10 +29,10 @@ public:
  //   QAction* collection;
     QAction* library;
     QAction* reading_now;
-    /*
-    QAction* dictionary;
-    QAction* cards;
-    QAction* settings;
+
+    //QAction* dictionary;
+    QAction* cards_action;
+    /*QAction* settings;
     QAction* entrance_exit;
 */
 private:

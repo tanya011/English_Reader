@@ -22,6 +22,6 @@ void set_titles(Collection *cll,
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     SectionBase mainWindow;
-    mainWindow.show();
+    mainWindow.showMaximized();
     return a.exec();
 }

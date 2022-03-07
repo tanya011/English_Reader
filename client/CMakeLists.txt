@@ -19,14 +19,9 @@ set(PROJECT_SOURCES
         sectionbase.cpp
 
         include/readnow.h
-        include/library.h
-        include/collection.h
-        include/dictionary.h
+        include/library_window.h
         include/cards.h
-        include/settings.h
-        include/entrance.h
         include/sectionbase.h
-        include/menuconnectuons.h
 
         library.ui
         collection.ui
@@ -36,7 +31,7 @@ set(PROJECT_SOURCES
         entrance.ui
         sectionbase.ui
         readnow.ui
-)
+        src/cards.cpp)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(YAFR
