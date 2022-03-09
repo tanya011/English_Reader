@@ -29,6 +29,7 @@ std::string translate(const std::string &text);
 class ReadNow : public QMainWindow {
 public:
     explicit ReadNow(QMainWindow *parent = nullptr);
+    void printBook(const QString &book = nullptr);
 
     ~ReadNow() override = default;
 
@@ -36,7 +37,6 @@ private slots:
     void translateText();
 
 private:
-    void printBook(const QString &book = nullptr);
     void printWindowWithTranslate();
     void buttonPhraseToDict();
     void createActions();

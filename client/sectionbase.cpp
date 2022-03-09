@@ -28,7 +28,7 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     //    sections->addAction(settings);
     //    sections->addAction(entrance_exit);
 
-    setCentralWidget(&libraryWindow);
+    setCentralWidget(&readNow);
 
     QObject::connect(reading_now, &QAction::triggered, this, [&]() {
         takeCentralWidget();
@@ -37,6 +37,7 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     QObject::connect(library, &QAction::triggered, this, [&]() {
         takeCentralWidget();
         setCentralWidget(&libraryWindow);
+        libraryWindow.connectWithReader(*this, readNow);
     });
 }
 
