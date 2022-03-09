@@ -86,4 +86,3 @@ void ReadNow::createToolBars() {
     fileToolBar->addAction(translateSelectedText);
 }
 
-

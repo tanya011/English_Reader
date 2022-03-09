@@ -32,6 +32,10 @@ public:
             layout->addWidget(titleLabels[i], i, 0);
             readBtns[i] = new QPushButton(tr("Read"));
             layout->addWidget(readBtns[i], i, 1);
+
+            QObject::connect(readBtns[i], &QPushButton::clicked, this, [&]() {
+
+            });
         }
         box->setLayout(layout);
 
