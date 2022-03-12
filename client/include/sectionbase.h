@@ -34,7 +34,8 @@ public:
     QAction* entrance_exit;
 */
 private:
-    QMenu *sections;
+    QMenu *sectionLibrary;
+    QMenu *sectionReadNow;
 
     Ui::SectionBase *ui;  // TODO: better scoped_ptr
 };

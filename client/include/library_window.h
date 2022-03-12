@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QString>
+#include <QToolBar>
 #include "include/book_rep.h"
 #include "include/library.h"
 #include "readnow.h"
@@ -44,6 +45,7 @@ public:
         auto scrollArea = new QScrollArea(this);
         scrollArea->setWidget(box);
         scrollArea->setGeometry(1, 1, 300, 500);
+
     }
 
     void connectWithReader(QMainWindow &parent, ReadNow &readNow) {
@@ -53,10 +55,13 @@ public:
             QObject::connect(
                 readBtns[i], &QPushButton::clicked, &parent, [&, i]() {
                     parent.takeCentralWidget();
+                    parent.setWindowTitle(QString::fromStdString(bookPreviews[i].getAuthor()) + " " +
+                                                  QString::fromStdString(bookPreviews[i].getName()));
                     parent.setCentralWidget(&readNow);
                     QString text = QString::fromStdString(
                         bookRep.getBookById(bookPreviews[i].getId()).getText());
                     readNow.printBook(text);
+                    readNow.buttonsInLibraryConnectWithReader();
                 });
         }
         areBtnsConnected = true;
