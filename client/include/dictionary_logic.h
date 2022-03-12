@@ -20,50 +20,19 @@ public:
     WordSet all_words = WordSet("Все группы");
     std::map<int, WordSet> groups;
 
-    int add_word(std::string original, std::string translation){
-        Word word(original);
-        word.setTranslation(translation);
-        words[word.getId()] = word;
-        emit word_was_added_to_dictionary(word.getId());
-        return word.getId();
-    }
+    int add_word(std::string original, std::string translation);
 
-    void delete_word(int wordId){
+    void delete_word(int wordId);
 
-        for (auto &group: groups){
-            delete_word_from_group(wordId, group.first);
-        }
-        if (!words[wordId].getOriginal().empty()){
-            words.erase(wordId);
-        }
-    }
+    void add_word_to_group(int wordId, int groupId);
 
-    void add_word_to_group(int wordId, int groupId){
-        groups[groupId].addWord(words[wordId]);
-        std::string fullword = words[wordId].getOriginal() + " - " + words[wordId].getTranslation();
-    }
+    void delete_word_from_group(int wordId, int wordsetId);
 
-    void delete_word_from_group(int wordId, int wordsetId){
-        qDebug() << groups[wordsetId].getWords().size();
-        qDebug() << groups[wordsetId].getName().c_str() << groups[wordsetId].checkWord(wordId);
-        groups[wordsetId].deleteWordById(wordId);
-    }
+    int create_wordSet(std::string title);
 
-    int create_wordSet(std::string title){
-        WordSet new_wordSet(title);
-        groups[new_wordSet.getId()] = new_wordSet;
-        emit group_was_created(new_wordSet.getId(), std::move(title), groups[new_wordSet.getId()].getWords());
-        return new_wordSet.getId();
-     }
+    void delete_wordSet(int wordset_Id);
 
-    void delete_wordSet(int wordset_Id){
-        emit wordset_was_deleted(wordset_Id);
-        groups.erase(wordset_Id);
-    }
-
-    void add_allgroups_to_map(){
-        groups[all_words.getId()] = all_words;
-    }
+    void add_allgroups_to_map();
 
 
 signals:
@@ -72,9 +41,7 @@ signals:
     void word_was_added_to_dictionary(int wordId);
 
 public slots:
-    void add_word_allgroups(int wordId){
-        add_word_to_group(wordId, all_words.getId());
-    }
+    void add_word_allgroups(int wordId);
 };
 
 
