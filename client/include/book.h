@@ -14,6 +14,9 @@ public:
         : id(id), name(std::move(name)), author(std::move(author)) {
     }
 
+    [[nodiscard]] int getId() const {
+        return id;
+    }
     std::string getName() {
         return name;
     }
@@ -36,6 +39,17 @@ public:
           author(std::move(author)),
           text(std::move(text)) {
     }
+    Book(BookPreview preview, std::string text)
+        : id(preview.getId()),
+          name(std::move(preview.getName())),
+          author(std::move(preview.getAuthor())),
+          text(std::move(text)) {
+    }
+
+    [[nodiscard]] int getId() const {
+        return id;
+    }
+
     std::string getName() {
         return name;
     }

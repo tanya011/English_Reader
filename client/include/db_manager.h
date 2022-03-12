@@ -12,14 +12,14 @@
 // library and users.
 // TODO: may be it is a bad idea to keep both library and users at the same DB
 
-struct dbManager {  // throws sql::SQLException&
+struct DBManager {  // throws sql::SQLException&
 private:
     sql::Driver *driver;                   // don't need delete
     std::unique_ptr<sql::Connection> con;  // not thread safe
-    std::string dbName = "yafr";
+    const std::string dbName = "yafr";
 
 public:
-    dbManager()  // TODO: no connection options
+    DBManager()  // TODO: no connection options
         : driver(get_driver_instance()),
           con(driver->connect("tcp://127.0.0.1:3306", "root", "")) {
         std::unique_ptr<sql::Statement> stmt(con->createStatement());
