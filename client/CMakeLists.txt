@@ -13,20 +13,30 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(CURL REQUIRED)
+pkg_check_modules(CURL libcurl REQUIRED)
+
+
 
 set(PROJECT_SOURCES
         src/main.cpp
+        src/word.cpp
+        src/wordset.cpp
         sectionbase.cpp
+        src/dictionary.cpp
+        src/readnow.cpp
+        src/translator.cpp
+        src/dictionary_logic.cpp
 
         include/readnow.h
-        include/library.h
-        include/collection.h
+        include/library_window.h
         include/dictionary.h
-        include/cards.h
-        include/settings.h
-        include/entrance.h
+        include/dictionary_logic.h
         include/sectionbase.h
-        include/menuconnectuons.h
+        include/word.h
+        include/wordset.h
+        include/word_rep.h
+
 
         library.ui
         collection.ui
@@ -34,8 +44,8 @@ set(PROJECT_SOURCES
         cards.ui
         settings.ui
         entrance.ui
-        sectionbase.ui
         readnow.ui
+        sectionbase.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -70,6 +80,8 @@ set_target_properties(YAFR PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+
+target_link_libraries(YAFR PRIVATE ${CURL_LIBRARIES})
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(YAFR)
