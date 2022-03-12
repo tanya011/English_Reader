@@ -18,10 +18,9 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     //     settings = new QAction("Настройки", parent);
     //     entrance_exit = new QAction("Вход/Выход", parent);
 
-    sections = menuBar()->addMenu("Меню");
+    menuBar()->addAction(library);
+    menuBar()->addAction(reading_now);
 
-    sections->addAction(library);
-    sections->addAction(reading_now);
     //    sections->addAction(collection);
     //    sections->addAction(dictionary);
     //    sections->addAction(cards);
