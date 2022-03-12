@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+
 find_package(CURL REQUIRED)
 pkg_check_modules(CURL libcurl REQUIRED)
 
@@ -28,8 +29,15 @@ set(PROJECT_SOURCES
         sectionbase.cpp
         src/dictionary.cpp
         src/readnow.cpp
-        src/translator.cpp
         src/dictionary_logic.cpp
+        src/book_rep.cpp
+        src/library_window.cpp
+        src/translater.cpp
+
+        include/book.h
+        include/book_rep.h
+        include/db_manager.h
+
 
         include/readnow.h
         include/library_window.h
@@ -38,6 +46,7 @@ set(PROJECT_SOURCES
         include/sectionbase.h
         include/word.h
         include/wordset.h
+        include/dictionary_window.h
 
 
         library.ui
@@ -48,7 +57,7 @@ set(PROJECT_SOURCES
         entrance.ui
         sectionbase.ui
         readnow.ui
-)
+        include/library.h)
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(YAFR
@@ -74,7 +83,7 @@ else ()
 endif()
 
 target_link_libraries(YAFR PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-
+target_link_libraries(YAFR PRIVATE mysqlcppconn)
 set_target_properties(YAFR PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}

@@ -4,7 +4,7 @@
 #include <QMenuBar>
 
 SectionBase::SectionBase(DBManager& m, QWidget *parent)
-    : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow() {
+    : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow(m) {
     ui->setupUi(this);
 
     //инициализация кнопок, если сделать класс для QActions - реализовать
@@ -41,6 +41,7 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
         this->setWindowTitle("Библиотека");
         takeCentralWidget();
         setCentralWidget(&libraryWindow);
+        libraryWindow.connectWithReader(*this, readNow);
     });
     QObject::connect(dictionary, &QAction::triggered, this, [&]() {
         this->setWindowTitle("Словарь");

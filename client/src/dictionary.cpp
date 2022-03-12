@@ -6,10 +6,10 @@
 
 
 void Dictionary::show_group(int wordsetId){
-    qDebug() << wordsetId;
+    //qDebug() << wordsetId;
     for (auto &previousIcon: m_logic.groups[current_open_group].getWords()){
         QLayoutItem* item;
-        while ( (item = layout->takeAt(0)) != NULL){
+        while ( (item = layout->takeAt(0)) != nullptr){
             delete item->widget();
             delete item;
         }
@@ -20,9 +20,12 @@ void Dictionary::show_group(int wordsetId){
     wordBtnsDeleteAll.resize(m_logic.groups[wordsetId].getWords().size());
     wordBtnsDeleteGroup.resize(m_logic.groups[wordsetId].getWords().size());
     int index = 0;
+    int height = 0;
     for (auto &curWord: m_logic.groups[wordsetId].getWords()) {
         std::string fullWord = curWord.second->getOriginal() + " - " +  curWord.second->getTranslation();
-        QTextEdit *word = new QTextEdit(fullWord.c_str());
+        auto *word = new QTextEdit(fullWord.c_str());
+        word->setMaximumHeight(100);
+        height += word->height();
         layout->addWidget(word, index, 0);
         wordBtnsDeleteAll[index] = new QPushButton("Удалить из словаря");
         wordBtnsDeleteGroup[index] = new QPushButton("Удалить из группы");
@@ -39,7 +42,7 @@ void Dictionary::show_group(int wordsetId){
         index++;
     }
     current_word_height = 70 * index;
-    words_placement->setGeometry({0, 10, 1850, current_word_height});
+    words_placement->setGeometry({0, 10, 1850, 70 + height});
 }
 
 void Dictionary::add_group_to_menu(int wordsetId, std::string title, std::map<int,Word*> wordset){
