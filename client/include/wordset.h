@@ -9,9 +9,8 @@
 
 class WordSet{
 
-    int id{};
-    static inline int count_for_id;
-    static inline std::stack<int> available_ids; //стэк освободившихся
+    int id;
+    static inline int count_for_id = 0;
 
     std::string title;
     std::map<int, Word*> words;
@@ -19,23 +18,17 @@ class WordSet{
 public:
 
      explicit WordSet(std::string title_): title(std::move(title_)){
-        if (!available_ids.empty()){
-            id = available_ids.top();
-            available_ids.pop();
-        }
-        else{
-            id = ++count_for_id;
-        }
+        id = ++count_for_id;
     }
 
     WordSet() = default;
 
-    void kill_set(){
-        id = 0;
+    std::string getName(){
+        return title;
     }
 
     void addWord(Word &word){
-        *words[word.getId()] = word;
+        words[word.getId()] = &word;
     }
 
     void deleteWordById(int wordId){
@@ -46,12 +39,12 @@ public:
         return id;
     }
 
-    ~WordSet(){
-        if (id){
-            available_ids.push(id);
-        }
+    std::map<int, Word*> getWords(){
+        return words;
     }
-
+    bool checkWord(int wordId){
+        return words[wordId];
+    }
 };
 
 

@@ -2,41 +2,78 @@
 #define DICTIONARY_LOGIC_H
 
 #include "wordset.h"
+#include <QObject>
+#include <QTextEdit>
+#include <QDebug>
+
+class DictionaryLogic : public QObject{
+
+    Q_OBJECT
 
 
-class DictionaryLogic{
 
     std::map<int, Word> words;
 
-    std::map<int, WordSet> groups;
+
 
 public:
+    WordSet all_words = WordSet("Все группы");
+    std::map<int, WordSet> groups;
 
-    void add_word(Word &word){
+    int add_word(std::string original, std::string translation){
+        Word word(original);
+        word.setTranslation(translation);
         words[word.getId()] = word;
-        word.kill_word();
+        emit word_was_added_to_dictionary(word.getId());
+        return word.getId();
     }
 
     void delete_word(int wordId){
-        for (auto &group: groups){
-            group.second.deleteWordById(wordId);
-        }
 
-        words.erase(wordId);
+        for (auto &group: groups){
+            delete_word_from_group(wordId, group.first);
+        }
+        if (!words[wordId].getOriginal().empty()){
+            words.erase(wordId);
+        }
     }
 
     void add_word_to_group(int wordId, int groupId){
         groups[groupId].addWord(words[wordId]);
+        std::string fullword = words[wordId].getOriginal() + " - " + words[wordId].getTranslation();
     }
 
-    void create_wordSet(std::string &title){
+    void delete_word_from_group(int wordId, int wordsetId){
+        qDebug() << groups[wordsetId].getWords().size();
+        qDebug() << groups[wordsetId].getName().c_str() << groups[wordsetId].checkWord(wordId);
+        groups[wordsetId].deleteWordById(wordId);
+    }
+
+    int create_wordSet(std::string title){
         WordSet new_wordSet(title);
         groups[new_wordSet.getId()] = new_wordSet;
-        new_wordSet.kill_set();
+        emit group_was_created(new_wordSet.getId(), std::move(title), groups[new_wordSet.getId()].getWords());
+        return new_wordSet.getId();
+     }
+
+    void delete_wordSet(int wordset_Id){
+        emit wordset_was_deleted(wordset_Id);
+        groups.erase(wordset_Id);
     }
 
-    void delete_wordSet(int setId){
-        groups.erase(setId);
+    void add_allgroups_to_map(){
+        groups[all_words.getId()] = all_words;
+    }
+
+
+signals:
+    void group_was_created(int wordset_id, std::string title, std::map<int, Word*> new_wordset);
+    void wordset_was_deleted(int wordset_id);
+    void word_was_added_to_dictionary(int wordId);
+
+public slots:
+    void add_word_allgroups(int wordId){
+        add_word_to_group(wordId, all_words.getId());
     }
 };
 
