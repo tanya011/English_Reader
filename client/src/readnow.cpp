@@ -2,6 +2,7 @@
 #include <QAction>
 #include <QIcon>
 #include <QMainWindow>
+#include "include/dictionary_logic.h"
 
 ReadNow::ReadNow(QMainWindow *parent) : QMainWindow(parent) {
     auto *layout = new QHBoxLayout;
@@ -24,14 +25,14 @@ void ReadNow::translateText() {
     if (translatedText) {
         translatedText->clear();
         selectedText = bookText->textCursor().selectedText();
-        QString answer =
+        translText =
                 QString::fromStdString(translate::translate(selectedText.toStdString()));
-        translatedText->append(answer);
+        translatedText->append(translText);
     }
 }
 
 void ReadNow::buttonAddPhraseToDict() {
-    auto *button = new QPushButton;
+    button = new QPushButton;
     button->setParent(this);
     button->setGeometry(screen_width - 850, 660, 600, 50);
     button->setText("Добавить в словарь");

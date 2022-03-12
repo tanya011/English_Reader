@@ -36,6 +36,7 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
         this->setWindowTitle("Читаю сейчас");
         takeCentralWidget();
         setCentralWidget(&readNow);
+        readNow.buttonConnectWithDict(*this, dictionaryWindow);
     });
     QObject::connect(library, &QAction::triggered, this, [&]() {
         this->setWindowTitle("Библиотека");

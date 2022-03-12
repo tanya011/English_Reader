@@ -21,6 +21,8 @@
 #include <QWidget>
 #include <iostream>
 #include <QMainWindow>
+#include "dictionary_logic.h"
+#include "dictionary.h"
 
 namespace translate {
 std::string translate(const std::string &text);
@@ -41,6 +43,14 @@ public:
         this->createToolBars();
     }
 
+    void buttonConnectWithDict(QMainWindow &parent, Dictionary &dictionary) {
+        connect(button, &QPushButton::clicked, &dictionary, [&](){
+            if (translatedText != nullptr){
+                dictionary.m_logic.add_word(selectedText.toStdString(), translText.toStdString());
+            }
+        } );
+    }
+
 private slots:
     void translateText();
 
@@ -57,6 +67,8 @@ private:
     QTextEdit *translatedText{}; // окошко с переводом
     QAction *translateSelectedText{};
     QString selectedText;
+    QString translText;
+    QPushButton *button;
 };
 
 #endif  // READNOW_H

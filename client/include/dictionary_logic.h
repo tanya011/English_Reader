@@ -7,15 +7,8 @@
 #include <QDebug>
 
 class DictionaryLogic : public QObject{
-
     Q_OBJECT
-
-
-
     std::map<int, Word> words;
-
-
-
 public:
     WordSet all_words = WordSet("Все группы");
     std::map<int, WordSet> groups;

@@ -14,7 +14,7 @@
 
 class Dictionary: public QWidget {
 
-	DictionaryLogic m_logic;
+
 
     QMenuBar* groups_manager = new QMenuBar(this);
 
@@ -36,11 +36,12 @@ class Dictionary: public QWidget {
     std::vector<QPushButton *> wordBtnsDeleteGroup;
 
 public:
+
     Dictionary(QWidget *parent = nullptr);
 
     void show_group(int wordsetId);
 
-
+    DictionaryLogic m_logic;
 
 public slots:
     void add_group_to_menu(int wordset_id, std::string title, std::map<int,Word*> wordset);
