@@ -64,7 +64,7 @@ void ReadNow::createActions() {
 
     translateSelectedText->setEnabled(false);
     connect(bookText, &QTextEdit::copyAvailable, translateSelectedText,
-              &QAction::setEnabled);
+            &QAction::setEnabled);
 
 }
 

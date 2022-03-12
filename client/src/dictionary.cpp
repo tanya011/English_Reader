@@ -9,7 +9,7 @@ void Dictionary::show_group(int wordsetId){
     qDebug() << wordsetId;
     for (auto &previousIcon: m_logic.groups[current_open_group].getWords()){
         QLayoutItem* item;
-        while ( (item = layout->takeAt(0)) != nullptr){
+        while ( (item = layout->takeAt(0)) != NULL){
             delete item->widget();
             delete item;
         }
@@ -26,11 +26,11 @@ void Dictionary::show_group(int wordsetId){
         layout->addWidget(word, index, 0);
         wordBtnsDeleteAll[index] = new QPushButton("Удалить из словаря");
         wordBtnsDeleteGroup[index] = new QPushButton("Удалить из группы");
-        connect(wordBtnsDeleteAll[index], &QPushButton::clicked, &m_logic, [&](){
+        QObject::connect(wordBtnsDeleteAll[index], &QPushButton::clicked, &m_logic, [=](){
             m_logic.delete_word(curWord.first);
             show_group(wordsetId);
         });
-        QObject::connect(wordBtnsDeleteGroup[index], &QPushButton::clicked, [&](){
+        QObject::connect(wordBtnsDeleteGroup[index], &QPushButton::clicked, &m_logic, [=](){
             m_logic.delete_word_from_group(curWord.first, wordsetId);
             show_group(wordsetId);
         });
@@ -84,7 +84,7 @@ Dictionary::Dictionary(QWidget *parent): QWidget(parent){
         bool ok;
         QString wordsetName = QInputDialog::getText(this, tr("Новая группа"), tr("Название группы:"), QLineEdit::Normal, "", &ok);
         if (ok && !wordsetName.isEmpty())
-            m_logic.create_wordSet(wordsetName.toStdString());
+                m_logic.create_wordSet(wordsetName.toStdString());
     });
 
     QObject::connect(&m_logic, &DictionaryLogic::word_was_added_to_dictionary, &m_logic, &DictionaryLogic::add_word_allgroups);

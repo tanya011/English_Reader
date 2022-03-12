@@ -20,35 +20,21 @@ class Word{
 
 public:
 
-    explicit Word(std::string original_): original(std::move(original_)){
-        id = ++count_for_id;
-    }
+    explicit Word(std::string original_);
 
     Word() = default;
 
-    std::string getOriginal(){
-        return original;
-    }
+    std::string getOriginal();
 
-    std::string getTranslation(){
-        return translation;
-    }
+    std::string getTranslation();
 
-    void setTranslation(std::string translation_){
-        translation = std::move(translation_);
-    }
+    void setTranslation(std::string translation_);
 
-    void setContext(std::string context_){
-        context = std::move(context_);
-    }
+    void setContext(std::string context_);
 
-    void addExample(std::string example_){
-        examples.push_back(std::move(example_));
-    }
+    void addExample(std::string example_);
 
-    [[nodiscard]]int getId() const{
-        return id;
-    }
+    [[nodiscard]]int getId() const;
 };
 
 #endif // WORD_H

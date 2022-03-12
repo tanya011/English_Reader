@@ -17,34 +17,21 @@ class WordSet{
 
 public:
 
-     explicit WordSet(std::string title_): title(std::move(title_)){
-        id = ++count_for_id;
-    }
+     explicit WordSet(std::string title_);
 
     WordSet() = default;
 
-    std::string getName(){
-        return title;
-    }
+    std::string getName();
 
-    void addWord(Word &word){
-        words[word.getId()] = &word;
-    }
+    void addWord(Word &word);
 
-    void deleteWordById(int wordId){
-        words.erase(wordId);
-    }
+    void deleteWordById(int wordId);
 
-    [[nodiscard]]int getId() const{
-        return id;
-    }
+    [[nodiscard]]int getId() const;
 
-    std::map<int, Word*> getWords(){
-        return words;
-    }
-    bool checkWord(int wordId){
-        return words[wordId];
-    }
+    std::map<int, Word*> getWords();
+
+    bool checkWord(int wordId);
 };
 
 

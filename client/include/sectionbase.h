@@ -11,14 +11,14 @@ namespace Ui {
 class SectionBase;
 }
 
-class SectionBase : public QMainWindow {
+class SectionBase : public QMainWindow
+{
     Q_OBJECT
 
 private:
     LibraryWindow libraryWindow;
     ReadNow readNow;
-    Dictionary dictionary;
-
+    Dictionary dictionaryWindow;
     DBManager& dbManager;
 
 public:
@@ -26,17 +26,21 @@ public:
     SectionBase(DBManager& m, QWidget *parent = nullptr);
     ~SectionBase();
 
+
     //кнопки на меню
-    //   QAction* collection;
-    QAction *library;
-    QAction *reading_now;
-    QAction* dictionary_action;
-   /*  QAction* cards;
+ //   QAction* collection;
+    QAction* library;
+    QAction* reading_now;
+    QAction* dictionary;
+    /*
+    QAction* cards;
     QAction* settings;
     QAction* entrance_exit;
 */
 private:
-     Ui::SectionBase *ui;  // TODO: better scoped_ptr
+    //QMenu* sections;
+
+    Ui::SectionBase *ui;
 };
 
 #endif  // SECTIONBASE_H

@@ -13,13 +13,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
-
 find_package(CURL REQUIRED)
-
 pkg_check_modules(CURL libcurl REQUIRED)
-
-#include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-#conan_basic_setup()
 
 include_directories(${MYSQL_CONCPP_DIR}/include)
 link_directories(${MYSQL_CONCPP_DIR}/lib64)
@@ -28,20 +23,22 @@ include_directories(${CURL_INCLUDE_DIR})
 
 set(PROJECT_SOURCES
         src/main.cpp
-        src/book_rep.cpp
-        src/library_window.cpp
-        src/readnow.cpp
-        src/translater.cpp
+        src/word.cpp
+        src/wordset.cpp
         sectionbase.cpp
+        src/dictionary.cpp
+        src/readnow.cpp
+        src/translator.cpp
+        src/dictionary_logic.cpp
 
+        include/readnow.h
         include/library_window.h
-        include/sectionbase.h
-
-        include/book.h
-        include/book_rep.h
-        include/db_manager.h
-        include/library.h
         include/dictionary.h
+        include/dictionary_logic.h
+        include/sectionbase.h
+        include/word.h
+        include/wordset.h
+
 
         library.ui
         collection.ui
@@ -51,7 +48,7 @@ set(PROJECT_SOURCES
         entrance.ui
         sectionbase.ui
         readnow.ui
-        src/dictionary.cpp)
+)
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(YAFR
@@ -71,25 +68,23 @@ else ()
         #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else ()
         add_executable(YAFR
-                ${PROJECT_SOURCES}
-                )
-    endif ()
-endif ()
-
-#target_link_libraries(YAFR PRIVATE ${CONAN_LIBS})
+            ${PROJECT_SOURCES}
+        )
+    endif()
+endif()
 
 target_link_libraries(YAFR PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(YAFR PRIVATE mysqlcppconn)
-target_link_libraries(YAFR PRIVATE ${CURL_LIBRARIES})
 
 set_target_properties(YAFR PROPERTIES
-        MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-        MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-        MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-        MACOSX_BUNDLE TRUE
-        WIN32_EXECUTABLE TRUE
-        )
+    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
+)
 
-if (QT_VERSION_MAJOR EQUAL 6)
+target_link_libraries(YAFR PRIVATE ${CURL_LIBRARIES})
+
+if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(YAFR)
-endif ()
+endif()
