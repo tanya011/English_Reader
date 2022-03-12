@@ -5,6 +5,7 @@
 #include "library_window.h"
 #include "readnow.h"
 #include "db_manager.h"
+#include "dictionary.h"
 
 namespace Ui {
 class SectionBase;
@@ -16,6 +17,8 @@ class SectionBase : public QMainWindow {
 private:
     LibraryWindow libraryWindow;
     ReadNow readNow;
+    Dictionary dictionary;
+
     DBManager& dbManager;
 
 public:
@@ -27,17 +30,13 @@ public:
     //   QAction* collection;
     QAction *library;
     QAction *reading_now;
-    /*
-    QAction* dictionary;
-    QAction* cards;
+    QAction* dictionary_action;
+   /*  QAction* cards;
     QAction* settings;
     QAction* entrance_exit;
 */
 private:
-    QMenu *sectionLibrary;
-    QMenu *sectionReadNow;
-
-    Ui::SectionBase *ui;  // TODO: better scoped_ptr
+     Ui::SectionBase *ui;  // TODO: better scoped_ptr
 };
 
 #endif  // SECTIONBASE_H

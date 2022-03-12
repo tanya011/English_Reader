@@ -15,7 +15,7 @@ ReadNow::ReadNow(QMainWindow *parent) : QMainWindow(parent) {
     bookText->setLayout(layout);
     printWindowWithTranslate();
     translatedText->setLayout(layout);
-    buttonPhraseToDict();
+    buttonAddPhraseToDict();
     createActions();   // создаем Actions
     createToolBars();  // создаем панель
 };
@@ -23,14 +23,14 @@ ReadNow::ReadNow(QMainWindow *parent) : QMainWindow(parent) {
 void ReadNow::translateText() {
     if (translatedText) {
         translatedText->clear();
-        QString trr = bookText->textCursor().selectedText();
+        selectedText = bookText->textCursor().selectedText();
         QString answer =
-                QString::fromStdString(translate::translate(trr.toStdString()));
+                QString::fromStdString(translate::translate(selectedText.toStdString()));
         translatedText->append(answer);
     }
 }
 
-void ReadNow::buttonPhraseToDict() {
+void ReadNow::buttonAddPhraseToDict() {
     auto *button = new QPushButton;
     button->setParent(this);
     button->setGeometry(screen_width - 850, 660, 600, 50);

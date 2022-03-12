@@ -46,7 +46,7 @@ private slots:
 
 private:
     void printWindowWithTranslate();
-    void buttonPhraseToDict();
+    void buttonAddPhraseToDict();
     void createActions();
     void createToolBars();
 
@@ -56,6 +56,7 @@ private:
     QToolBar *fileToolBar{};  // панель управления
     QTextEdit *translatedText{}; // окошко с переводом
     QAction *translateSelectedText{};
+    QString selectedText;
 };
 
 #endif  // READNOW_H

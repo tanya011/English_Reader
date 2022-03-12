@@ -41,6 +41,7 @@ set(PROJECT_SOURCES
         include/book_rep.h
         include/db_manager.h
         include/library.h
+        include/dictionary.h
 
         library.ui
         collection.ui
@@ -50,7 +51,7 @@ set(PROJECT_SOURCES
         entrance.ui
         sectionbase.ui
         readnow.ui
-        )
+        src/dictionary.cpp)
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(YAFR
