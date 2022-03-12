@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "library_window.h"
 #include "readnow.h"
+#include "authorization.h"
 #include "db_manager.h"
 
 namespace Ui {
@@ -16,6 +17,7 @@ class SectionBase : public QMainWindow {
 private:
     LibraryWindow libraryWindow;
     ReadNow readNow;
+    Auth auth;
     DBManager& dbManager;
 
 public:
@@ -27,6 +29,7 @@ public:
     //   QAction* collection;
     QAction *library;
     QAction *reading_now;
+    QAction *auth_action;
     /*
     QAction* dictionary;
     QAction* cards;
@@ -34,9 +37,6 @@ public:
     QAction* entrance_exit;
 */
 private:
-    QMenu *sectionLibrary;
-    QMenu *sectionReadNow;
-
     Ui::SectionBase *ui;  // TODO: better scoped_ptr
 };
 
