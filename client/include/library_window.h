@@ -17,6 +17,9 @@ private:
     std::vector<QLabel *> titleLabels;
     std::vector<QPushButton *> readBtns;
     BookRep bookRep;
+    bool areBtnsConnected =
+        false;  // Need this to avoid calling function connectWithreader(which
+                // connects btns twice)
 
 public:
     explicit LibraryWindow(DBManager &dbManager, QWidget *parent = nullptr)
@@ -40,10 +43,12 @@ public:
 
         auto scrollArea = new QScrollArea(this);
         scrollArea->setWidget(box);
-        scrollArea->setGeometry(1,1,300,500);
+        scrollArea->setGeometry(1, 1, 300, 500);
     }
 
     void connectWithReader(QMainWindow &parent, ReadNow &readNow) {
+        if (areBtnsConnected)
+            return;
         for (int i = 0; i < bookPreviews.size(); i++) {
             QObject::connect(
                 readBtns[i], &QPushButton::clicked, &parent, [&, i]() {
@@ -54,6 +59,7 @@ public:
                     readNow.printBook(text);
                 });
         }
+        areBtnsConnected = true;
     }
 };
 

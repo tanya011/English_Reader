@@ -1,9 +1,7 @@
 #include "include/readnow.h"
 #include <QAction>
-#include <QGroupBox>
 #include <QIcon>
 #include <QMainWindow>
-#include <QToolBar>
 
 ReadNow::ReadNow(QMainWindow *parent) : QMainWindow(parent) {
     auto *layout = new QHBoxLayout;
@@ -59,9 +57,9 @@ void ReadNow::createActions() {
             &ReadNow::translateText);
 
     // TODO: works only when it is commented, so translate button is enabled
-   // translateSelectedText->setEnabled(false);
-  /*  connect(textEdit, SIGNAL(copyAvailable(bool)), translateSelectedText,
-            SLOT(setEnabled(bool)));*/
+    // translateSelectedText->setEnabled(false);
+    //  connect(textEdit, SIGNAL(copyAvailable(bool)), translateSelectedText,
+    //  SLOT(setEnabled(bool)));
 }
 
 void ReadNow::createToolBars() {
