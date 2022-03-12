@@ -35,7 +35,6 @@ set(PROJECT_SOURCES
         include/sectionbase.h
         include/word.h
         include/wordset.h
-        include/word_rep.h
 
 
         library.ui
