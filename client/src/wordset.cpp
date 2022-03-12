@@ -19,3 +19,11 @@ void WordSet::deleteWordById(int wordId){
 [[nodiscard]]int WordSet::getId() const{
     return id;
 }
+
+std::map<int, Word*> WordSet::getWords(){
+    return words;
+}
+
+bool WordSet::checkWord(int wordId){
+    return words[wordId];
+}
