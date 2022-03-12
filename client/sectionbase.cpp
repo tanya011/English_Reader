@@ -7,6 +7,7 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow(m) {
     ui->setupUi(this);
 
+
     //инициализация кнопок, если сделать класс для QActions - реализовать
     //иниициализацию
 
@@ -28,12 +29,15 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     //    sections->addAction(entrance_exit);
 
     setCentralWidget(&readNow);
+    this->setWindowTitle("Книга не выбрана");
+
 
     QObject::connect(reading_now, &QAction::triggered, this, [&]() {
         takeCentralWidget();
         setCentralWidget(&readNow);
     });
     QObject::connect(library, &QAction::triggered, this, [&]() {
+        this->setWindowTitle("Библиотека");
         takeCentralWidget();
         setCentralWidget(&libraryWindow);
         libraryWindow.connectWithReader(*this, readNow);

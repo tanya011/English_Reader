@@ -29,7 +29,7 @@ include_directories(${CURL_INCLUDE_DIR})
 set(PROJECT_SOURCES
         src/main.cpp
         src/book_rep.cpp
-        src/library.cpp
+        src/library_window.cpp
         src/readnow.cpp
         src/translater.cpp
         sectionbase.cpp

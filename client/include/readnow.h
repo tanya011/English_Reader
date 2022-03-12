@@ -52,9 +52,9 @@ private:
 
     int screen_width;
     int screen_height;
-    QTextEdit *textEdit{};    // виджет, отображающий текст
+    QTextEdit *bookText{};    // виджет, отображающий текст
     QToolBar *fileToolBar{};  // панель управления
-    QTextEdit *text{}; // окошко с переводом
+    QTextEdit *translatedText{}; // окошко с переводом
     QAction *translateSelectedText{};
 };
 
