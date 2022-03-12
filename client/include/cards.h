@@ -6,14 +6,15 @@
 #include <QCheckBox>
 #include <QDesktopWidget>
 #include <QLabel>
+#include <QMainWindow>
 #include <QPushButton>
 #include <QScrollArea>
-#include <vector>
 #include <iostream>
-#include <QMainWindow>
-#include "wordset.h"
-#include "sectionbase.h"
+#include <vector>
 #include "cards_display.h"
+#include "dictionary_logic.h"
+#include "sectionbase.h"
+#include "wordset.h"
 
 class Cards : public QWidget {
 public:
@@ -24,7 +25,6 @@ public:
         printHeading();
         printBox();
         printButton();
-
     }
 
 private slots:
@@ -35,7 +35,7 @@ private slots:
                 std::cout << wordSetInCheck.wordSet.getTitle() << " ";
             }
         }
-        auto parent = dynamic_cast<QMainWindow*>(parentWidget());
+        auto parent = dynamic_cast<QMainWindow *>(parentWidget());
         parent->takeCentralWidget();
         auto cardsDisplay = new CardsDisplay(checkedWordSets, parent);
         parent->setCentralWidget(cardsDisplay);
@@ -52,18 +52,38 @@ private:
     std::vector<WordSetsInCheckBox> m_checkBoxVector;
     std::vector<WordSet> checkedWordSets;
 
-    void printHeading(){
+    void printHeading() {
         auto *text = new QLabel(this);
         text->setText("Выберите группы");
         text->setGeometry(screen_width / 2 - 200, 10, 500, 100);
         this->setStyleSheet("QLabel{font-size: 11pt;}");
     }
 
-    void printBox(){
+    void printBox() {
         std::vector<WordSet> wordSets;
+
+        // debug1
+        auto dict = new DictionaryLogic();
+        for (int i = 0; i < 10; i++) {
+            Word w("word " + std::to_string(i));
+            w.setTranslation("translation "+std::to_string(i));
+            dict->add_word(w);
+        }
+        // debug1
+
+        //debug
+        auto words = new std::vector<Word>(dict->getWords());
+        // debug
+
         for (int i = 0; i < 50; i++) {
             wordSets.emplace_back(std::to_string(i) + " group");
+            // debug2
+            for (int j = 0; j < 10; ++j) {
+                wordSets.back().addWord(words->at(j));
+            }
+            // debug2
         }
+
         auto *scroll = new QScrollArea(this);
         auto *hbox = new QVBoxLayout(scroll);
         this->setLayout(hbox);
@@ -82,13 +102,12 @@ private:
                             screen_height - 700);
     }
 
-    void printButton(){
+    void printButton() {
         auto *button = new QPushButton("Начать", this);
         button->setGeometry(screen_width / 2 - 150, screen_height - 500, 200,
                             60);
         connect(button, &QPushButton::clicked, this, &Cards::button_clicked);
     }
-
 };
 
 #endif  // YAFR_CARDS_H

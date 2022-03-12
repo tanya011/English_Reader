@@ -11,21 +11,22 @@
 
 class CardsDisplay : public QWidget {
 private:
-    std::vector<Word*> words;
-    int curWord=0;
+    std::vector<Word *> words;
+    int curWord = 0;
+    bool translationShowed = false;
 
 public:
     explicit CardsDisplay(std::vector<WordSet> wordSets,
                           QWidget *parent = nullptr)
         : QWidget(parent) {
-        for(auto ws:wordSets)
-            for(auto w: ws.getWords())
+        for (auto ws : wordSets)
+            for (auto w : ws.getWords())
                 words.push_back(w.second);
-
 
         auto box = new QWidget(this);
         auto layout = new QVBoxLayout;
-        auto card = new QLabel(QString::fromStdString(words[curWord]->getWord()));
+        auto *card = new QLabel();
+
         box->setLayout(layout);
 
         auto font = card->font();
@@ -48,6 +49,44 @@ public:
         btnLayout->addWidget(btnPrev);
         btnLayout->addWidget(btnShowTranslation);
         btnLayout->addWidget(btnNext);
+
+        QObject::connect(btnPrev, &QPushButton::clicked, this, [&, card]() {
+            curWord--;
+            curWord %= words.size();
+            card->setText(
+                QString::fromStdString(words[curWord]->getOriginal()));
+        });
+
+        QObject::connect(btnNext, &QPushButton::clicked, this, [&, card]() {
+            curWord++;
+            curWord %= words.size();
+            card->setText(
+                QString::fromStdString(words[curWord]->getOriginal()));
+        });
+        QObject::connect(
+            btnShowTranslation, &QPushButton::clicked, this,
+            [&, card, btnShowTranslation]() {
+                if (!translationShowed) {
+                    btnShowTranslation->setText("Hide translation");
+                    card->setText(QString::fromStdString(
+                        words[curWord]->getOriginal() + "\n--------------\n" +
+                        words[curWord]->getTranslation()));
+                } else {
+                    btnShowTranslation->setText("Translate");
+                    card->setText(QString::fromStdString(words[curWord]->getOriginal()));
+                }
+                translationShowed =  !translationShowed;
+            });
+
+        if (!words.empty()) {
+            card->setText(
+                QString::fromStdString(words[curWord]->getOriginal()));
+        } else {
+            card->setText("No groups selected");
+            btnNext->setEnabled(false);
+            btnPrev->setEnabled(false);
+            btnShowTranslation->setEnabled(false);
+        }
     }
 };
 

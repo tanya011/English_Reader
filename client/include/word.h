@@ -4,42 +4,36 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <stack>
 
 
 
 class Word{
 
-    int id{};
-    static inline int count_for_id;
-    static inline std::stack<int> available_ids; //стэк освободившихся
+    int id;
+    static inline int count_for_id = 0;
 
-    std::string word;
+    std::string original;
     std::string translation;
     std::string context;
     std::vector<std::string> examples;
 
 public:
 
-    // id берётся из счётчика, увеличивающегося от каждого нового слова, если какой-то адйишник освободился, то он переприсвоится
-
-    explicit Word(std::string word_): word(std::move(word_)){
-        if (!available_ids.empty()){
-            id = available_ids.top();
-            available_ids.pop();
-        }
-        else{
-            id = ++count_for_id;
-        }
+    explicit Word(std::string original_): original(std::move(original_)){
+        id = ++count_for_id;
     }
 
     Word() = default;
 
-    void kill_word(){ //id = 0 особый id, у переменных, которые не находятся в контейнере, чтобы в момент удаления, деструктор не добавил дубликат id, который уже есть в контейнере
-        id = 0;
+    std::string getOriginal(){
+        return original;
     }
 
-    void setTranslation(std::string &translation_){
+    std::string getTranslation(){
+        return translation;
+    }
+
+    void setTranslation(std::string translation_){
         translation = std::move(translation_);
     }
 
@@ -47,20 +41,13 @@ public:
         context = std::move(context_);
     }
 
-    void addExample(std::string &example_){
+    void addExample(std::string example_){
         examples.push_back(std::move(example_));
     }
 
     [[nodiscard]]int getId() const{
         return id;
     }
-
-    ~Word(){
-        if (id) {
-            available_ids.push(id);
-        }
-    }
-
 };
 
 #endif // WORD_H
