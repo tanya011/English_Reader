@@ -4,7 +4,11 @@
 #include "ui_sectionbase.h"
 
 SectionBase::SectionBase(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow() {
+    : QMainWindow(parent),
+      ui(new Ui::SectionBase),
+      readNow(),
+      libraryWindow(this),
+      cards(this) {
     ui->setupUi(this);
 
     //инициализация кнопок, если сделать класс для QActions - реализовать

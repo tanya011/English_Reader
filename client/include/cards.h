@@ -10,7 +10,10 @@
 #include <QScrollArea>
 #include <vector>
 #include <iostream>
+#include <QMainWindow>
 #include "wordset.h"
+#include "sectionbase.h"
+#include "cards_display.h"
 
 class Cards : public QWidget {
 public:
@@ -32,6 +35,10 @@ private slots:
                 std::cout << wordSetInCheck.wordSet.getTitle() << " ";
             }
         }
+        auto parent = dynamic_cast<QMainWindow*>(parentWidget());
+        parent->takeCentralWidget();
+        auto cardsDisplay = new CardsDisplay(checkedWordSets, parent);
+        parent->setCentralWidget(cardsDisplay);
     }
 
 private:
