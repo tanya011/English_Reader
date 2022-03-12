@@ -25,7 +25,7 @@ void ReadNow::translateText() {
         text->clear();
         QString trr = textEdit->textCursor().selectedText();
         QString answer =
-            QString::fromStdString(translate::translate(trr.toStdString()));
+                QString::fromStdString(translate::translate(trr.toStdString()));
         text->append(answer);
     }
 }
@@ -45,7 +45,11 @@ void ReadNow::printWindowWithTranslate() {
 
 void ReadNow::printBook(const QString &book) {
     textEdit = new QTextEdit(this);
-    textEdit->append("1234");
+    if (book == nullptr) {
+        textEdit->append("Select book");
+    } else {
+        textEdit->append(book);
+    }
     textEdit->setReadOnly(true);
     textEdit->setGeometry(40, 120, screen_width - 1000, screen_height - 300);
 }
@@ -54,14 +58,14 @@ void ReadNow::createActions() {
     translateSelectedText = new QAction(tr("Translate"), this);
     translateSelectedText->setShortcut(tr("Ctrl+D"));
     translateSelectedText->setStatusTip(
-        tr("Фраза будет переведена при нажатии"));
+            tr("Фраза будет переведена при нажатии"));
     connect(translateSelectedText, &QAction::triggered, this,
             &ReadNow::translateText);
 
     // TODO: works only when it is commented, so translate button is enabled
-   // translateSelectedText->setEnabled(false);
-  /*  connect(textEdit, SIGNAL(copyAvailable(bool)), translateSelectedText,
-            SLOT(setEnabled(bool)));*/
+    translateSelectedText->setEnabled(false);
+    connect(textEdit, &QTextEdit::copyAvailable, translateSelectedText,
+              &QAction::setEnabled);
 }
 
 void ReadNow::createToolBars() {

@@ -33,6 +33,14 @@ public:
 
     ~ReadNow() override = default;
 
+
+    void buttonsInLibraryConnectWithReader(){
+        this->removeToolBar(this->fileToolBar);
+        this->fileToolBar->clear();
+        this->createActions();
+        this->createToolBars();
+    }
+
 private slots:
     void translateText();
 
@@ -46,7 +54,7 @@ private:
     int screen_height;
     QTextEdit *textEdit{};    // виджет, отображающий текст
     QToolBar *fileToolBar{};  // панель управления
-    QTextEdit *text{};
+    QTextEdit *text{}; // окошко с переводом
     QAction *translateSelectedText{};
 };
 
