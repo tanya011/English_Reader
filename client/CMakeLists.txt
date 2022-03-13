@@ -15,6 +15,7 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 find_package(CURL REQUIRED)
+
 pkg_check_modules(CURL libcurl REQUIRED)
 
 include_directories(${MYSQL_CONCPP_DIR}/include)
@@ -57,7 +58,9 @@ set(PROJECT_SOURCES
         entrance.ui
         sectionbase.ui
         readnow.ui
-        include/library.h)
+        include/authorization.h
+        include/library.h
+)
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(YAFR
@@ -77,10 +80,10 @@ else ()
         #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else ()
         add_executable(YAFR
-            ${PROJECT_SOURCES}
-        )
-    endif()
-endif()
+                ${PROJECT_SOURCES}
+                )
+    endif ()
+endif ()
 
 target_link_libraries(YAFR PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(YAFR PRIVATE mysqlcppconn)

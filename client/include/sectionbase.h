@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "library_window.h"
 #include "readnow.h"
+#include "authorization.h"
 #include "db_manager.h"
 #include "dictionary.h"
 
@@ -19,6 +20,7 @@ private:
     LibraryWindow libraryWindow;
     ReadNow readNow;
     Dictionary dictionaryWindow;
+    Auth auth;
     DBManager& dbManager;
 
 public:
@@ -31,6 +33,7 @@ public:
  //   QAction* collection;
     QAction* library;
     QAction* reading_now;
+    QAction *auth_action;
     QAction* dictionary;
     /*
     QAction* cards;

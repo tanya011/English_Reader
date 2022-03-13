@@ -1,11 +1,13 @@
 #include "include/sectionbase.h"
-#include "ui_sectionbase.h"
 #include <QMenu>
 #include <QMenuBar>
+#include "ui_sectionbase.h"
 
 SectionBase::SectionBase(DBManager& m, QWidget *parent)
-    : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow(m) {
+    : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow(m),
+    auth_action(){
     ui->setupUi(this);
+
 
     //инициализация кнопок, если сделать класс для QActions - реализовать
     //иниициализацию
@@ -16,9 +18,7 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     dictionary = new QAction("Словарь", this);
     //     cards = new QAction("Карточки", parent);
     //     settings = new QAction("Настройки", parent);
-    //     entrance_exit = new QAction("Вход/Выход", parent);
-
-    //sections = menuBar()->addMenu("Меню");
+    auth_action = new QAction("Войти", parent);
 
     menuBar()->addAction(library);
     menuBar()->addAction(reading_now);
@@ -27,7 +27,7 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     //    sections->addAction(dictionary);
     //    sections->addAction(cards);
     //    sections->addAction(settings);
-    //    sections->addAction(entrance_exit);
+    menuBar()->addAction(auth_action);
 
     setCentralWidget(&readNow);
     this->setWindowTitle("Книга не выбрана");
@@ -50,6 +50,10 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
         takeCentralWidget();
         setCentralWidget(&dictionaryWindow);
         dictionaryWindow.show_group(1);
+    });
+    QObject::connect(auth_action, &QAction::triggered, this, [&]() {
+        takeCentralWidget();
+        setCentralWidget(&auth);
     });
 }
 
