@@ -32,11 +32,12 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     setCentralWidget(&readNow);
     this->setWindowTitle("Книга не выбрана");
 
+    readNow.buttonConnectWithDict(*this, dictionaryWindow);
+
     QObject::connect(reading_now, &QAction::triggered, this, [&]() {
         this->setWindowTitle("Читаю сейчас");
         takeCentralWidget();
         setCentralWidget(&readNow);
-        readNow.buttonConnectWithDict(*this, dictionaryWindow);
     });
     QObject::connect(library, &QAction::triggered, this, [&]() {
         this->setWindowTitle("Библиотека");
@@ -48,6 +49,7 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
         this->setWindowTitle("Словарь");
         takeCentralWidget();
         setCentralWidget(&dictionaryWindow);
+        dictionaryWindow.show_group(1);
     });
 }
 

@@ -31,7 +31,7 @@ std::string translate(const std::string &text);
 class ReadNow : public QMainWindow {
 public:
     explicit ReadNow(QMainWindow *parent = nullptr);
-    void printBook(const QString &book = nullptr);
+    void printBook(const QString &book = nullptr, const QString &author = nullptr, const QString &title = nullptr);
 
     ~ReadNow() override = default;
 
@@ -46,7 +46,10 @@ public:
     void buttonConnectWithDict(QMainWindow &parent, Dictionary &dictionary) {
         connect(button, &QPushButton::clicked, &dictionary, [&](){
             if (translatedText != nullptr){
-                dictionary.m_logic.add_word(selectedText.toStdString(), translText.toStdString());
+                int wordId = dictionary.m_logic.add_word(selectedText.toStdString(), translText.toStdString());
+                int setId = dictionary.m_logic.create_wordSet(authorName.toStdString() + " " + title.toStdString());
+                //dictionary.add_group_to_menu(setId, authorName.toStdString() + title.toStdString());
+                dictionary.m_logic.add_word_to_group(wordId, setId);
             }
         } );
     }
@@ -69,6 +72,8 @@ private:
     QString selectedText;
     QString translText;
     QPushButton *button;
+    QString authorName = "";
+    QString title = "";
 };
 
 #endif  // READNOW_H

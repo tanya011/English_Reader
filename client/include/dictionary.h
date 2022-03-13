@@ -14,8 +14,6 @@
 
 class Dictionary: public QWidget {
 
-
-
     QMenuBar* groups_manager = new QMenuBar(this);
 
     QGroupBox* words_placement = new QGroupBox(this);
@@ -44,7 +42,7 @@ public:
     DictionaryLogic m_logic;
 
 public slots:
-    void add_group_to_menu(int wordset_id, std::string title, std::map<int,Word*> wordset);
+    void add_group_to_menu(int wordset_id, const std::string& title);
 
     void delete_group_from_menu(int wordset_id);
 

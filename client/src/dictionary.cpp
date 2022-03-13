@@ -45,8 +45,8 @@ void Dictionary::show_group(int wordsetId){
     words_placement->setGeometry({0, 10, 1850, 70 + height});
 }
 
-void Dictionary::add_group_to_menu(int wordsetId, std::string title, std::map<int,Word*> wordset){
-    QAction* action = new QAction(title.c_str(), this);
+void Dictionary::add_group_to_menu(int wordsetId, const std::string& title){
+    auto* action = new QAction(title.c_str(), this);
     groups->addAction(action);
     QObject::connect(action, &QAction::triggered, this, [=]() {
         show_group(wordsetId);
@@ -67,8 +67,7 @@ Dictionary::Dictionary(QWidget *parent): QWidget(parent){
     groups_manager->addMenu(groups);
     groups_manager->addMenu(sorts);
 
-
-    QAction* all_groups = new QAction("Все слова", groups);
+    auto* all_groups = new QAction("Все слова", groups);
 
     QObject::connect(all_groups, &QAction::triggered, this, [&]() {
         show_group(1);
@@ -78,10 +77,9 @@ Dictionary::Dictionary(QWidget *parent): QWidget(parent){
 
     m_logic.add_allgroups_to_map();
 
-    QAction* addWordset = new QAction("Добавить группу", this);
+    auto* addWordset = new QAction("Добавить группу", this);
 
     groups_manager->addAction(addWordset);
-
 
     QObject::connect(addWordset, &QAction::triggered, this, [&](){
         bool ok;
@@ -106,12 +104,7 @@ Dictionary::Dictionary(QWidget *parent): QWidget(parent){
     m_logic.add_word_to_group(z, y);
 
 
-
-
-
-
     words_placement->setGeometry({0, 10, 1850, 4000});
     words_placement->setLayout(layout);
 
-    show_group(1);
 }

@@ -60,7 +60,11 @@ public:
                         parent.setCentralWidget(&readNow);
                         QString text = QString::fromStdString(
                                 bookRep.getBookById(bookPreviews[i].getId()).getText());
-                        readNow.printBook(text);
+                        QString author = QString::fromStdString(
+                                bookRep.getBookById(bookPreviews[i].getId()).getAuthor());
+                        QString title = QString::fromStdString(
+                                bookRep.getBookById(bookPreviews[i].getId()).getName());
+                        readNow.printBook(text, author, title);
                         readNow.buttonsInLibraryConnectWithReader();
                     });
         }

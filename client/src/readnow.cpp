@@ -44,8 +44,10 @@ void ReadNow::printWindowWithTranslate() {
     translatedText->setGeometry(screen_width - 900, 120, 700, 500);
 }
 
-void ReadNow::printBook(const QString &book) {
+void ReadNow::printBook(const QString &book, const QString &author, const QString &title_) {
     bookText = new QTextEdit(this);
+    authorName = author;
+    title = title_;
     if (book == nullptr) {
         bookText->append("Select book");
     } else {

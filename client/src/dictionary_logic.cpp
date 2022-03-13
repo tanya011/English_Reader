@@ -29,6 +29,11 @@ void DictionaryLogic::delete_word_from_group(int wordId, int wordsetId){
 }
 
 int DictionaryLogic::create_wordSet(std::string title){
+    for (auto groupName : groups){
+        if (groupName.second.getName() == title){
+            return groupName.second.getId();
+        }
+    }
     WordSet new_wordSet(title);
     groups[new_wordSet.getId()] = new_wordSet;
     emit group_was_created(new_wordSet.getId(), std::move(title), groups[new_wordSet.getId()].getWords());
