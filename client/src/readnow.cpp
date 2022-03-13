@@ -2,6 +2,7 @@
 #include <QAction>
 #include <QIcon>
 #include <QMainWindow>
+#include "include/dictionary_logic.h"
 
 ReadNow::ReadNow(QMainWindow *parent) : QMainWindow(parent) {
     auto *layout = new QHBoxLayout;
@@ -15,7 +16,7 @@ ReadNow::ReadNow(QMainWindow *parent) : QMainWindow(parent) {
     bookText->setLayout(layout);
     printWindowWithTranslate();
     translatedText->setLayout(layout);
-    buttonPhraseToDict();
+    buttonAddPhraseToDict();
     createActions();   // создаем Actions
     createToolBars();  // создаем панель
 };
@@ -23,15 +24,15 @@ ReadNow::ReadNow(QMainWindow *parent) : QMainWindow(parent) {
 void ReadNow::translateText() {
     if (translatedText) {
         translatedText->clear();
-        QString trr = bookText->textCursor().selectedText();
-        QString answer =
-                QString::fromStdString(translate::translate(trr.toStdString()));
-        translatedText->append(answer);
+        selectedText = bookText->textCursor().selectedText();
+        translText =
+                QString::fromStdString(translate::translate(selectedText.toStdString()));
+        translatedText->append(translText);
     }
 }
 
-void ReadNow::buttonPhraseToDict() {
-    auto *button = new QPushButton;
+void ReadNow::buttonAddPhraseToDict() {
+    button = new QPushButton;
     button->setParent(this);
     button->setGeometry(screen_width - 850, 660, 600, 50);
     button->setText("Добавить в словарь");
@@ -43,8 +44,10 @@ void ReadNow::printWindowWithTranslate() {
     translatedText->setGeometry(screen_width - 900, 120, 700, 500);
 }
 
-void ReadNow::printBook(const QString &book) {
+void ReadNow::printBook(const QString &book, const QString &author, const QString &title_) {
     bookText = new QTextEdit(this);
+    authorName = author;
+    title = title_;
     if (book == nullptr) {
         bookText->append("Select book");
     } else {
@@ -64,7 +67,7 @@ void ReadNow::createActions() {
 
     translateSelectedText->setEnabled(false);
     connect(bookText, &QTextEdit::copyAvailable, translateSelectedText,
-              &QAction::setEnabled);
+            &QAction::setEnabled);
 
 }
 

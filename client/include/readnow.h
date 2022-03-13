@@ -21,6 +21,8 @@
 #include <QWidget>
 #include <iostream>
 #include <QMainWindow>
+#include "dictionary_logic.h"
+#include "dictionary.h"
 
 namespace translate {
 std::string translate(const std::string &text);
@@ -29,7 +31,7 @@ std::string translate(const std::string &text);
 class ReadNow : public QMainWindow {
 public:
     explicit ReadNow(QMainWindow *parent = nullptr);
-    void printBook(const QString &book = nullptr);
+    void printBook(const QString &book = nullptr, const QString &author = nullptr, const QString &title = nullptr);
 
     ~ReadNow() override = default;
 
@@ -41,12 +43,23 @@ public:
         this->createToolBars();
     }
 
+    void buttonConnectWithDict(QMainWindow &parent, Dictionary &dictionary) {
+        connect(button, &QPushButton::clicked, &dictionary, [&](){
+            if (translatedText != nullptr){
+                int wordId = dictionary.m_logic.add_word(selectedText.toStdString(), translText.toStdString());
+                int setId = dictionary.m_logic.create_wordSet(authorName.toStdString() + " " + title.toStdString());
+                //dictionary.add_group_to_menu(setId, authorName.toStdString() + title.toStdString());
+                dictionary.m_logic.add_word_to_group(wordId, setId);
+            }
+        } );
+    }
+
 private slots:
     void translateText();
 
 private:
     void printWindowWithTranslate();
-    void buttonPhraseToDict();
+    void buttonAddPhraseToDict();
     void createActions();
     void createToolBars();
 
@@ -56,6 +69,11 @@ private:
     QToolBar *fileToolBar{};  // панель управления
     QTextEdit *translatedText{}; // окошко с переводом
     QAction *translateSelectedText{};
+    QString selectedText;
+    QString translText;
+    QPushButton *button;
+    QString authorName = "";
+    QString title = "";
 };
 
 #endif  // READNOW_H

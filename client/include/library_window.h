@@ -19,12 +19,12 @@ private:
     std::vector<QPushButton *> readBtns;
     BookRep bookRep;
     bool areBtnsConnected =
-        false;  // Need this to avoid calling function connectWithreader(which
-                // connects btns twice)
+            false;  // Need this to avoid calling function connectWithreader(which
+    // connects btns twice)
 
 public:
     explicit LibraryWindow(DBManager &dbManager, QWidget *parent = nullptr)
-        : QWidget(parent), bookRep(dbManager) {
+            : QWidget(parent), bookRep(dbManager) {
         Library library(bookRep.getBookPreview());
         auto box = new QWidget;
         auto layout = new QGridLayout;
@@ -33,9 +33,9 @@ public:
         readBtns = std::vector<QPushButton *>(bookPreviews.size());
         for (int i = 0; i < bookPreviews.size(); i++) {
             titleLabels[i] =
-                new QLabel(QString("Name: %1 \n Author: %2")
-                               .arg(bookPreviews[i].getName().c_str(),
-                                    bookPreviews[i].getAuthor().c_str()));
+                    new QLabel(QString("Name: %1 \n Author: %2")
+                                       .arg(bookPreviews[i].getName().c_str(),
+                                            bookPreviews[i].getAuthor().c_str()));
             layout->addWidget(titleLabels[i], i, 0);
             readBtns[i] = new QPushButton(tr("Read"));
             layout->addWidget(readBtns[i], i, 1);
@@ -53,16 +53,20 @@ public:
             return;
         for (int i = 0; i < bookPreviews.size(); i++) {
             QObject::connect(
-                readBtns[i], &QPushButton::clicked, &parent, [&, i]() {
-                    parent.takeCentralWidget();
-                    parent.setWindowTitle(QString::fromStdString(bookPreviews[i].getAuthor()) + " " +
-                                                  QString::fromStdString(bookPreviews[i].getName()));
-                    parent.setCentralWidget(&readNow);
-                    QString text = QString::fromStdString(
-                        bookRep.getBookById(bookPreviews[i].getId()).getText());
-                    readNow.printBook(text);
-                    readNow.buttonsInLibraryConnectWithReader();
-                });
+                    readBtns[i], &QPushButton::clicked, &parent, [&, i]() {
+                        parent.takeCentralWidget();
+                        parent.setWindowTitle(QString::fromStdString(bookPreviews[i].getAuthor()) + " " +
+                                              QString::fromStdString(bookPreviews[i].getName()));
+                        parent.setCentralWidget(&readNow);
+                        QString text = QString::fromStdString(
+                                bookRep.getBookById(bookPreviews[i].getId()).getText());
+                        QString author = QString::fromStdString(
+                                bookRep.getBookById(bookPreviews[i].getId()).getAuthor());
+                        QString title = QString::fromStdString(
+                                bookRep.getBookById(bookPreviews[i].getId()).getName());
+                        readNow.printBook(text, author, title);
+                        readNow.buttonsInLibraryConnectWithReader();
+                    });
         }
         areBtnsConnected = true;
     }

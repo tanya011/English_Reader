@@ -4,55 +4,31 @@
 #include "wordset.h"
 #include <QObject>
 #include <QTextEdit>
+#include <QDebug>
 
 class DictionaryLogic : public QObject{
-
     Q_OBJECT
 
-
-
     std::map<int, Word> words;
-
-
 
 public:
     WordSet all_words = WordSet("Все группы");
     std::map<int, WordSet> groups;
+    int add_word(std::string original, std::string translation);
+    void delete_word(int wordId);
+    void add_word_to_group(int wordId, int groupId);
+    void delete_word_from_group(int wordId, int wordsetId);
+    int create_wordSet(std::string title);
+    void delete_wordSet(int wordset_Id);
+    void add_allgroups_to_map();
 
-    void add_word(Word word){
-        words[word.getId()] = word;
-    }
+signals:
+    void group_was_created(int wordset_id, std::string title, std::map<int, Word*> new_wordset);
+    void wordset_was_deleted(int wordset_id);
+    void word_was_added_to_dictionary(int wordId);
 
-    void delete_word(int wordId){
-        for (auto &group: groups){
-            delete_word_from_group(wordId, group.second.getId());
-        }
-        words.erase(wordId);
-    }
-
-    void add_word_to_group(int wordId, int groupId){
-        groups[groupId].addWord(words[wordId]);
-    }
-
-    void delete_word_from_group(int wordId, int wordsetId){
-        if(groups[wordsetId].checkWord(wordId)){
-        groups[wordsetId].deleteWordById(wordId);
-        }
-    }
-
-    int create_wordSet(std::string title){
-        WordSet new_wordSet(title);
-        groups[new_wordSet.getId()] = new_wordSet;
-        return new_wordSet.getId();
-     }
-
-    void delete_wordSet(int wordset_Id){
-        groups.erase(wordset_Id);
-    }
-
-    void add_allgroups_to_map(){
-        groups[all_words.getId()] = all_words;
-    }
+public slots:
+    void add_word_allgroups(int wordId);
 };
 
 

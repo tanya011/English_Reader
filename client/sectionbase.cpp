@@ -1,12 +1,11 @@
 #include "include/sectionbase.h"
+#include "ui_sectionbase.h"
 #include <QMenu>
 #include <QMenuBar>
-#include "ui_sectionbase.h"
 
 SectionBase::SectionBase(DBManager& m, QWidget *parent)
     : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow(m) {
     ui->setupUi(this);
-
 
     //инициализация кнопок, если сделать класс для QActions - реализовать
     //иниициализацию
@@ -14,14 +13,16 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     library = new QAction("Библиотека", this);
     reading_now = new QAction("Читаю сейчас", this);
     //     collection = new QAction("Коллекция", parent);
-    //     dictionary = new QAction("Словарь", parent);
+    dictionary = new QAction("Словарь", this);
     //     cards = new QAction("Карточки", parent);
     //     settings = new QAction("Настройки", parent);
     //     entrance_exit = new QAction("Вход/Выход", parent);
 
+    //sections = menuBar()->addMenu("Меню");
+
     menuBar()->addAction(library);
     menuBar()->addAction(reading_now);
-
+    menuBar()->addAction(dictionary);
     //    sections->addAction(collection);
     //    sections->addAction(dictionary);
     //    sections->addAction(cards);
@@ -31,8 +32,10 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     setCentralWidget(&readNow);
     this->setWindowTitle("Книга не выбрана");
 
+    readNow.buttonConnectWithDict(*this, dictionaryWindow);
 
     QObject::connect(reading_now, &QAction::triggered, this, [&]() {
+        this->setWindowTitle("Читаю сейчас");
         takeCentralWidget();
         setCentralWidget(&readNow);
     });
@@ -42,8 +45,15 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
         setCentralWidget(&libraryWindow);
         libraryWindow.connectWithReader(*this, readNow);
     });
+    QObject::connect(dictionary, &QAction::triggered, this, [&]() {
+        this->setWindowTitle("Словарь");
+        takeCentralWidget();
+        setCentralWidget(&dictionaryWindow);
+        dictionaryWindow.show_group(1);
+    });
 }
 
-SectionBase::~SectionBase() {
+SectionBase::~SectionBase()
+{
     delete ui;
 }

@@ -11,7 +11,7 @@ private:
 
 public:
     explicit Library(std::vector<BookPreview> books)
-        : books(std::move(books)) {
+            : books(std::move(books)) {
     }
 
     std::vector<BookPreview>& getBooks(){
