@@ -10,7 +10,7 @@
 #include <QTextEdit>
 #include <QGridLayout>
 #include <QPushButton>
-
+#include <fstream>
 
 class Dictionary: public QWidget {
 
