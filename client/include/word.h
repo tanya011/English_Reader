@@ -4,7 +4,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <stack>
 
 
 
@@ -20,6 +19,7 @@ class Word{
 
 public:
 
+
     explicit Word(std::string original_);
 
     Word() = default;
@@ -30,7 +30,9 @@ public:
 
     void setTranslation(std::string translation_);
 
+
     void setContext(std::string context_);
+
 
     void addExample(std::string example_);
 
@@ -41,6 +43,7 @@ public:
     static void setIdCounter(int id);
 
     static int counterSaver();
+
 };
 
 #endif // WORD_H

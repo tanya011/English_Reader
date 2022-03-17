@@ -4,9 +4,11 @@
 #include <QMainWindow>
 #include "library_window.h"
 #include "readnow.h"
+
 #include "authorization.h"
 #include "db_manager.h"
 #include "dictionary.h"
+
 
 namespace Ui {
 class SectionBase;
@@ -19,9 +21,13 @@ class SectionBase : public QMainWindow
 private:
     LibraryWindow libraryWindow;
     ReadNow readNow;
+
     Dictionary dictionaryWindow;
     Auth auth;
     DBManager& dbManager;
+
+    Cards cards;
+
 
 public:
 
@@ -33,11 +39,13 @@ public:
  //   QAction* collection;
     QAction* library;
     QAction* reading_now;
+
     QAction *auth_action;
     QAction* dictionary;
     /*
     QAction* cards;
     QAction* settings;
+
     QAction* entrance_exit;
 */
 private:

@@ -27,6 +27,7 @@ set(PROJECT_SOURCES
         src/main.cpp
         src/word.cpp
         src/wordset.cpp
+        src/cards_display.cpp
         sectionbase.cpp
         src/dictionary.cpp
         src/readnow.cpp
@@ -38,16 +39,16 @@ set(PROJECT_SOURCES
         include/book.h
         include/book_rep.h
         include/db_manager.h
-
-
         include/readnow.h
         include/library_window.h
+
         include/dictionary.h
         include/dictionary_logic.h
         include/sectionbase.h
         include/word.h
         include/wordset.h
         include/dictionary_window.h
+        include/cards.h
 
 
         library.ui
@@ -58,9 +59,11 @@ set(PROJECT_SOURCES
         entrance.ui
         sectionbase.ui
         readnow.ui
+
         include/authorization.h
         include/library.h
-)
+        src/cards.cpp)
+
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(YAFR
@@ -88,15 +91,15 @@ endif ()
 target_link_libraries(YAFR PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(YAFR PRIVATE mysqlcppconn)
 set_target_properties(YAFR PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
-)
+        MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+        MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+        MACOSX_BUNDLE TRUE
+        WIN32_EXECUTABLE TRUE
+        )
 
 target_link_libraries(YAFR PRIVATE ${CURL_LIBRARIES})
 
-if(QT_VERSION_MAJOR EQUAL 6)
+if (QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(YAFR)
-endif()
+endif ()

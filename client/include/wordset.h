@@ -4,9 +4,6 @@
 #include "word.h"
 #include <map>
 
-
-
-
 class WordSet{
 
     int id;
@@ -17,6 +14,7 @@ class WordSet{
 
 public:
 
+
      explicit WordSet(std::string title_);
 
     WordSet() = default;
@@ -25,9 +23,11 @@ public:
 
     void addWord(Word &word);
 
+
     void deleteWordById(int wordId);
 
     [[nodiscard]]int getId() const;
+
 
     std::map<int, Word*> getWords();
 
@@ -38,6 +38,7 @@ public:
     static void setIdCounter(int id);
 
     static int counterSaver();
+
 };
 
 

@@ -3,11 +3,13 @@
 #include <QMenuBar>
 #include "ui_sectionbase.h"
 
-SectionBase::SectionBase(DBManager& m, QWidget *parent)
-    : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow(m),
-    auth_action(){
+SectionBase::SectionBase(QWidget *parent)
+    : QMainWindow(parent),
+      ui(new Ui::SectionBase),
+      readNow(),
+      libraryWindow(this),
+      cards(this) {
     ui->setupUi(this);
-
 
     //инициализация кнопок, если сделать класс для QActions - реализовать
     //иниициализацию
@@ -15,49 +17,37 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     library = new QAction("Библиотека", this);
     reading_now = new QAction("Читаю сейчас", this);
     //     collection = new QAction("Коллекция", parent);
-    dictionary = new QAction("Словарь", this);
-    //     cards = new QAction("Карточки", parent);
+    //     dictionary = new QAction("Словарь", parent);
+    cards_action = new QAction("Карточки", parent);
     //     settings = new QAction("Настройки", parent);
-    auth_action = new QAction("Войти", parent);
+    //     entrance_exit = new QAction("Вход/Выход", parent);
 
-    menuBar()->addAction(library);
-    menuBar()->addAction(reading_now);
-    menuBar()->addAction(dictionary);
+    sections = menuBar()->addMenu("Меню");
+
+    sections->addAction(library);
+    sections->addAction(reading_now);
     //    sections->addAction(collection);
     //    sections->addAction(dictionary);
-    //    sections->addAction(cards);
+    sections->addAction(cards_action);
     //    sections->addAction(settings);
-    menuBar()->addAction(auth_action);
+    //    sections->addAction(entrance_exit);
 
-    setCentralWidget(&readNow);
-    this->setWindowTitle("Книга не выбрана");
-
-    readNow.buttonConnectWithDict(*this, dictionaryWindow);
+    setCentralWidget(&cards);
 
     QObject::connect(reading_now, &QAction::triggered, this, [&]() {
-        this->setWindowTitle("Читаю сейчас");
         takeCentralWidget();
         setCentralWidget(&readNow);
     });
     QObject::connect(library, &QAction::triggered, this, [&]() {
-        this->setWindowTitle("Библиотека");
         takeCentralWidget();
         setCentralWidget(&libraryWindow);
-        libraryWindow.connectWithReader(*this, readNow);
     });
-    QObject::connect(dictionary, &QAction::triggered, this, [&]() {
-        this->setWindowTitle("Словарь");
+    QObject::connect(cards_action, &QAction::triggered, this, [&]() {
         takeCentralWidget();
-        setCentralWidget(&dictionaryWindow);
-        dictionaryWindow.show_group(1);
-    });
-    QObject::connect(auth_action, &QAction::triggered, this, [&]() {
-        takeCentralWidget();
-        setCentralWidget(&auth);
+        setCentralWidget(&cards);
     });
 }
 
-SectionBase::~SectionBase()
-{
+SectionBase::~SectionBase() {
     delete ui;
 }

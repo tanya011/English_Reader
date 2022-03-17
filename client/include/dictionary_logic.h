@@ -4,6 +4,7 @@
 #include "wordset.h"
 #include <QObject>
 #include <QTextEdit>
+
 #include <QDebug>
 
 class DictionaryLogic : public QObject{
@@ -12,6 +13,7 @@ class DictionaryLogic : public QObject{
     std::map<int, Word> words;
 
 public:
+
     WordSet all_words = WordSet("Все группы");
     std::map<int, WordSet> groups;
     int add_word(std::string original, std::string translation);
@@ -32,6 +34,7 @@ signals:
 
 public slots:
     void add_word_allgroups(int wordId);
+
 };
 
 
