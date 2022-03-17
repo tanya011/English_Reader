@@ -35,6 +35,12 @@ public:
     void addExample(std::string example_);
 
     [[nodiscard]]int getId() const;
+    
+    void setId(int newId);
+
+    static void setIdCounter(int id);
+
+    static int counterSaver();
 };
 
 #endif // WORD_H
