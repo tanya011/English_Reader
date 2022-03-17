@@ -27,3 +27,15 @@ std::map<int, Word*> WordSet::getWords(){
 bool WordSet::checkWord(int wordId){
     return words[wordId];
 }
+
+void WordSet::setId(int newId){
+    id = newId;
+}
+
+void WordSet::setIdCounter(int id){
+    count_for_id = id;
+}
+
+int WordSet::counterSaver() {
+    return count_for_id;
+}
