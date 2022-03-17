@@ -32,6 +32,12 @@ public:
     std::map<int, Word*> getWords();
 
     bool checkWord(int wordId);
+    
+    void setId(int newId);
+
+    static void setIdCounter(int id);
+
+    static int counterSaver();
 };
 
 
