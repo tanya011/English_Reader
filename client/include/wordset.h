@@ -19,7 +19,7 @@ public:
 
     WordSet() = default;
 
-    std::string getName();
+    std::string getTitle();
 
     void addWord(Word &word);
 

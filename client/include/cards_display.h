@@ -34,7 +34,7 @@ public:
         font.setPointSize(50);
         card->setFont(font);
         card->setAlignment(Qt::AlignHCenter);
-        card->setFixedSize(1000, 500);
+        box->setFixedSize(1800, 1200);
         card->setMargin(100);
         layout->addWidget(card);
 

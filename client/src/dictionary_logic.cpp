@@ -39,7 +39,7 @@ void DictionaryLogic::delete_word_from_group(int wordId, int wordsetId){
 
 int DictionaryLogic::create_wordSet(std::string title){
     for (auto groupName : groups){
-        if (groupName.second.getName() == title){
+        if (groupName.second.getTitle() == title){
             return groupName.second.getId();
         }
     }
@@ -51,7 +51,7 @@ int DictionaryLogic::create_wordSet(std::string title){
 
 int DictionaryLogic::create_wordSet(std::string title, int id){
     for (auto groupName : groups){
-        if (groupName.second.getName() == title){
+        if (groupName.second.getTitle() == title){
             return groupName.second.getId();
         }
     }
@@ -90,7 +90,7 @@ DictionaryLogic::~DictionaryLogic() {
     for (auto wordset: groups){
         file << wordset.second.getWords().size() << std::endl;
         file << wordset.second.getId() << std::endl;
-        file << wordset.second.getName() << std::endl;
+        file << wordset.second.getTitle() << std::endl;
         for (auto word: wordset.second.getWords()){
             file << word.second->getId() << std::endl;
         }

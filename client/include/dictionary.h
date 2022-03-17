@@ -41,6 +41,14 @@ public:
 
     DictionaryLogic m_logic;
 
+    inline std::vector<WordSet> getWordSets(){
+        std::vector<WordSet> wordSets;
+        for(auto g: m_logic.groups){
+            wordSets.push_back(g.second);
+        }
+        return wordSets;
+    }
+
 public slots:
     void add_group_to_menu(int wordset_id, const std::string& title);
 

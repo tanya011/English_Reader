@@ -14,8 +14,18 @@ class DictionaryLogic : public QObject{
 
 public:
 
-    WordSet all_words = WordSet("Все группы");
+    // TEST
+    inline std::vector <Word> getWords(){
+        std::vector <Word> a;
+        for(auto w: words){
+            a.push_back(w.second);
+        }
+        return a;
+    }
+    // Test
     std::map<int, WordSet> groups;
+
+    WordSet all_words = WordSet("Все группы");
     int add_word(std::string original, std::string translation);
     int add_word(std::string original, std::string translation, int id);
     void delete_word(int wordId);

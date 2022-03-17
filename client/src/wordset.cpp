@@ -4,7 +4,7 @@ WordSet::WordSet(std::string title_): title(std::move(title_)){
    id = ++count_for_id;
 }
 
-std::string WordSet::getName(){
+std::string WordSet::getTitle(){
     return title;
 }
 

@@ -23,8 +23,11 @@ public:
         screen_height = QApplication::desktop()->screenGeometry().height();
 
         printHeading();
-        printBox();
         printButton();
+    }
+    void setWordSets(std::vector<WordSet> ws) {
+        allWordSets = ws;
+        printBox();
     }
 
 private slots:
@@ -32,7 +35,7 @@ private slots:
         for (auto wordSetInCheck : m_checkBoxVector) {
             if (wordSetInCheck.checkBox->isChecked()) {
                 checkedWordSets.push_back(wordSetInCheck.wordSet);
-                std::cout << wordSetInCheck.wordSet.getTitle() << " ";
+                // std::cout << wordSetInCheck.wordSet.getTitle() << " ";
             }
         }
         auto parent = dynamic_cast<QMainWindow *>(parentWidget());
@@ -51,6 +54,7 @@ private:
     };
     std::vector<WordSetsInCheckBox> m_checkBoxVector;
     std::vector<WordSet> checkedWordSets;
+    std::vector<WordSet> allWordSets;
 
     void printHeading() {
         auto *text = new QLabel(this);
@@ -60,35 +64,11 @@ private:
     }
 
     void printBox() {
-        std::vector<WordSet> wordSets;
-
-        // debug1
-        auto dict = new DictionaryLogic();
-        for (int i = 0; i < 10; i++) {
-            Word w("word " + std::to_string(i));
-            w.setTranslation("translation "+std::to_string(i));
-            dict->add_word(w);
-        }
-        // debug1
-
-        //debug
-        auto words = new std::vector<Word>(dict->getWords());
-        // debug
-
-        for (int i = 0; i < 50; i++) {
-            wordSets.emplace_back(std::to_string(i) + " group");
-            // debug2
-            for (int j = 0; j < 10; ++j) {
-                wordSets.back().addWord(words->at(j));
-            }
-            // debug2
-        }
-
         auto *scroll = new QScrollArea(this);
         auto *hbox = new QVBoxLayout(scroll);
         this->setLayout(hbox);
 
-        for (auto &wordSet : wordSets) {
+        for (auto &wordSet : allWordSets) {
             std::string a = wordSet.getTitle();
             auto *cb = new QCheckBox(a.c_str(), this);
             m_checkBoxVector.push_back({cb, wordSet});
