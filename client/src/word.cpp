@@ -27,3 +27,15 @@ void Word::addExample(std::string example_){
 [[nodiscard]]int Word::getId() const{
     return id;
 }
+
+void Word::setId(int newId){
+    id = newId;
+}
+
+void Word::setIdCounter(int id){
+    count_for_id = id;
+}
+
+int Word::counterSaver() {
+    return count_for_id;
+}
