@@ -28,7 +28,6 @@ class Dictionary: public QWidget {
 
 
     QMenu* groups = new QMenu("Выбор группы", groups_manager);
-    QMenu* sorts = new QMenu("По дате добавления", groups_manager);
 
     std::vector<QPushButton *> wordBtnsDeleteAll;
     std::vector<QPushButton *> wordBtnsDeleteGroup;
