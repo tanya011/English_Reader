@@ -47,7 +47,6 @@ set(PROJECT_SOURCES
         include/sectionbase.h
         include/word.h
         include/wordset.h
-        include/dictionary_window.h
         include/cards.h
 
 

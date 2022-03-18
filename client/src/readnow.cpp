@@ -42,6 +42,11 @@ void ReadNow::buttonAddPhraseToDict() {
 void ReadNow::printWindowWithTranslate() {
     translatedText = new QTextEdit(this);
     translatedText->setGeometry(screen_width - 900, 120, 700, 500);
+
+    auto font = translatedText->font();
+    //font.setBold(true);
+    font.setPointSize(12);
+    translatedText->setFont(font);
 }
 
 void ReadNow::printBook(const QString &book, const QString &author, const QString &title_) {
@@ -53,8 +58,14 @@ void ReadNow::printBook(const QString &book, const QString &author, const QStrin
     } else {
         bookText->append(book);
     }
+    bookText->moveCursor(QTextCursor::Start);
     bookText->setReadOnly(true);
-    bookText->setGeometry(40, 120, screen_width - 1000, screen_height - 300);
+    bookText->setGeometry(40, 120, screen_width - 1000, screen_height - 350);
+
+    auto font = bookText->font();
+    //font.setBold(true);
+    font.setPointSize(13);
+    bookText->setFont(font);
 }
 
 void ReadNow::createActions() {

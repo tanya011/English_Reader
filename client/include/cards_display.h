@@ -55,7 +55,6 @@ public:
         QObject::connect(btnPrev, &QPushButton::clicked, this, [&, card, btnShowTranslation]() {
             curWord--;
             curWord %= words.size();
-            translationShowed= false;
             card->setText(
                 QString::fromStdString(words[curWord]->getOriginal()));
 
@@ -65,7 +64,6 @@ public:
         QObject::connect(btnNext, &QPushButton::clicked, this, [&, card, btnShowTranslation]() {
             curWord++;
             curWord %= words.size();
-            translationShowed= false;
             card->setText(
                 QString::fromStdString(words[curWord]->getOriginal()));
             btnShowTranslation->setText("Translate");
