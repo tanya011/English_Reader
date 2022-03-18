@@ -2,10 +2,10 @@
 #include <QMenu>
 #include "ui_sectionbase.h"
 
-SectionBase::SectionBase(DBManager& m, QWidget *parent)
-    : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow(m),
-      auth_action(), cards(this),
-      dictionaryWindow(){
+SectionBase::SectionBase(DBManager &m, QWidget *parent)
+        : dbManager(m), QMainWindow(parent), ui(new Ui::SectionBase), readNow(), libraryWindow(m),
+          auth_action(), cards(this),
+          dictionaryWindow() {
     ui->setupUi(this);
 
 
@@ -21,7 +21,7 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     menuBar()->addAction(reading_now);
     menuBar()->addAction(dictionary);
     menuBar()->addAction(cards_action);
-    menuBar()->addAction(auth_action);
+    //menuBar()->addAction(auth_action);
 
     setCentralWidget(&readNow);
     this->setWindowTitle("Книга не выбрана");
@@ -29,7 +29,11 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     readNow.buttonConnectWithDict(*this, dictionaryWindow);
 
     QObject::connect(reading_now, &QAction::triggered, this, [&]() {
-        this->setWindowTitle("Читаю сейчас");
+        if (this->windowTitle() == "") {
+            this->setWindowTitle("Книга не выбрана");
+        } else {
+            this->setWindowTitle(readNow.getAuthorTitle());
+        }
         takeCentralWidget();
         setCentralWidget(&readNow);
     });
@@ -59,7 +63,76 @@ SectionBase::SectionBase(DBManager& m, QWidget *parent)
     });
 }
 
-SectionBase::~SectionBase()
-{
+SectionBase::~SectionBase() {
     delete ui;
 }
+
+/*
+399
+10
+0
+
+
+351
+their greatest fear
+их самый большой страх
+352
+for several years
+на несколько лет
+353
+shudder
+содрогаться
+354
+tawny
+рыжевато-коричневый
+355
+on the corner
+на углу
+356
+How exciting!
+Как здорово!
+357
+in the yard
+во дворе
+358
+nothing more, nothing less
+ни больше ни меньше
+359
+forever
+навсегда
+378
+4
+10
+1
+Все группы
+0
+351
+352
+353
+354
+355
+356
+357
+358
+359
+5
+364
+Joanne Katheline Rowling
+ Harry Potter and the Philosopher's Stone
+351
+352
+353
+354
+355
+2
+365
+Nicole Irving Hachiko
+356
+357
+2
+366
+Paul Shipton
+ The Beatles
+358
+359
+ */

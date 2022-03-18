@@ -54,6 +54,10 @@ public:
         } );
     }
 
+    QString getAuthorTitle(){
+        return authorName + " " + title;
+    }
+
 private slots:
     void translateText();
 
@@ -67,13 +71,15 @@ private:
     int screen_height;
     QTextEdit *bookText{};    // виджет, отображающий текст
     QToolBar *fileToolBar{};  // панель управления
-    QTextEdit *translatedText{}; // окошко с переводом
+
     QAction *translateSelectedText{};
     QString selectedText;
     QString translText;
     QPushButton *button;
     QString authorName = "";
     QString title = "";
+public:
+    QTextEdit *translatedText{}; // окошко с переводом
 };
 
 #endif  // READNOW_H

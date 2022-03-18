@@ -7,6 +7,8 @@
 #include <QPushButton>
 #include <QWidget>
 #include <utility>
+#include <QApplication>
+#include <QDesktopWidget>
 #include "wordset.h"
 
 class CardsDisplay : public QWidget {
@@ -34,8 +36,8 @@ public:
         font.setPointSize(50);
         card->setFont(font);
         card->setAlignment(Qt::AlignHCenter);
-        box->setFixedSize(1800, 1200);
-        card->setMargin(100);
+        box->setFixedSize(QApplication::desktop()->screenGeometry().width() - 150, 1200);
+        card->setMargin(90);
         layout->addWidget(card);
 
         auto menu = new QWidget(this);
@@ -50,18 +52,23 @@ public:
         btnLayout->addWidget(btnShowTranslation);
         btnLayout->addWidget(btnNext);
 
-        QObject::connect(btnPrev, &QPushButton::clicked, this, [&, card]() {
+        QObject::connect(btnPrev, &QPushButton::clicked, this, [&, card, btnShowTranslation]() {
             curWord--;
             curWord %= words.size();
+            translationShowed= false;
             card->setText(
                 QString::fromStdString(words[curWord]->getOriginal()));
+
+            btnShowTranslation->setText("Translate");
         });
 
-        QObject::connect(btnNext, &QPushButton::clicked, this, [&, card]() {
+        QObject::connect(btnNext, &QPushButton::clicked, this, [&, card, btnShowTranslation]() {
             curWord++;
             curWord %= words.size();
+            translationShowed= false;
             card->setText(
                 QString::fromStdString(words[curWord]->getOriginal()));
+            btnShowTranslation->setText("Translate");
         });
         QObject::connect(
             btnShowTranslation, &QPushButton::clicked, this,

@@ -4,7 +4,7 @@
 #include "include/db_manager.h"
 
 void load_books(DBManager& m){
-    std::string path="/home/ekaterina/project-yafr/English_Reader/client/src/";
+    std::string path="/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/";
     std::ifstream f(path+"booknames.txt");
     std::vector<std::string> names;
     std::string t;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     DBManager dbManager;
-    load_books(dbManager);
+    //load_books(dbManager);
 
     SectionBase mainWindow(dbManager);
     mainWindow.showMaximized();
