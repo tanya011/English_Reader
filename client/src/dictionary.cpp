@@ -65,7 +65,6 @@ Dictionary::Dictionary(QWidget *parent): QWidget(parent){
     QObject::connect(&m_logic, &DictionaryLogic::wordset_was_deleted, this, &Dictionary::delete_group_from_menu);
 
     groups_manager->addMenu(groups);
-    groups_manager->addMenu(sorts);
 
     auto* all_groups = new QAction("Все слова", groups);
 
