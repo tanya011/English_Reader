@@ -30,16 +30,16 @@ set(PROJECT_SOURCES
         src/cards_display.cpp
         sectionbase.cpp
         src/dictionary.cpp
-        src/readnow.cpp
+        src/readNowWindow.cpp
         src/dictionary_logic.cpp
         src/book_rep.cpp
         src/library_window.cpp
-        src/translater.cpp
+        src/translator.cpp
 
         include/book.h
         include/book_rep.h
         include/db_manager.h
-        include/readnow.h
+        include/readNowWindow.h
         include/library_window.h
 
         include/dictionary.h
@@ -59,7 +59,7 @@ set(PROJECT_SOURCES
         sectionbase.ui
         readnow.ui
 
-        include/authorization.h
+        include/authorizationWindow.h
         include/library.h
         src/cards.cpp)
 
@@ -77,6 +77,8 @@ else ()
     if (ANDROID)
         add_library(YAFR SHARED
                 ${PROJECT_SOURCES}
+                src/readNowWindow.cpp
+                include/readNowWindow.h
                 )
         # Define properties for Android with Qt 5 after find_package() calls as:
         #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
@@ -96,6 +98,8 @@ set_target_properties(YAFR PROPERTIES
         MACOSX_BUNDLE TRUE
         WIN32_EXECUTABLE TRUE
         )
+set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC TRUE)
+
 
 target_link_libraries(YAFR PRIVATE ${CURL_LIBRARIES})
 

@@ -3,6 +3,7 @@
 #include "include/sectionbase.h"
 #include "include/db_manager.h"
 
+/* мы не знаем что это такое если бы мы знали что это такое
 void load_books(DBManager& m){
     std::string path="/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/";
     std::ifstream f(path+"booknames.txt");
@@ -24,6 +25,7 @@ void load_books(DBManager& m){
         std::cout<< id<<", ";
     }
 }
+ */
 
 
 int main(int argc, char *argv[]) {
@@ -35,7 +37,6 @@ int main(int argc, char *argv[]) {
     SectionBase mainWindow(dbManager);
     mainWindow.showMaximized();
     mainWindow.show();
-
 
     return a.exec();
 }

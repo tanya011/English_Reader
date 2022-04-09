@@ -5,12 +5,13 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-class Auth : public QWidget {
+class AuthorizationWindow : public QWidget {
 private:
 
 public:
-    explicit Auth(QWidget *parent = nullptr)
+    explicit AuthorizationWindow(QWidget *parent = nullptr)
     : QWidget(parent) {
+        // здесь все все-равно переделывать
         auto box = new QWidget;
         auto layout = new QGridLayout;
         auto line1 = new QLineEdit;

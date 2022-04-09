@@ -10,7 +10,9 @@
 #include <QToolBar>
 #include "include/book_rep.h"
 #include "include/library.h"
-#include "readnow.h"
+#include "readNowWindow.h"
+#include <QDesktopWidget>
+#include <QApplication>
 
 class LibraryWindow : public QWidget {
 private:
@@ -58,7 +60,7 @@ public:
         scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
     }
 
-    void connectWithReader(QMainWindow &parent, ReadNow &readNow) {
+    void connectWithReader(QMainWindow &parent, ReadNowWindow &readNow) {
         if (areBtnsConnected)
             return;
         for (int i = 0; i < bookPreviews.size(); i++) {
@@ -80,8 +82,8 @@ public:
                         readNow.printBook(text, author, title);
                         readNow.buttonsInLibraryConnectWithReader();
 
-                        if (readNow.translatedText != nullptr) {
-                            readNow.translatedText->clear();
+                        if (readNow.translatedTextDisplay_ != nullptr) {
+                            readNow.translatedTextDisplay_->clear();
                         }
                     });
         }
