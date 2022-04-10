@@ -1,12 +1,7 @@
 #include "include/dictionaryWindow.h"
-#include <QPushButton>
-#include<iostream>
-#include <QDebug>
-#include <QInputDialog>
 
 
-void DictionaryWindow::showWordSet(int wordsetId){
-    //qDebug() << wordsetId;
+void DictionaryWindow::showWordSet(int wordSetId){
     for (auto &previousIcon: mLogic_.wordSets_[curOpenWordSetId_].getWords()){
         QLayoutItem* item;
         while ( (item = layout_->takeAt(0)) != nullptr){
@@ -16,14 +11,14 @@ void DictionaryWindow::showWordSet(int wordsetId){
         wordBtnsDeleteFromDictionary_.clear();
         wordBtnsDeleteFromWordSet_.clear();
     }
-    curOpenWordSetId_ = wordsetId;
+    curOpenWordSetId_ = wordSetId;
     wordBtnsDeleteFromDictionary_.resize(
-        mLogic_.wordSets_[wordsetId].getWords().size());
+        mLogic_.wordSets_[wordSetId].getWords().size());
     wordBtnsDeleteFromWordSet_.resize(
-        mLogic_.wordSets_[wordsetId].getWords().size());
+        mLogic_.wordSets_[wordSetId].getWords().size());
     int index = 0;
     int height = 0;
-    for (auto &curWord: mLogic_.wordSets_[wordsetId].getWords()) {
+    for (auto &curWord: mLogic_.wordSets_[wordSetId].getWords()) {
         std::string fullWord = curWord.second->getOriginal() + " - " +  curWord.second->getTranslation();
         auto *word = new QTextEdit(fullWord.c_str());
         word->setMaximumHeight(100);
@@ -33,11 +28,12 @@ void DictionaryWindow::showWordSet(int wordsetId){
         wordBtnsDeleteFromWordSet_[index] = new QPushButton("Удалить из группы");
         QObject::connect(wordBtnsDeleteFromDictionary_[index], &QPushButton::clicked, &mLogic_, [=](){
                              mLogic_.deleteWordFromDictionary(curWord.first);
-                             showWordSet(wordsetId);
+                             showWordSet(wordSetId);
         });
         QObject::connect(wordBtnsDeleteFromWordSet_[index], &QPushButton::clicked, &mLogic_, [=](){
-                             mLogic_.deleteWordFromWordSet(curWord.first, wordsetId);
-                showWordSet(wordsetId);
+                             mLogic_.deleteWordFromWordSet(curWord.first,
+                                                           wordSetId);
+                showWordSet(wordSetId);
         });
         layout_->addWidget(wordBtnsDeleteFromDictionary_[index], index, 1);
         layout_->addWidget(wordBtnsDeleteFromWordSet_[index], index, 2);
@@ -46,49 +42,51 @@ void DictionaryWindow::showWordSet(int wordsetId){
     wordsPlacement_->setGeometry({0, 10, 1850, 70 + height});
 }
 
-void DictionaryWindow::addWordSetIconToMenu(int wordset_id, const std::string& title){
+void DictionaryWindow::addWordSetIconToMenu(int wordSetId, const std::string& title){
     auto* action = new QAction(title.c_str(), this);
     wordSets_->addAction(action);
-    QObject::connect(action, &QAction::triggered, this, [=]() { showWordSet(wordset_id);
+    QObject::connect(action, &QAction::triggered, this, [=]() { showWordSet(wordSetId);
     });
-    wordSetIconForMenu_[wordset_id] = action;
+    wordSetIconForMenu_[wordSetId] = action;
 }
 
-void DictionaryWindow::deleteWordSetIconFromMenu(int wordset_id){
-    wordSets_->removeAction(wordSetIconForMenu_[wordset_id]);
-    wordSetIconForMenu_.erase(wordset_id);
+void DictionaryWindow::deleteWordSetIconFromMenu(int wordSetId){
+    wordSets_->removeAction(wordSetIconForMenu_[wordSetId]);
+    wordSetIconForMenu_.erase(wordSetId);
 }
 
 DictionaryWindow::DictionaryWindow(QWidget *parent): QWidget(parent){
+
+    wordSetsToolsBar_->addMenu(wordSets_);
+
+    auto* allWords = new QAction("Все слова", wordSets_);
+
+    wordSets_->addAction(allWords);
+
+    mLogic_.addAllWordsToWordSets();
+
+    auto* addWordSet = new QAction("Добавить группу", this);
+
+    wordSetsToolsBar_->addAction(addWordSet);
+
 
     QObject::connect(&mLogic_, &Dictionary::groupWasCreated, this,
                      &DictionaryWindow::addWordSetIconToMenu);
     QObject::connect(&mLogic_, &Dictionary::wordSetWasDeleted, this,
                      &DictionaryWindow::deleteWordSetIconFromMenu);
 
-    wordSetsToolsBar_->addMenu(wordSets_);
-
-    auto* all_groups = new QAction("Все слова", wordSets_);
-
-    QObject::connect(all_groups, &QAction::triggered, this, [&]() { showWordSet(1);
+    QObject::connect(allWords, &QAction::triggered, this, [&]() { showWordSet(1);
     });
 
-    wordSets_->addAction(all_groups);
-
-    mLogic_.addAllWordsToWordSets();
-
-    auto* addWordset = new QAction("Добавить группу", this);
-
-    wordSetsToolsBar_->addAction(addWordset);
-
-    QObject::connect(addWordset, &QAction::triggered, this, [&](){
+    QObject::connect(addWordSet, &QAction::triggered, this, [&](){
         bool ok;
-        QString wordsetName = QInputDialog::getText(this, tr("Новая группа"), tr("Название группы:"), QLineEdit::Normal, "", &ok);
-        if (ok && !wordsetName.isEmpty())
-            mLogic_.createWordSet(wordsetName.toStdString());
+        QString wordSetName = QInputDialog::getText(this, tr("Новая группа"), tr("Название группы:"), QLineEdit::Normal, "", &ok);
+        if (ok && !wordSetName.isEmpty())
+            mLogic_.createWordSet(wordSetName.toStdString());
     });
 
     QObject::connect(&mLogic_, &Dictionary::wordWasAddedToDictionary, &mLogic_, &Dictionary::addWordAllGroups);
+
 
     int q = mLogic_.addWord("hello", "привет");
     int w = mLogic_.addWord("good", "хорошо");
@@ -105,57 +103,7 @@ DictionaryWindow::DictionaryWindow(QWidget *parent): QWidget(parent){
 
     wordsPlacement_->setGeometry({0, 10, 1850, 4000});
     wordsPlacement_->setLayout(layout_);
-    
-    std::ifstream file("dictionaryData.txt"); //файл лежит в cmake-build-debug
-    std::string curString;
-    getline(file, curString);
-    if (!curString.empty()) {
-        int counterWordId = std::stoi(curString);
-        Word::setIdCounter(counterWordId);
-        getline(file, curString);
-        int wordsNumber = std::stoi(curString);
-        for (int word = 0; word < wordsNumber; word++) {
-            getline(file, curString);
-            int id = std::stoi(curString);
 
-            getline(file, curString);
-            std::string original = curString;
-
-            getline(file, curString);
-            std::string translation = curString;
-
-            mLogic_.addWord(original, translation, id);
-        }
-        getline(file, curString);
-        int counterWordsetId = std::stoi(curString);
-        WordSet::setIdCounter(counterWordsetId);
-
-        getline(file, curString);
-        int wordsetNumber = std::stoi(curString);
-
-        for (int wordset = 0; wordset < wordsetNumber; wordset++) {
-            getline(file, curString);
-            int wordsetSize = std::stoi(curString);
-
-            getline(file, curString);
-            int wordsetId = std::stoi(curString);
-
-            getline(file, curString);
-            std::string wordsetName = curString;
-
-            mLogic_.createWordSet(wordsetName, wordsetId);
-
-            for (int word = 0; word < wordsetSize; word++) {
-                getline(file, curString);
-                int wordId = std::stoi(curString);
-                mLogic_.addWordToWordSet(wordId, wordsetId);
-            }
-        }
-        file.close();
-    }
-    else{
-        file.close();
-    }
-
+    mLogic_.downloadDictionary();
 
 }
