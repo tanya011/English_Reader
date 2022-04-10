@@ -30,17 +30,14 @@ public:
 
     int addWord(std::string original, std::string translation);
     int addWord(std::string original, std::string translation, int id);
-    
     void deleteWordFromDictionary(int wordId);
     void addWordToWordSet(int wordId, int wordSetId);
     void deleteWordFromWordSet(int wordId, int wordSetId);
-    
     int createWordSet(std::string title);
     int createWordSet(std::string title, int id);
-    
     void deleteWordSet(int wordSetId);
     void addAllWordsToWordSets();  // Adds wordSet "AllWords" into the map wordSets[]
-    
+    void downloadDictionary();
     ~Dictionary();
 
 signals:
