@@ -31,7 +31,7 @@ set(PROJECT_SOURCES
         sectionbase.cpp
         src/dictionary.cpp
         src/readNowWindow.cpp
-        src/dictionary_logic.cpp
+        src/dictionaryWindow.cpp
         src/book_rep.cpp
         src/library_window.cpp
         src/translator.cpp
@@ -43,7 +43,7 @@ set(PROJECT_SOURCES
         include/library_window.h
 
         include/dictionary.h
-        include/dictionary_logic.h
+        include/dictionaryWindow.h
         include/sectionbase.h
         include/word.h
         include/wordset.h
