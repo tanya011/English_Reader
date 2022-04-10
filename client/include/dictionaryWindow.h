@@ -11,6 +11,7 @@
 #include <QTextEdit>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QInputDialog>
 #include <fstream>
 
 
