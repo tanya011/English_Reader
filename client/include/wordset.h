@@ -7,28 +7,26 @@
 class WordSet{
 
     int id;
-    static inline int count_for_id = 0;
+    static inline int idCounter_ = 0;
 
-    std::string title;
-    std::map<int, Word*> words;
+    std::string title_;
+    std::map<int, Word*> words_;
 
 public:
 
 
-     explicit WordSet(std::string title_);
+    explicit WordSet(std::string title_);
 
     WordSet() = default;
 
     std::string getTitle();
 
     void addWord(Word &word);
-
-
+    
     void deleteWordById(int wordId);
 
     [[nodiscard]]int getId() const;
-
-
+    
     std::map<int, Word*> getWords();
 
     bool checkWord(int wordId);
@@ -40,6 +38,5 @@ public:
     static int counterSaver();
 
 };
-
 
 #endif // WORDSET_H
