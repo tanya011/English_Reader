@@ -1,19 +1,19 @@
 #include <include/wordset.h>
 
-WordSet::WordSet(std::string title_): title(std::move(title_)){
-   id = ++count_for_id;
+WordSet::WordSet(std::string title_): title_(std::move(title_)){
+   id = ++idCounter_;
 }
 
 std::string WordSet::getTitle(){
-    return title;
+    return title_;
 }
 
 void WordSet::addWord(Word &word){
-    words[word.getId()] = &word;
+    words_[word.getId()] = &word;
 }
 
 void WordSet::deleteWordById(int wordId){
-    words.erase(wordId);
+    words_.erase(wordId);
 }
 
 [[nodiscard]]int WordSet::getId() const{
@@ -21,11 +21,11 @@ void WordSet::deleteWordById(int wordId){
 }
 
 std::map<int, Word*> WordSet::getWords(){
-    return words;
+    return words_;
 }
 
 bool WordSet::checkWord(int wordId){
-    return words[wordId];
+    return words_[wordId];
 }
 
 void WordSet::setId(int newId){
@@ -33,9 +33,9 @@ void WordSet::setId(int newId){
 }
 
 void WordSet::setIdCounter(int id){
-    count_for_id = id;
+    idCounter_ = id;
 }
 
 int WordSet::counterSaver() {
-    return count_for_id;
+    return idCounter_;
 }
