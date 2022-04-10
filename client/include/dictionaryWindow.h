@@ -1,9 +1,10 @@
-#ifndef DICTIONARY_H
-#define DICTIONARY_H
+#ifndef DICTIONARY_WINDOW_H
+#define DICTIONARY_WINDOW_H
 
+
+#include "dictionary.h"
 
 #include <QWidget>
-#include "dictionary_logic.h"
 #include <QMenu>
 #include <QMenuBar>
 #include <QGroupBox>
@@ -12,56 +13,52 @@
 #include <QPushButton>
 #include <fstream>
 
-class Dictionary: public QWidget {
 
-    QMenuBar* groups_manager = new QMenuBar(this);
+class DictionaryWindow : public QWidget {
 
-    QGroupBox* words_placement = new QGroupBox(this);
+    QMenuBar* wordSetsToolsBar_ = new QMenuBar(this);
 
-    QGridLayout *layout = new QGridLayout;
+    QGroupBox* wordsPlacement_ = new QGroupBox(this);
 
-    int current_open_group = 1;
+    QGridLayout* layout_ = new QGridLayout;
 
-    int current_word_height = 1;
+    int curOpenWordSetId_ = 1;
 
-    std::map<int, QAction*> group_buttons;  // нужен, чтобы можно было при создании группы добавлялась её иконка в панель выбора групп
+    std::map<int, QAction*>
+        wordSetIconForMenu_;  // Helps to add name of wordSet in wordSet menu
 
 
-    QMenu* groups = new QMenu("Выбор группы", groups_manager);
+    QMenu* wordSets_ = new QMenu("Выбор группы", wordSetsToolsBar_);
 
-    std::vector<QPushButton *> wordBtnsDeleteAll;
-    std::vector<QPushButton *> wordBtnsDeleteGroup;
+    std::vector<QPushButton *> wordBtnsDeleteFromDictionary_;
+    std::vector<QPushButton *> wordBtnsDeleteFromWordSet_;
 
 public:
+    explicit DictionaryWindow(QWidget *parent = nullptr);
 
-    Dictionary(QWidget *parent = nullptr);
+    Dictionary mLogic_;
 
-    void show_group(int wordsetId);
-
-    DictionaryLogic m_logic;
+    void showWordSet(int wordSetId);
 
     inline std::vector<WordSet> getWordSets(){
         std::vector<WordSet> wordSets;
-        for(auto g: m_logic.groups){
+        for(auto g: mLogic_.wordSets_){
             wordSets.push_back(g.second);
         }
         return wordSets;
     }
 
 public slots:
-    void add_group_to_menu(int wordset_id, const std::string& title);
+    void addWordSetIconToMenu(int wordSetId, const std::string& title);
 
-    void delete_group_from_menu(int wordset_id);
+    void deleteWordSetIconFromMenu(int wordSetId);
 
-    void make_word_icon(int wordId, int wordsetId, std::string text_for_visualisation);
+    void makeWordIcon(int wordId, int wordSetId, std::string textForVisualisation);
 
-    void remove_word_icon(int wordId, int wordsetId);
+    void removeWordIcon(int wordId, int wordSetId);
 
-    void remove_wordsets_icons(int wordsetId);
-
-    void showContextMenuWord();
-
+    void removeWordSetsIcons(int wordSetId);
 };
 
 
-#endif // DICTIONARY_H
+#endif // DICTIONARY_WINDOW_H
