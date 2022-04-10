@@ -56,7 +56,7 @@ void SectionBase::creatMenu() {
         this->setWindowTitle("Словарь");
         takeCentralWidget();
         setCentralWidget(&dictionaryWindow_);
-        dictionaryWindow_.show_group(1);
+        dictionaryWindow_.showWordSet(1);
     });
     QObject::connect(authorizationAction_, &QAction::triggered, this, [&]() {
         this->setWindowTitle("Авторизация");
