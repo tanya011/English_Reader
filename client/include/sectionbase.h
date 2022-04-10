@@ -6,7 +6,7 @@
 #include "readNowWindow.h"
 #include "authorizationWindow.h"
 #include "db_manager.h"
-#include "dictionary.h"
+#include "dictionaryWindow.h"
 #include "cards.h"
 
 namespace Ui {
@@ -29,7 +29,7 @@ private:
 
     LibraryWindow libraryWindow_;
     ReadNowWindow readNowWindow_;
-    Dictionary dictionaryWindow_;
+    DictionaryWindow dictionaryWindow_;
     AuthorizationWindow authorizationWindow_;
     Cards cardsWindow_;
     DBManager &dbManager_;
