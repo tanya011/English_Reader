@@ -1,51 +1,56 @@
-#ifndef DICTIONARY_LOGIC_H
-#define DICTIONARY_LOGIC_H
+#ifndef DICTIONARY_H
+#define DICTIONARY_H
 
 #include "wordset.h"
+
 #include <QObject>
 #include <QTextEdit>
 
-#include <QDebug>
+class Dictionary : public QObject{
 
-class DictionaryLogic : public QObject{
     Q_OBJECT
 
-    std::map<int, Word> words;
+    std::map<int, Word> words_;
 
 public:
 
     // TEST
     inline std::vector <Word> getWords(){
         std::vector <Word> a;
-        for(auto w: words){
+        for(auto w: words_){
             a.push_back(w.second);
         }
         return a;
     }
     // Test
-    std::map<int, WordSet> groups;
 
-    WordSet all_words = WordSet("Все группы");
-    int add_word(std::string original, std::string translation);
-    int add_word(std::string original, std::string translation, int id);
-    void delete_word(int wordId);
-    void add_word_to_group(int wordId, int groupId);
-    void delete_word_from_group(int wordId, int wordsetId);
-    int create_wordSet(std::string title);
-    int create_wordSet(std::string title, int id);
-    void delete_wordSet(int wordset_Id);
-    void add_allgroups_to_map();
-    ~DictionaryLogic();
+    std::map<int, WordSet> wordSets_;
+
+    WordSet allWords_ = WordSet("Все группы");
+
+    int addWord(std::string original, std::string translation);
+    int addWord(std::string original, std::string translation, int id);
+    
+    void deleteWordFromDictionary(int wordId);
+    void addWordToWordSet(int wordId, int wordSetId);
+    void deleteWordFromWordSet(int wordId, int wordSetId);
+    
+    int createWordSet(std::string title);
+    int createWordSet(std::string title, int id);
+    
+    void deleteWordSet(int wordSetId);
+    void addAllWordsToWordSets();  // Adds wordSet "AllWords" into the map wordSets[]
+    
+    ~Dictionary();
 
 signals:
-    void group_was_created(int wordset_id, std::string title, std::map<int, Word*> new_wordset);
-    void wordset_was_deleted(int wordset_id);
-    void word_was_added_to_dictionary(int wordId);
+    void groupWasCreated(int wordSetId, std::string title, std::map<int, Word*> newWordSet);
+    void wordSetWasDeleted(int wordSetId);
+    void wordWasAddedToDictionary(int wordId);
 
 public slots:
-    void add_word_allgroups(int wordId);
-
+    void addWordAllGroups(int wordId); //Updates wordSet "AllWords"
 };
 
 
-#endif // DICTIONARY_LOGIC_H
+#endif // DICTIONARY_H
