@@ -65,9 +65,9 @@ int Dictionary::createWordSet(std::string title, int id){
     return new_wordSet.getId();
 }
 
-void Dictionary::deleteWordSet(int wordset_Id){
-    emit wordSetWasDeleted(wordset_Id);
-    wordSets_.erase(wordset_Id);
+void Dictionary::deleteWordSet(int wordSetId){
+    emit wordSetWasDeleted(wordSetId);
+    wordSets_.erase(wordSetId);
 }
 
 void Dictionary::addAllWordsToWordSets(){
@@ -89,11 +89,11 @@ Dictionary::~Dictionary() {
     }
     file << WordSet::counterSaver() << std::endl;
     file << wordSets_.size() << std::endl;
-    for (auto wordset: wordSets_){
-        file << wordset.second.getWords().size() << std::endl;
-        file << wordset.second.getId() << std::endl;
-        file << wordset.second.getTitle() << std::endl;
-        for (auto word: wordset.second.getWords()){
+    for (auto wordSet : wordSets_){
+        file << wordSet.second.getWords().size() << std::endl;
+        file << wordSet.second.getId() << std::endl;
+        file << wordSet.second.getTitle() << std::endl;
+        for (auto word: wordSet.second.getWords()){
             file << word.second->getId() << std::endl;
         }
     }
