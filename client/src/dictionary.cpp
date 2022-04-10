@@ -30,7 +30,7 @@ void Dictionary::deleteWordFromDictionary(int wordId){
 
 void Dictionary::addWordToWordSet(int wordId, int wordSetId){
     wordSets_[wordSetId].addWord(words_[wordId]);
-    std::string fullword =
+    std::string fullWord =
         words_[wordId].getOriginal() + " - " + words_[wordId].getTranslation();
 }
 
@@ -122,28 +122,28 @@ void Dictionary::downloadDictionary() {
             addWord(original, translation, id);
         }
         getline(file, curString);
-        int counterWordsetId = std::stoi(curString);
-        WordSet::setIdCounter(counterWordsetId);
+        int counterWordSetId = std::stoi(curString);
+        WordSet::setIdCounter(counterWordSetId);
 
         getline(file, curString);
-        int wordsetNumber = std::stoi(curString);
+        int wordSetNumber = std::stoi(curString);
 
-        for (int wordset = 0; wordset < wordsetNumber; wordset++) {
+        for (int wordSet = 0; wordSet < wordSetNumber; wordSet++) {
             getline(file, curString);
-            int wordsetSize = std::stoi(curString);
-
-            getline(file, curString);
-            int wordsetId = std::stoi(curString);
+            int wordSetSize = std::stoi(curString);
 
             getline(file, curString);
-            std::string wordsetName = curString;
+            int wordSetId = std::stoi(curString);
 
-            createWordSet(wordsetName, wordsetId);
+            getline(file, curString);
+            std::string wordSetName = curString;
 
-            for (int word = 0; word < wordsetSize; word++) {
+            createWordSet(wordSetName, wordSetId);
+
+            for (int word = 0; word < wordSetSize; word++) {
                 getline(file, curString);
                 int wordId = std::stoi(curString);
-                addWordToWordSet(wordId, wordsetId);
+                addWordToWordSet(wordId, wordSetId);
             }
         }
         file.close();
