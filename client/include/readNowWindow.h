@@ -3,8 +3,8 @@
 
 #include <QToolBar>
 #include <QMainWindow>
-#include "dictionary_logic.h"
 #include "dictionary.h"
+#include "dictionaryWindow.h"
 
 namespace translate {
     std::string translate(const std::string &text);
@@ -26,13 +26,16 @@ public:
         this->createToolBars();
     }
 
-    void makeConnectWithDict(QMainWindow &parent, Dictionary &dictionary) {
+    void makeConnectWithDict(QMainWindow &parent,
+                             DictionaryWindow &dictionary) {
         connect(button_, &QPushButton::clicked, &dictionary, [&]() {
             if (translatedTextDisplay_ != nullptr) {
-                int wordId = dictionary.m_logic.add_word(selectedText_.toStdString(), translatedText_.toStdString());
-                int setId = dictionary.m_logic.create_wordSet(authorName_.toStdString() + " " + title_.toStdString());
+                int wordId = dictionary.mLogic_.addWord(
+                    selectedText_.toStdString(), translatedText_.toStdString());
+                int setId = dictionary.mLogic_.createWordSet(
+                    authorName_.toStdString() + " " + title_.toStdString());
                 //dictionary.add_group_to_menu(setId, authorName.toStdString() + title.toStdString());
-                dictionary.m_logic.add_word_to_group(wordId, setId);
+                dictionary.mLogic_.addWordToWordSet(wordId, setId);
             }
         });
     }
