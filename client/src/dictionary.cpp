@@ -99,3 +99,56 @@ Dictionary::~Dictionary() {
     }
     file.close();
 }
+
+void Dictionary::downloadDictionary() {
+    std::ifstream file("dictionaryData.txt"); //файл лежит в cmake-build-debug
+    std::string curString;
+    getline(file, curString);
+    if (!curString.empty()) {
+        int counterWordId = std::stoi(curString);
+        Word::setIdCounter(counterWordId);
+        getline(file, curString);
+        int wordsNumber = std::stoi(curString);
+        for (int word = 0; word < wordsNumber; word++) {
+            getline(file, curString);
+            int id = std::stoi(curString);
+
+            getline(file, curString);
+            std::string original = curString;
+
+            getline(file, curString);
+            std::string translation = curString;
+
+            addWord(original, translation, id);
+        }
+        getline(file, curString);
+        int counterWordsetId = std::stoi(curString);
+        WordSet::setIdCounter(counterWordsetId);
+
+        getline(file, curString);
+        int wordsetNumber = std::stoi(curString);
+
+        for (int wordset = 0; wordset < wordsetNumber; wordset++) {
+            getline(file, curString);
+            int wordsetSize = std::stoi(curString);
+
+            getline(file, curString);
+            int wordsetId = std::stoi(curString);
+
+            getline(file, curString);
+            std::string wordsetName = curString;
+
+            createWordSet(wordsetName, wordsetId);
+
+            for (int word = 0; word < wordsetSize; word++) {
+                getline(file, curString);
+                int wordId = std::stoi(curString);
+                addWordToWordSet(wordId, wordsetId);
+            }
+        }
+        file.close();
+    }
+    else{
+        file.close();
+    }
+}
