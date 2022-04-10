@@ -12,7 +12,7 @@
 #include <iostream>
 #include <vector>
 #include "cards_display.h"
-#include "dictionary_logic.h"
+#include "dictionary.h"
 #include "sectionbase.h"
 #include "wordset.h"
 
