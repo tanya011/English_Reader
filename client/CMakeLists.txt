@@ -27,41 +27,31 @@ set(PROJECT_SOURCES
         src/main.cpp
         src/word.cpp
         src/wordset.cpp
-        src/cards_display.cpp
-        sectionbase.cpp
+        src/cardsDisplay.cpp
+        src/connectingWindow.cpp
         src/dictionary.cpp
         src/readNowWindow.cpp
         src/dictionaryWindow.cpp
         src/book_rep.cpp
-        src/library_window.cpp
+        src/libraryWindow.cpp
         src/translator.cpp
+        src/learnWindow.cpp
 
         include/book.h
         include/book_rep.h
         include/db_manager.h
         include/readNowWindow.h
-        include/library_window.h
+        include/libraryWindow.h
 
         include/dictionary.h
         include/dictionaryWindow.h
-        include/sectionbase.h
+        include/connectingWindow.h
         include/word.h
         include/wordset.h
-        include/cards.h
-
-
-        library.ui
-        collection.ui
-        dictionary.ui
-        cards.ui
-        settings.ui
-        entrance.ui
-        sectionbase.ui
-        readnow.ui
-
+        include/learnWindow.h
         include/authorizationWindow.h
         include/library.h
-        src/cards.cpp)
+        )
 
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -1,12 +1,16 @@
 #include <QApplication>
 #include <sstream>
-#include "include/sectionbase.h"
+#include "include/authorizationWindow.h"
+#include "include/connectingWindow.h"
 #include "include/db_manager.h"
+#include "include/learnWindow.h"
+#include "include/libraryWindow.h"
+#include "include/readNowWindow.h"
 
 /* мы не знаем что это такое если бы мы знали что это такое
 void load_books(DBManager& m){
-    std::string path="/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/";
-    std::ifstream f(path+"booknames.txt");
+    std::string path="/home/tatyana/Programming/Проект Весна
+2022/English_Reader/client/src/"; std::ifstream f(path+"booknames.txt");
     std::vector<std::string> names;
     std::string t;
     while(std::getline(f, t)){
@@ -27,16 +31,51 @@ void load_books(DBManager& m){
 }
  */
 
-
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-
     DBManager dbManager;
-    //load_books(dbManager);
+    ConnectingWindow connectingWindow;
 
-    SectionBase mainWindow(dbManager);
-    mainWindow.showMaximized();
-    mainWindow.show();
+    // The order of things below is important. readNowWindow tries to connect to
+    // dictionaryWindow, so it must exist
+
+    DictionaryWindow dictionaryWindow(&connectingWindow);
+    connectingWindow.windowIndexes.dictionary =
+        connectingWindow.allWindows.addWidget(&dictionaryWindow);
+
+    ReadNowWindow readNowWindow(&connectingWindow);
+    connectingWindow.windowIndexes.readNow =
+        connectingWindow.allWindows.addWidget(&readNowWindow);
+
+    LibraryWindow libraryWindow(&connectingWindow, dbManager);
+    connectingWindow.windowIndexes.library =
+        connectingWindow.allWindows.addWidget(&libraryWindow);
+
+    CardsDisplay cardsDisplay(&connectingWindow);
+    connectingWindow.windowIndexes.cards =
+        connectingWindow.allWindows.addWidget(&cardsDisplay);
+
+    LearnWindow learnWindow(&connectingWindow);
+    connectingWindow.windowIndexes.learn =
+        connectingWindow.allWindows.addWidget(&learnWindow);
+
+    AuthorizationWindow authorizationWindow(&connectingWindow);
+    connectingWindow.windowIndexes.auth =
+        connectingWindow.allWindows.addWidget(&authorizationWindow);
+
+    connectingWindow.allWindows.setCurrentIndex(
+        connectingWindow.windowIndexes.readNow);
+
+    //      Notes for curious people
+    // Note 1: Though all windows had connectingWindow as parent first, they now
+    // have StackedWidget as parent and so don't appear all at the same time.
+
+    // Note 2: Windows have member 'parent', but it isn't true Qt parent, it's
+    // connectionWindow.
+
+    // Note 3: We can change parent of widget, as they all inherit QWidget, and
+    // it's parent is QWidget
+    connectingWindow.showMaximized();
 
     return a.exec();
 }

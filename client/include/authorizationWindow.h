@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QGridLayout>
 
 class AuthorizationWindow : public QWidget {
 private:

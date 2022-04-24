@@ -1,19 +1,19 @@
 #include "include/readNowWindow.h"
 #include <QAction>
-#include <QMainWindow>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QGridLayout>
+#include <QMainWindow>
 #include <QPushButton>
 #include <QString>
 #include <QTextEdit>
 #include <iostream>
-#include <QDesktopWidget>
+#include "include/connectingWindow.h"
+#include "include/dictionaryWindow.h"
 
-
-ReadNowWindow::ReadNowWindow(QMainWindow *parent) : QMainWindow(parent) {
+ReadNowWindow::ReadNowWindow(ConnectingWindow *parent)
+    : parent(parent), QMainWindow(dynamic_cast<QMainWindow *>(parent)) {
     auto *layout = new QHBoxLayout;
-
-    //parent->setWindowTitle("Читаю сейчас");
 
     screenWidth_ = QApplication::desktop()->screenGeometry().width();
     screenHeight_ = QApplication::desktop()->screenGeometry().height();
@@ -25,14 +25,33 @@ ReadNowWindow::ReadNowWindow(QMainWindow *parent) : QMainWindow(parent) {
     createButtonAddPhraseToDict();
     createActions();   // создаем Actions
     createToolBars();  // создаем панель
+    makeConnectWithDict();
 };
+
+void ReadNowWindow::makeConnectWithDict() {
+    assert(parent!= nullptr);
+    auto dictionary = dynamic_cast<DictionaryWindow *>(
+        parent->allWindows.widget(parent->windowIndexes.dictionary));
+    assert(dictionary!= nullptr);
+    connect(button_, &QPushButton::clicked, dictionary, [&]() {
+        if (translatedTextDisplay_ != nullptr) {
+            int wordId = dictionary->mLogic_.addWord(
+                selectedText_.toStdString(), translatedText_.toStdString());
+            int setId = dictionary->mLogic_.createWordSet(
+                authorName_.toStdString() + " " + title_.toStdString());
+            // dictionary.add_group_to_menu(setId, authorName.toStdString()
+            // + title.toStdString());
+            dictionary->mLogic_.addWordToWordSet(wordId, setId);
+        }
+    });
+}
 
 void ReadNowWindow::translateText() {
     if (translatedTextDisplay_) {
         translatedTextDisplay_->clear();
         selectedText_ = bookTextDisplay_->textCursor().selectedText();
-        translatedText_ =
-                QString::fromStdString(translate::translate(selectedText_.toStdString()));
+        translatedText_ = QString::fromStdString(
+            translate::translate(selectedText_.toStdString()));
         translatedTextDisplay_->append(translatedText_);
     }
 }
@@ -50,12 +69,14 @@ void ReadNowWindow::createWindowWithTranslate() {
     translatedTextDisplay_->setGeometry(screenWidth_ - 900, 120, 700, 500);
 
     auto font = translatedTextDisplay_->font();
-    //font.setBold(true);
+    // font.setBold(true);
     font.setPointSize(12);
     translatedTextDisplay_->setFont(font);
 }
 
-void ReadNowWindow::printBook(const QString &book, const QString &author, const QString &title) {
+void ReadNowWindow::printBook(const QString &book,
+                              const QString &author,
+                              const QString &title) {
     bookTextDisplay_ = new QTextEdit(this);
     authorName_ = author;
     title_ = title;
@@ -66,10 +87,11 @@ void ReadNowWindow::printBook(const QString &book, const QString &author, const 
     }
     bookTextDisplay_->moveCursor(QTextCursor::Start);
     bookTextDisplay_->setReadOnly(true);
-    bookTextDisplay_->setGeometry(40, 120, screenWidth_ - 1000, screenHeight_ - 350);
+    bookTextDisplay_->setGeometry(40, 120, screenWidth_ - 1000,
+                                  screenHeight_ - 350);
 
     auto font = bookTextDisplay_->font();
-    //font.setBold(true);
+    // font.setBold(true);
     font.setPointSize(13);
     bookTextDisplay_->setFont(font);
 }
@@ -78,14 +100,13 @@ void ReadNowWindow::createActions() {
     translateSelectedTextAction_ = new QAction(tr("Translate"), this);
     translateSelectedTextAction_->setShortcut(tr("Ctrl+D"));
     translateSelectedTextAction_->setStatusTip(
-            tr("Фраза будет переведена при нажатии"));
+        tr("Фраза будет переведена при нажатии"));
     connect(translateSelectedTextAction_, &QAction::triggered, this,
             &ReadNowWindow::translateText);
 
     translateSelectedTextAction_->setEnabled(false);
-    connect(bookTextDisplay_, &QTextEdit::copyAvailable, translateSelectedTextAction_,
-            &QAction::setEnabled);
-
+    connect(bookTextDisplay_, &QTextEdit::copyAvailable,
+            translateSelectedTextAction_, &QAction::setEnabled);
 }
 
 void ReadNowWindow::createToolBars() {
@@ -94,5 +115,5 @@ void ReadNowWindow::createToolBars() {
 }
 
 [[nodiscard]] QSize ReadNowWindow::sizeHint() const {
-return {1000, 500};
+    return {1000, 500};
 }
