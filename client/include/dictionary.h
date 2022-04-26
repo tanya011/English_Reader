@@ -10,7 +10,7 @@ class Dictionary : public QObject{
 
     Q_OBJECT
 
-    std::map<int, Word> words_;
+    std::map<int, Word> words_{};
 
 public:
 
@@ -38,7 +38,7 @@ public:
     void deleteWordSet(int wordSetId);
     void addAllWordsToWordSets();  // Adds wordSet "AllWords" into the map wordSets[]
     void downloadDictionary();
-    ~Dictionary();
+    ~Dictionary() override;
 
 signals:
     void groupWasCreated(int wordSetId, std::string title, std::map<int, Word*> newWordSet);

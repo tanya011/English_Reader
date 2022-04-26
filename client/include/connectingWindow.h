@@ -11,7 +11,7 @@ class ConnectingWindow : public QMainWindow {
 public:
     QStackedWidget allWindows;
     struct WindowIndexes {
-        int library, readNow, dictionary, auth, learn, cards;
+        int library=-1, readNow=-1, dictionary=-1, auth=-1, learn=-1, cards=-1;
     } windowIndexes;
 
     explicit ConnectingWindow(QWidget *parent = nullptr);

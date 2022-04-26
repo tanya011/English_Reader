@@ -15,6 +15,8 @@ void LearnWindow::setWordSets(std::vector<WordSet> ws) {
 }
 
 void LearnWindow::button_clicked() {
+    if(!checkedWordSets.empty())
+        checkedWordSets={};
     for (auto wordSetInCheck : m_checkBoxVector) {
         if (wordSetInCheck.checkBox->isChecked()) {
             checkedWordSets.push_back(wordSetInCheck.wordSet);
@@ -22,9 +24,20 @@ void LearnWindow::button_clicked() {
         }
     }
 
-    auto cardsDisplay = dynamic_cast<CardsDisplay *>(
-        parent->allWindows.widget(parent->windowIndexes.cards));
+    if (parent->windowIndexes.cards !=
+        -1) {  // TODO: I don't completely understand what happens with this
+               // widget. In docs told that is's not displayed, but its parent
+               // remains to be QStackedWidget.
+        CardsDisplay *old = dynamic_cast<CardsDisplay *>(
+            parent->allWindows.widget(parent->windowIndexes.cards));
+        parent->allWindows.removeWidget(
+            old);
+        old->setParent(nullptr); // maybe its solution
+        delete old;
+    }
+    auto cardsDisplay = new CardsDisplay(parent);
     cardsDisplay->displayWords(checkedWordSets);
+    parent->windowIndexes.cards = parent->allWindows.addWidget(cardsDisplay);
     parent->allWindows.setCurrentIndex(parent->windowIndexes.cards);
 }
 

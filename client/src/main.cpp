@@ -51,10 +51,6 @@ int main(int argc, char *argv[]) {
     connectingWindow.windowIndexes.library =
         connectingWindow.allWindows.addWidget(&libraryWindow);
 
-    CardsDisplay cardsDisplay(&connectingWindow);
-    connectingWindow.windowIndexes.cards =
-        connectingWindow.allWindows.addWidget(&cardsDisplay);
-
     LearnWindow learnWindow(&connectingWindow);
     connectingWindow.windowIndexes.learn =
         connectingWindow.allWindows.addWidget(&learnWindow);

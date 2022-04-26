@@ -22,6 +22,8 @@ public:
     void setWordSets(std::vector<WordSet> ws);
     ConnectingWindow *parent;
 
+
+
 private slots:
     void button_clicked();
 

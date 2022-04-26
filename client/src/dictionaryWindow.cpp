@@ -55,7 +55,7 @@ void DictionaryWindow::deleteWordSetIconFromMenu(int wordSetId){
     wordSetIconForMenu_.erase(wordSetId);
 }
 
-DictionaryWindow::DictionaryWindow(QWidget *parent): QWidget(parent){
+DictionaryWindow::DictionaryWindow(ConnectingWindow *parent): QWidget(parent){
 
     wordSetsToolsBar_->addMenu(wordSets_);
 
@@ -106,4 +106,11 @@ DictionaryWindow::DictionaryWindow(QWidget *parent): QWidget(parent){
 
     mLogic_.downloadDictionary();
 
+}
+std::vector<WordSet> DictionaryWindow::getWordSets() {
+    std::vector<WordSet> wordSets;
+    for(auto g: mLogic_.wordSets_){
+        wordSets.push_back(g.second);
+    }
+    return wordSets;
 }

@@ -9,10 +9,6 @@ CardsDisplay::CardsDisplay(ConnectingWindow *parent) : QWidget(parent) {
 }
 
 void CardsDisplay::displayWords(std::vector<WordSet> wordSets) {
-    words = {};  // TODO: I create one global display window and so, cards after
-                 // previous display aren't cleared. Maybe it's better to create
-                 // own cardsDisplay object for every display.
-    curWord = 0;
     for (auto ws : wordSets)
         for (auto w : ws.getWords())
             words.push_back(w.second);
