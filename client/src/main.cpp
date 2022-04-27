@@ -1,3 +1,4 @@
+#define __GLIBCXX_DEBUG
 #include <QApplication>
 #include <sstream>
 #include "include/authorizationWindow.h"
@@ -39,25 +40,25 @@ int main(int argc, char *argv[]) {
     // The order of things below is important. readNowWindow tries to connect to
     // dictionaryWindow, so it must exist
 
-    DictionaryWindow dictionaryWindow(&connectingWindow);
+    auto dictionaryWindow = new DictionaryWindow(&connectingWindow);
     connectingWindow.windowIndexes.dictionary =
-        connectingWindow.allWindows.addWidget(&dictionaryWindow);
+        connectingWindow.allWindows.addWidget(dictionaryWindow);
 
-    ReadNowWindow readNowWindow(&connectingWindow);
+    auto readNowWindow = new ReadNowWindow(&connectingWindow);
     connectingWindow.windowIndexes.readNow =
-        connectingWindow.allWindows.addWidget(&readNowWindow);
+        connectingWindow.allWindows.addWidget(readNowWindow);
 
-    LibraryWindow libraryWindow(&connectingWindow, dbManager);
+    auto  libraryWindow = new LibraryWindow(&connectingWindow, dbManager);
     connectingWindow.windowIndexes.library =
-        connectingWindow.allWindows.addWidget(&libraryWindow);
+        connectingWindow.allWindows.addWidget(libraryWindow);
 
-    LearnWindow learnWindow(&connectingWindow);
+    auto learnWindow = new LearnWindow(&connectingWindow);
     connectingWindow.windowIndexes.learn =
-        connectingWindow.allWindows.addWidget(&learnWindow);
+        connectingWindow.allWindows.addWidget(learnWindow);
 
-    AuthorizationWindow authorizationWindow(&connectingWindow);
+    auto  authorizationWindow = new AuthorizationWindow(&connectingWindow);
     connectingWindow.windowIndexes.auth =
-        connectingWindow.allWindows.addWidget(&authorizationWindow);
+        connectingWindow.allWindows.addWidget(authorizationWindow);
 
     connectingWindow.allWindows.setCurrentIndex(
         connectingWindow.windowIndexes.readNow);

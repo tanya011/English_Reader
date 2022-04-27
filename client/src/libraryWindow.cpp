@@ -42,7 +42,7 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent, DBManager &dbManager)
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
 
     for (int i = 0; i < bookPreviews.size(); i++) {
-        QObject::connect(readBtns[i], &QPushButton::clicked, this, [&, i]() {
+        QObject::connect(readBtns[i], &QPushButton::clicked, this, [=]() {
             connectWithReader(bookPreviews[i].getId());
         });
     }

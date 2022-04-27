@@ -13,6 +13,7 @@ void CardsDisplay::displayWords(std::vector<WordSet> wordSets) {
         for (auto w : ws.getWords())
             words.push_back(w.second);
 
+
     auto box = new QWidget(this);
     auto layout = new QVBoxLayout;
     auto *card = new QLabel();

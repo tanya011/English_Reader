@@ -26,24 +26,24 @@ void ConnectingWindow::addMenu() {
     setCentralWidget(&allWindows);
     this->setWindowTitle("Книга не выбрана");
 
-    QObject::connect(readNowAction_, &QAction::triggered, this, [&]() {
+    QObject::connect(readNowAction_, &QAction::triggered, this, [=]() {
         if (this->windowTitle() == "") {
             this->setWindowTitle("Книга не выбрана");
         } else {
             this->setWindowTitle(dynamic_cast<ReadNowWindow *>(
-                                     allWindows.widget(windowIndexes.library))
+                                     allWindows.widget(windowIndexes.readNow))
                                      ->getAuthorTitle());
         }
         showReadNow();
     });
 
-    QObject::connect(libraryAction_, &QAction::triggered, this, [&]() {
+    QObject::connect(libraryAction_, &QAction::triggered, this, [=]() {
         this->setWindowTitle("Библиотека");
         updateLibrary();  // not implemented yet
         showLibrary();
     });
 
-    QObject::connect(dictionaryAction_, &QAction::triggered, this, [&]() {
+    QObject::connect(dictionaryAction_, &QAction::triggered, this, [=]() {
         this->setWindowTitle("Словарь");
         updateDictionary();  // not implemented yet
         showDictionary();
@@ -52,12 +52,12 @@ void ConnectingWindow::addMenu() {
             ->showWordSet(1);
     });
 
-    QObject::connect(authorizationAction_, &QAction::triggered, this, [&]() {
+    QObject::connect(authorizationAction_, &QAction::triggered, this, [=]() {
         this->setWindowTitle("Авторизация");
         showAuth();
     });
 
-    QObject::connect(cardsAction_, &QAction::triggered, this, [&]() {
+    QObject::connect(cardsAction_, &QAction::triggered, this, [=]() {
         this->setWindowTitle("Карточки");
         updateCards();
         showCards();
@@ -102,7 +102,7 @@ void ConnectingWindow::updateReadNow(const std::string &title,
                                      const std::string &author,
                                      const std::string &text) {
     auto readNow =
-        dynamic_cast<ReadNowWindow *>(allWindows.widget(windowIndexes.library));
+        dynamic_cast<ReadNowWindow *>(allWindows.widget(windowIndexes.readNow));
 
     readNow->printBook(QString::fromStdString(text),
                        QString::fromStdString(author),

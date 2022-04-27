@@ -49,6 +49,7 @@ void LearnWindow::printHeading() {
 }
 
 void LearnWindow::printBox() {
+    m_checkBoxVector={};
     auto *scroll = new QScrollArea(this);
     auto *hbox = new QVBoxLayout(scroll);
     this->setLayout(hbox);

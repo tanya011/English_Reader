@@ -33,14 +33,15 @@ void ReadNowWindow::makeConnectWithDict() {
     auto dictionary = dynamic_cast<DictionaryWindow *>(
         parent->allWindows.widget(parent->windowIndexes.dictionary));
     assert(dictionary!= nullptr);
-    connect(button_, &QPushButton::clicked, dictionary, [&]() {
+    connect(button_, &QPushButton::clicked, dictionary, [=]() {
         if (translatedTextDisplay_ != nullptr) {
+            assert(dictionary!= nullptr);
             int wordId = dictionary->mLogic_.addWord(
                 selectedText_.toStdString(), translatedText_.toStdString());
             int setId = dictionary->mLogic_.createWordSet(
                 authorName_.toStdString() + " " + title_.toStdString());
             // dictionary.add_group_to_menu(setId, authorName.toStdString()
-            // + title.toStdString());
+            // + title.toStdString())
             dictionary->mLogic_.addWordToWordSet(wordId, setId);
         }
     });
