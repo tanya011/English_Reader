@@ -23,11 +23,6 @@ void LearnWindow::button_clicked() {
             // std::cout << wordSetInCheck.wordSet.getTitle() << " ";
         }
     }
-    
-    for (auto &wordSetInCheck : m_checkBoxVector) {
-        wordSetInCheck.checkBox->setCheckState(
-            static_cast<Qt::CheckState>(false));
-    }
 
     if (parent->windowIndexes.cards !=
         -1) {  // TODO: I don't completely understand what happens with this
