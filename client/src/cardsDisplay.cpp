@@ -13,13 +13,25 @@ void CardsDisplay::displayWords(std::vector<WordSet> wordSets) {
         for (auto w : ws.getWords())
             words.push_back(w.second);
 
-
     auto box = new QWidget(this);
     auto layout = new QVBoxLayout;
     auto *card = new QLabel();
 
     box->setLayout(layout);
+    layout->addWidget(card);
 
+    auto menu = new QWidget(this);
+    auto btnLayout = new QHBoxLayout;
+    menu->setLayout(btnLayout);
+    layout->addWidget(menu);
+    auto btnPrev = new QPushButton("Previous");
+    auto btnNext = new QPushButton("Next");
+    auto btnShowTranslation = new QPushButton("Translation");
+    btnLayout->addWidget(btnPrev);
+    btnLayout->addWidget(btnShowTranslation);
+    btnLayout->addWidget(btnNext);
+
+    // Styles
     auto font = card->font();
     font.setBold(true);
     font.setPointSize(50);
@@ -28,19 +40,7 @@ void CardsDisplay::displayWords(std::vector<WordSet> wordSets) {
     box->setFixedSize(QApplication::desktop()->screenGeometry().width() - 150,
                       1200);
     card->setMargin(90);
-    layout->addWidget(card);
-
-    auto menu = new QWidget(this);
-    auto btnLayout = new QHBoxLayout;
-    menu->setLayout(btnLayout);
-    layout->addWidget(menu);
-
-    auto btnPrev = new QPushButton("Previous");
-    auto btnNext = new QPushButton("Next");
-    auto btnShowTranslation = new QPushButton("Translation");
-    btnLayout->addWidget(btnPrev);
-    btnLayout->addWidget(btnShowTranslation);
-    btnLayout->addWidget(btnNext);
+    // Styles
 
     QObject::connect(
         btnPrev, &QPushButton::clicked, this, [&, card, btnShowTranslation]() {

@@ -1,8 +1,8 @@
 #include "include/book_rep.h"
 
-
-BookRep::BookRep(DBManager &m)
-    : manager(m), stmt(manager.getConnection().createStatement()) {
+BookRep::BookRep(DBManager &m) : manager(m) {
+    std::unique_ptr<sql::Statement> stmt(
+        manager.getConnection().createStatement());
     stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName +
                   "("
                   "id INT NOT NULL UNIQUE,"
@@ -39,23 +39,27 @@ int BookRep::addBook(
         prst->execute();
         return freeId++;
     } catch (sql::SQLException &e) {
-        //std::cout << e.what();
+        // std::cout << e.what();
         return -1;
     }
 }
 
 bool BookRep::deleteBookById(int id) {  // true if everything is ok
     try {
+        std::unique_ptr<sql::Statement> stmt(
+            manager.getConnection().createStatement());
         stmt->execute("DELETE FROM " + tableName +
                       " WHERE id=" + std::to_string(id));
         return true;
     } catch (sql::SQLException &e) {
-        //std::cout << e.what();
+        // std::cout << e.what();
         return false;
     }
 }
 
 Book BookRep::getBookById(int id) {
+    std::unique_ptr<sql::Statement> stmt(
+        manager.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
         "SELECT * FROM " + tableName + " WHERE id=" + std::to_string(id)));
     if (reqRes->next()) {
@@ -68,6 +72,8 @@ Book BookRep::getBookById(int id) {
 }
 
 std::vector<BookPreview> BookRep::getBookPreview() {
+    std::unique_ptr<sql::Statement> stmt(
+        manager.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
         "SELECT id, name, author  FROM " + tableName + " ORDER BY name"));
     std::vector<BookPreview> bookPreviews;

@@ -24,7 +24,6 @@ struct BookRep {  // throws sql::SQLException& and BookRepException(see above)
     // TODO: Adding of large textes isn't supposed to work good. See TODO below
 private:
     DBManager &manager;
-    std::unique_ptr<sql::Statement> stmt;
     std::string tableName = "books";
     int freeId = 0;
 

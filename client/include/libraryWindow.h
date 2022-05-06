@@ -9,6 +9,7 @@
 #include "include/connectingWindow.h"
 #include "include/library.h"
 
+
 class LibraryWindow : public QWidget {
 private:
     std::vector<BookPreview> bookPreviews;
