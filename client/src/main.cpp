@@ -3,7 +3,7 @@
 #include <sstream>
 #include "include/authorizationWindow.h"
 #include "include/connectingWindow.h"
-#include "include/db_manager.h"
+#include "include/dbManager.h"
 #include "include/learnWindow.h"
 #include "include/libraryWindow.h"
 #include "include/readNowWindow.h"

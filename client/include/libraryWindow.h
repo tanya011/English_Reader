@@ -5,7 +5,7 @@
 #include <QDesktopWidget>
 #include <QLabel>
 #include <QPushButton>
-#include "include/book_rep.h"
+#include "include/bookRep.h"
 #include "include/connectingWindow.h"
 #include "include/library.h"
 

@@ -3,7 +3,7 @@
 #include <QGroupBox>
 #include <QScrollArea>
 #include <QString>
-#include "include/book_rep.h"
+#include "include/bookRep.h"
 #include "include/readNowWindow.h"
 
 LibraryWindow::LibraryWindow(ConnectingWindow *parent, DBManager &dbManager)

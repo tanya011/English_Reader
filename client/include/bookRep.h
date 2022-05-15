@@ -1,5 +1,5 @@
-#ifndef YAFR_BOOK_REP_H
-#define YAFR_BOOK_REP_H
+#ifndef YAFR_BOOKREP_H
+#define YAFR_BOOKREP_H
 
 // DB includes
 #include <cppconn/driver.h>
@@ -9,7 +9,7 @@
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
 #include "book.h"
-#include "db_manager.h"
+#include "dbManager.h"
 
 struct BookRepException : std::runtime_error {
     explicit BookRepException(const std::string &message = "BookRep exception");

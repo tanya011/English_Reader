@@ -1,4 +1,4 @@
-#include "include/book_rep.h"
+#include "include/bookRep.h"
 
 BookRep::BookRep(DBManager &m) : manager(m) {
     std::unique_ptr<sql::Statement> stmt(
