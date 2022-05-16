@@ -6,10 +6,10 @@ UserRep::UserRep(DBManager &m) : manager(m) {
 
     stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName +
                   "("
-                  "id, INT UNIQUE,"
-                  "name TINYTEXT UNIQUE,"
+                  "id INT UNIQUE,"
+                  "name TINYTEXT,"
                   "passwordHash TINYTEXT,"
-                  "token TINYTEXT UNIQUE"
+                  "token TINYTEXT"
                   ")");
 
     std::unique_ptr<sql::ResultSet> maxId(

@@ -37,6 +37,7 @@ set(PROJECT_SOURCES
         src/translator.cpp
         src/learnWindow.cpp
         src/user.cpp
+        src/authorizationWindow.cpp
 
         include/book.h
         include/bookRep.h

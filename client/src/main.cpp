@@ -1,4 +1,3 @@
-#define __GLIBCXX_DEBUG
 #include <QApplication>
 #include <sstream>
 #include "include/authorizationWindow.h"
@@ -35,10 +34,16 @@ void load_books(DBManager& m){
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     DBManager dbManager;
+    User user;
     ConnectingWindow connectingWindow;
+    connectingWindow.setUser(&user);
 
     // The order of things below is important. readNowWindow tries to connect to
-    // dictionaryWindow, so it must exist
+    // dictionaryWindow, so it must be initialized by that time
+
+    auto authorizationWindow = new AuthorizationWindow(&connectingWindow);
+    connectingWindow.windowIndexes.auth =
+        connectingWindow.allWindows.addWidget(authorizationWindow);
 
     auto dictionaryWindow = new DictionaryWindow(&connectingWindow);
     connectingWindow.windowIndexes.dictionary =
@@ -48,7 +53,7 @@ int main(int argc, char *argv[]) {
     connectingWindow.windowIndexes.readNow =
         connectingWindow.allWindows.addWidget(readNowWindow);
 
-    auto  libraryWindow = new LibraryWindow(&connectingWindow, dbManager);
+    auto libraryWindow = new LibraryWindow(&connectingWindow, dbManager);
     connectingWindow.windowIndexes.library =
         connectingWindow.allWindows.addWidget(libraryWindow);
 
@@ -56,12 +61,8 @@ int main(int argc, char *argv[]) {
     connectingWindow.windowIndexes.learn =
         connectingWindow.allWindows.addWidget(learnWindow);
 
-    auto  authorizationWindow = new AuthorizationWindow(&connectingWindow);
-    connectingWindow.windowIndexes.auth =
-        connectingWindow.allWindows.addWidget(authorizationWindow);
-
     connectingWindow.allWindows.setCurrentIndex(
-        connectingWindow.windowIndexes.readNow);
+        connectingWindow.windowIndexes.auth);
 
     //      Notes for curious people
     // Note 1: Though all windows had connectingWindow as parent first, they now
@@ -72,6 +73,7 @@ int main(int argc, char *argv[]) {
 
     // Note 3: We can change parent of widget, as they all inherit QWidget, and
     // it's parent is QWidget
+
     connectingWindow.showMaximized();
 
     return a.exec();

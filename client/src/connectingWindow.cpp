@@ -8,6 +8,9 @@ ConnectingWindow::ConnectingWindow(QWidget *parent)
     : allWindows(new QStackedWidget), QMainWindow(parent) {
     addMenu();
 }
+void ConnectingWindow::setUser(User *u) {
+    user = u;
+}
 
 void ConnectingWindow::addMenu() {
     // инициализация кнопок меню
@@ -27,6 +30,8 @@ void ConnectingWindow::addMenu() {
     this->setWindowTitle("Книга не выбрана");
 
     QObject::connect(readNowAction_, &QAction::triggered, this, [=]() {
+        if (!user->isAuthorized())
+            return;
         if (this->windowTitle() == "") {
             this->setWindowTitle("Книга не выбрана");
         } else {
@@ -38,12 +43,16 @@ void ConnectingWindow::addMenu() {
     });
 
     QObject::connect(libraryAction_, &QAction::triggered, this, [=]() {
+        if (!user->isAuthorized())
+            return;
         this->setWindowTitle("Библиотека");
         updateLibrary();  // not implemented yet
         showLibrary();
     });
 
     QObject::connect(dictionaryAction_, &QAction::triggered, this, [=]() {
+        if (!user->isAuthorized())
+            return;
         this->setWindowTitle("Словарь");
         updateDictionary();  // not implemented yet
         showDictionary();
@@ -58,6 +67,8 @@ void ConnectingWindow::addMenu() {
     });
 
     QObject::connect(cardsAction_, &QAction::triggered, this, [=]() {
+        if (!user->isAuthorized())
+            return;
         this->setWindowTitle("Карточки");
         updateCards();
         showCards();
@@ -77,10 +88,6 @@ void ConnectingWindow::showDictionary() {
 
 void ConnectingWindow::showCards() {
     allWindows.setCurrentIndex(windowIndexes.learn);
-}
-
-void ConnectingWindow::showCardsDisplay() {
-    allWindows.setCurrentIndex(windowIndexes.cards);
 }
 
 void ConnectingWindow::showAuth() {
@@ -124,5 +131,3 @@ void ConnectingWindow::updateCards() {
 void ConnectingWindow::updateAuth() {
     // TODO
 }
-
-
