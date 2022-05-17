@@ -1,6 +1,7 @@
 #include "include/userRep.h"
 
-UserRep::UserRep(DBManager &m) : manager(m) {
+UserRep::UserRep(DBManager &m, std::mutex *mutex) : manager(m), mutex_(mutex) {
+    std::unique_lock l(*mutex_);
     std::unique_ptr<sql::Statement> stmt(
         manager.getConnection().createStatement());
 
@@ -21,6 +22,7 @@ UserRep::UserRep(DBManager &m) : manager(m) {
 void UserRep::addUser(const std::string &name,
                       const std::string &hash,
                       const std::string &token) {
+    std::unique_lock l(*mutex_);
     std::unique_ptr<sql::PreparedStatement> prst(
         manager.getConnection().prepareStatement(
             "INSERT INTO " + tableName +
@@ -36,6 +38,7 @@ void UserRep::addUser(const std::string &name,
 }
 
 std::string UserRep::getUserToken(const std::string &name) {
+    std::unique_lock l(*mutex_);
     std::unique_ptr<sql::Statement> stmt(
         manager.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
@@ -48,6 +51,7 @@ std::string UserRep::getUserToken(const std::string &name) {
 }
 
 std::string UserRep::getUserName(const std::string &token) {
+    std::unique_lock l(*mutex_);
     std::unique_ptr<sql::Statement> stmt(
         manager.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
@@ -60,13 +64,22 @@ std::string UserRep::getUserName(const std::string &token) {
 }
 
 bool UserRep::isUserExist(const std::string &name, const std::string &hash) {
+    std::unique_lock l(*mutex_);
+    std::cout << "Requesting..." << std::endl;
     std::unique_ptr<sql::Statement> stmt(
         manager.getConnection().createStatement());
-    std::unique_ptr<sql::ResultSet> reqRes(
-        stmt->executeQuery("SELECT * FROM " + tableName +
-                           " WHERE name=" + name + ", passwordHash=" + hash));
-    if (reqRes->next())
+    std::string query = "SELECT token FROM " + tableName + " WHERE " + "name='" +
+                        name + "' AND passwordHash='" + hash + "'";
+    std::cout << query << std::endl;
+    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(query));
+    /*  std::unique_ptr<sql::ResultSet> reqRes(
+          stmt->executeQuery("SELECT token FROM users WHERE name='a' AND
+       passwordHash='1'"));
+  */
+    std::cout << "Requested successfully" << std::endl;
+    if (reqRes->next()) {
         return true;
+    }
     return false;
 }
 

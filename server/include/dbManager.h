@@ -14,7 +14,7 @@
 
 struct DBManager {  // throws sql::SQLException&
 private:
-    sql::Driver *driver;                   // don't need delete
+    sql::Driver *driver;// don't need delete
     std::unique_ptr<sql::Connection> con;  // not thread safe
     const std::string dbName = "yafr";
 

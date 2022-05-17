@@ -8,6 +8,7 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
+#include <mutex>
 #include "dbManager.h"
 
 struct UserNotFoundException : std::runtime_error {
@@ -21,9 +22,10 @@ private:
     DBManager &manager;
     std::string tableName = "users";
     int freeId = 0;
+    std::mutex* mutex_;
 
 public:
-    explicit UserRep(DBManager &m);
+    UserRep(DBManager &m, std::mutex* mutex);
 
     void addUser(const std::string &name,
                  const std::string &hash,

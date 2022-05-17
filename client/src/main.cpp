@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     // Note 3: We can change parent of widget, as they all inherit QWidget, and
     // it's parent is QWidget
 
-    connectingWindow.showMaximized();
+    connectingWindow.show();
 
     return a.exec();
 }
