@@ -6,9 +6,18 @@
 #include "include/book_rep.h"
 #include "include/readNowWindow.h"
 
-LibraryWindow::LibraryWindow(ConnectingWindow *parent, DBManager &dbManager)
-    : QWidget(parent), bookRep(dbManager), parent(parent) {
-    Library library(bookRep.getBookPreview());
+LibraryWindow::LibraryWindow(ConnectingWindow *parent/*, DBManager &dbManager*/)
+    : QWidget(parent)/*, bookRep(dbManager),*/, parent(parent) {
+
+        //////
+    std::vector<BookPreview> bookPreviews;
+    for(int i = 0; i < 20; i++){
+        bookPreviews.emplace_back(i, &"Autor "[i], &"Title " [ i]);
+    }
+
+        ////
+    //Library library(bookRep.getBookPreview());
+    Library library(bookPreviews);
 
     auto box = new QWidget;
     auto layout = new QGridLayout;
@@ -53,9 +62,9 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent, DBManager &dbManager)
 }
 
 void LibraryWindow::connectWithReader(int bookId) {
-    std::string text = bookRep.getBookById(bookId).getText();
-    std::string author = bookRep.getBookById(bookId).getAuthor();
-    std::string title = bookRep.getBookById(bookId).getName();
+    std::string text = "Tfjksdkldsfldlmdsfmdsmkdfklfd";
+    std::string author = bookPreviews[bookId].getAuthor();
+    std::string title = bookPreviews[bookId].getName();
     parent->updateReadNow(title, author, text);
     parent->showReadNow();
 }

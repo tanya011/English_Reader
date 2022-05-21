@@ -38,8 +38,8 @@ set(PROJECT_SOURCES
         src/learnWindow.cpp
 
         include/book.h
-        include/book_rep.h
-        include/db_manager.h
+        #include/book_rep.h
+        #include/db_manager.h
         include/readNowWindow.h
         include/libraryWindow.h
 

@@ -4,7 +4,7 @@
 void DictionaryWindow::showWordSet(int wordSetId){
     for (auto &previousIcon: mLogic_.wordSets_[curOpenWordSetId_].getWords()){
         QLayoutItem* item;
-        while ( (item = layout_->takeAt(0)) != nullptr){
+        while ( (item = layout1->takeAt(0)) != nullptr){
             delete item->widget();
             delete item;
         }
@@ -23,7 +23,7 @@ void DictionaryWindow::showWordSet(int wordSetId){
         auto *word = new QTextEdit(fullWord.c_str());
         word->setMaximumHeight(100);
         height += word->height();
-        layout_->addWidget(word, index, 0);
+        layout1->addWidget(word, index, 0);
         wordBtnsDeleteFromDictionary_[index] = new QPushButton("Удалить из словаря");
         wordBtnsDeleteFromWordSet_[index] = new QPushButton("Удалить из группы");
         QObject::connect(wordBtnsDeleteFromDictionary_[index], &QPushButton::clicked, &mLogic_, [=](){
@@ -35,11 +35,13 @@ void DictionaryWindow::showWordSet(int wordSetId){
                                                            wordSetId);
                 showWordSet(wordSetId);
         });
-        layout_->addWidget(wordBtnsDeleteFromDictionary_[index], index, 1);
-        layout_->addWidget(wordBtnsDeleteFromWordSet_[index], index, 2);
+        layout1->addWidget(wordBtnsDeleteFromDictionary_[index], index, 1);
+        //qScrollArea->setWidget(wordBtnsDeleteFromDictionary_[index]);
+        layout1->addWidget(wordBtnsDeleteFromWordSet_[index], index, 2);
         index++;
     }
-    wordsPlacement_->setGeometry({0, 10, 1850, 70 + height});
+   // wordsPlacement_->setGeometry({0, 10, 1850, 70 + height});
+
 }
 
 void DictionaryWindow::addWordSetIconToMenu(int wordSetId, const std::string& title){
@@ -56,6 +58,21 @@ void DictionaryWindow::deleteWordSetIconFromMenu(int wordSetId){
 }
 
 DictionaryWindow::DictionaryWindow(ConnectingWindow *parent): QWidget(parent){
+    //this->setGeometry( 100, 100, 260, 260);
+
+    //QScrollArea *scrollArea = new QScrollArea( this );
+    scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+    scrollArea->setWidgetResizable( true );
+    scrollArea->setGeometry( 10, 50, 2000, 1000 );
+
+    QWidget *widget = new QWidget();
+    scrollArea->setWidget( widget );
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    widget->setLayout( layout1 );
+
+
+
 
     wordSetsToolsBar_->addMenu(wordSets_);
 
@@ -101,11 +118,10 @@ DictionaryWindow::DictionaryWindow(ConnectingWindow *parent): QWidget(parent){
 
     mLogic_.addWordToWordSet(z, y);
 
-    wordsPlacement_->setGeometry({0, 10, 1850, 4000});
-    wordsPlacement_->setLayout(layout_);
+    //wordsPlacement_->setGeometry({0, 10, 1850, 4000});
+   // wordsPlacement_->setLayout(layout1);
 
     mLogic_.downloadDictionary();
-
 }
 std::vector<WordSet> DictionaryWindow::getWordSets() {
     std::vector<WordSet> wordSets;

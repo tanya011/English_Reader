@@ -8,6 +8,7 @@
 #include <QMenuBar>
 #include <QPushButton>
 #include <QTextEdit>
+#include <QScrollArea>
 #include <QWidget>
 #include <fstream>
 #include "connectingWindow.h"
@@ -16,9 +17,14 @@
 class DictionaryWindow : public QWidget {
     QMenuBar *wordSetsToolsBar_ = new QMenuBar(this);
 
-    QGroupBox *wordsPlacement_ = new QGroupBox(this);
+   // QGroupBox *wordsPlacement_ = new QGroupBox(this);
 
-    QGridLayout *layout_ = new QGridLayout;
+    //QGridLayout *layout_ = new QGridLayout;
+
+    QGridLayout *layout1 = new QGridLayout;
+
+
+    QScrollArea *scrollArea =  new QScrollArea(this);
 
     int curOpenWordSetId_ = 1;
 

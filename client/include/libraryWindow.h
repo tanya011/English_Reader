@@ -19,7 +19,7 @@ private:
     ConnectingWindow *parent;
 
 public:
-    LibraryWindow(ConnectingWindow *parent, DBManager &dbManager);
+    LibraryWindow(ConnectingWindow *parent/*, DBManager &dbManager*/);
 
     void connectWithReader(int bookId);
 };
