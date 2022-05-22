@@ -14,6 +14,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
 find_package(CURL REQUIRED)
 
 pkg_check_modules(CURL libcurl REQUIRED)
@@ -33,17 +35,20 @@ set(PROJECT_SOURCES
         src/readNowWindow.cpp
         src/dictionaryWindow.cpp
         src/bookRep.cpp
-        src/libraryWindow.cpp
+        src/collectionWindow.cpp
         src/translator.cpp
         src/learnWindow.cpp
         src/user.cpp
         src/authorizationWindow.cpp
+        src/libraryWindow.cpp
 
-        include/book.h
+
+
+
         include/bookRep.h
         include/dbManager.h
         include/readNowWindow.h
-        include/libraryWindow.h
+        include/collectionWindow.h
         include/dictionary.h
         include/dictionaryWindow.h
         include/connectingWindow.h
@@ -51,8 +56,10 @@ set(PROJECT_SOURCES
         include/wordset.h
         include/learnWindow.h
         include/authorizationWindow.h
-        include/library.h
         include/user.h
+        include/libraryWindow.h
+
+
         )
 
 
@@ -94,6 +101,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC TRUE)
 
 
 target_link_libraries(YAFR PRIVATE ${CURL_LIBRARIES})
+
+target_link_libraries(YAFR PRIVATE nlohmann_json::nlohmann_json)
 
 if (QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(YAFR)

@@ -5,8 +5,11 @@ AuthorizationWindow::AuthorizationWindow(ConnectingWindow *parent)
     updateWindow();
 }
 void AuthorizationWindow::updateWindow() {
+    qDeleteAll(this->findChildren<QWidget *>("", Qt::FindDirectChildrenOnly));
     auto box = new QWidget;
-    auto layout = new QGridLayout;
+    auto layout = new QVBoxLayout;
+    box->setLayout(layout);
+    box->setParent(this);
     if (!parent_->user->isAuthorized()) {
         auto nameField = new QLineEdit;
         auto passwordField = new QLineEdit;
@@ -20,20 +23,14 @@ void AuthorizationWindow::updateWindow() {
             auto username = nameField->text().toStdString();
             auto password = passwordField->text().toStdString();
             parent_->user->init(username, password);
-            qDeleteAll(
-                box->findChildren<QWidget *>("", Qt::FindDirectChildrenOnly));
-            updateWindow();
+            this->updateWindow();
         });
     } else {
         auto exitBtn = new QPushButton(tr("Выход"));
-        layout->addWidget(exitBtn);  // TODO: Nothing happends
+        layout->addWidget(exitBtn);
         QObject::connect(exitBtn, &QPushButton::clicked, this, [=]() {
             parent_->user->exit();
-            qDeleteAll(
-                box->findChildren<QWidget *>("", Qt::FindDirectChildrenOnly));
-            updateWindow();
+            this->updateWindow();
         });
     }
-    box->setLayout(layout);
-    box->setParent(this);
 }

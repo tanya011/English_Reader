@@ -1,34 +1,30 @@
 #include "include/libraryWindow.h"
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QScrollArea>
-#include <QString>
-#include "include/bookRep.h"
-#include "include/readNowWindow.h"
 
-LibraryWindow::LibraryWindow(ConnectingWindow *parent, DBManager &dbManager)
-    : QWidget(parent), bookRep(dbManager), parent(parent) {
-    Library library(bookRep.getBookPreview());
+LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
+    updateWindow();
+}
+void LibraryWindow::updateWindow() {
+    std::vector<Book> books = parent_->user->getLibraryBooks();
 
     auto box = new QWidget;
     auto layout = new QGridLayout;
 
-    bookPreviews = std::vector<BookPreview>(library.getBooks());
-    titleLabels = std::vector<QLabel *>(bookPreviews.size());
-    readBtns = std::vector<QPushButton *>(bookPreviews.size());
+    titleLabels_ = std::vector<QLabel *>(books.size());
+    addBtns_ = std::vector<QPushButton *>(books.size());
 
-    for (int i = 0; i < bookPreviews.size(); i++) {
-        titleLabels[i] =
-            new QLabel(QString("Name: %1,   Author: %2")
-                           .arg(bookPreviews[i].getName().c_str(),
-                                bookPreviews[i].getAuthor().c_str()));
-        layout->addWidget(titleLabels[i], i, 0);
+    for (int i = 0; i < books.size(); i++) {
+        titleLabels_[i] = new QLabel(
+            QString("Name: %1,   Author: %2")
+                .arg(books[i].getName().c_str(), books[i].getAuthor().c_str()));
+        layout->addWidget(titleLabels_[i], i, 0);
 
-        readBtns[i] = new QPushButton(tr("Read"));
-        layout->addWidget(readBtns[i], i, 1);
+        addBtns_[i] = new QPushButton(tr("Add"));
+        layout->addWidget(addBtns_[i], i, 1);
 
-        readBtns[i]->setFixedWidth(100);
-        readBtns[i]->setFixedHeight(50);
+        addBtns_[i]->setFixedWidth(100);
+        addBtns_[i]->setFixedHeight(50);
     }
 
     box->setLayout(layout);
@@ -36,9 +32,9 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent, DBManager &dbManager)
     auto scrollArea = new QScrollArea(this);
     scrollArea->setWidget(box);
 
-    for (int i = 0; i < bookPreviews.size(); i++) {
-        QObject::connect(readBtns[i], &QPushButton::clicked, this,
-                         [=]() { connectWithReader(bookPreviews[i].getId()); });
+    for (int i = 0; i < books.size(); i++) {
+        QObject::connect(addBtns_[i], &QPushButton::clicked, this,
+                         [=]() { connectWithCollection(books[i].getId()); });
     }
 
     // Styles
@@ -51,11 +47,7 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent, DBManager &dbManager)
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
     // Styles
 }
-
-void LibraryWindow::connectWithReader(int bookId) {
-    std::string text = bookRep.getBookById(bookId).getText();
-    std::string author = bookRep.getBookById(bookId).getAuthor();
-    std::string title = bookRep.getBookById(bookId).getName();
-    parent->updateReadNow(title, author, text);
-    parent->showReadNow();
+void LibraryWindow::connectWithCollection(int bookId) {
+    parent_->user->addBookToCollection(bookId);
+    parent_->updateCollection(); // TODO it don't updates
 }

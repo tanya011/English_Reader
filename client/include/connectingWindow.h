@@ -15,18 +15,19 @@ public:
     QStackedWidget allWindows;
     struct WindowIndexes {
         int library = -1, readNow = -1, dictionary = -1, auth = -1, learn = -1,
-            cards = -1;
+            cards = -1, collection = -1;
     } windowIndexes;
 
     explicit ConnectingWindow(QWidget *parent = nullptr);
 
     void setUser(User *u);
 
-    void showLibrary();
+    void showCollection();
     void showReadNow();
     void showDictionary();
     void showCards();
     void showAuth();
+    void showLibrary();
 
     void updateLibrary();
     void updateReadNow(const std::string &title,
@@ -34,15 +35,16 @@ public:
                        const std::string &text);
     void updateDictionary();
     void updateCards();
+    void updateCollection();
 
-    void updateAuth();
 
 private:
-    QAction *libraryAction_;
+    QAction *collectionAction_;
     QAction *readNowAction_;
     QAction *authorizationAction_;
     QAction *dictionaryAction_;
     QAction *cardsAction_;
+    QAction *libraryAction_;
 
     std::vector<WordSet> getWordSets();
 

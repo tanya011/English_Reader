@@ -14,20 +14,22 @@ void ConnectingWindow::setUser(User *u) {
 
 void ConnectingWindow::addMenu() {
     // инициализация кнопок меню
-    libraryAction_ = new QAction("Библиотека", this);
+    collectionAction_ = new QAction("Коллекция", this);
     readNowAction_ = new QAction("Читаю сейчас", this);
     dictionaryAction_ = new QAction("Словарь", this);
     authorizationAction_ = new QAction("Войти", this);
     cardsAction_ = new QAction("Карточки", this);
+    libraryAction_ = new QAction("Библиотека", this);
 
     menuBar()->addAction(libraryAction_);
+    menuBar()->addAction(collectionAction_);
     menuBar()->addAction(readNowAction_);
     menuBar()->addAction(dictionaryAction_);
     menuBar()->addAction(cardsAction_);
     menuBar()->addAction(authorizationAction_);
 
+
     setCentralWidget(&allWindows);
-    this->setWindowTitle("Книга не выбрана");
 
     QObject::connect(readNowAction_, &QAction::triggered, this, [=]() {
         if (!user->isAuthorized())
@@ -42,11 +44,17 @@ void ConnectingWindow::addMenu() {
         showReadNow();
     });
 
+    QObject::connect(collectionAction_, &QAction::triggered, this, [=]() {
+        if (!user->isAuthorized())
+            return;
+        this->setWindowTitle("Коллекция");
+        showCollection();
+    });
+
     QObject::connect(libraryAction_, &QAction::triggered, this, [=]() {
         if (!user->isAuthorized())
             return;
         this->setWindowTitle("Библиотека");
-        updateLibrary();  // not implemented yet
         showLibrary();
     });
 
@@ -77,6 +85,10 @@ void ConnectingWindow::addMenu() {
 
 void ConnectingWindow::showLibrary() {
     allWindows.setCurrentIndex(windowIndexes.library);
+}
+
+void ConnectingWindow::showCollection() {
+    allWindows.setCurrentIndex(windowIndexes.collection);
 }
 void ConnectingWindow::showReadNow() {
     allWindows.setCurrentIndex(windowIndexes.readNow);
@@ -127,7 +139,5 @@ void ConnectingWindow::updateCards() {
     dynamic_cast<LearnWindow *>(allWindows.widget(windowIndexes.learn))
         ->setWordSets(getWordSets());
 }
-
-void ConnectingWindow::updateAuth() {
-    // TODO
+void ConnectingWindow::updateCollection() {
 }

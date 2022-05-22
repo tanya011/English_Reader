@@ -72,15 +72,24 @@ bool UserRep::isUserExist(const std::string &name, const std::string &hash) {
                         name + "' AND passwordHash='" + hash + "'";
     std::cout << query << std::endl;
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(query));
-    /*  std::unique_ptr<sql::ResultSet> reqRes(
-          stmt->executeQuery("SELECT token FROM users WHERE name='a' AND
-       passwordHash='1'"));
-  */
+
     std::cout << "Requested successfully" << std::endl;
     if (reqRes->next()) {
         return true;
     }
     return false;
+}
+int UserRep::getUserId(const std::string &token) {
+    std::unique_lock l(*mutex_);
+    std::unique_ptr<sql::Statement> stmt(
+        manager.getConnection().createStatement());
+    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
+        "SELECT id FROM " + tableName + " WHERE token=" + token));
+    if (reqRes->next()) {
+        return reqRes->getInt("id");
+    } else {
+        throw UserNotFoundException("token", token);
+    }
 }
 
 UserNotFoundException::UserNotFoundException(const std::string &charact,

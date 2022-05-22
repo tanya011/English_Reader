@@ -35,6 +35,8 @@ public:
 
     std::string getUserName(const std::string &token);
 
+    int getUserId(const std::string &token);
+
     bool isUserExist(const std::string &name, const std::string &hash);
 };
 

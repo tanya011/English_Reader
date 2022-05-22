@@ -1,12 +1,9 @@
 #include "include/bookRep.h"
 #include <filesystem>
-#include <fstream>
 #include <sstream>
-#include <utility>
 
-BookRep::BookRep(DBManager &m, std::filesystem::path appFolder)
-    : manager_(m), appFolder_(std::move(appFolder)) {
-    create_directories(appFolder_ / "books");
+BookRep::BookRep(DBManager &m, std::mutex *mutex) : manager_(m), mutex_(mutex) {
+    std::unique_lock l(*mutex_);
     std::unique_ptr<sql::Statement> stmt(
         manager_.getConnection().createStatement());
     stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName_ +
@@ -16,55 +13,62 @@ BookRep::BookRep(DBManager &m, std::filesystem::path appFolder)
                   "author TINYTEXT,"
                   "filename TINYTEXT NOT NULL"
                   ")");
+
+    std::unique_ptr<sql::ResultSet> maxId(
+        stmt->executeQuery("SELECT MAX(id) FROM " + tableName_));
+    if (maxId->next()) {
+        freeId_ = maxId->getInt(1) + 1;
+    }
 }
 
-void BookRep::addBook(int id,
-                      const std::string &bookName,
-                      const std::string &author,
-                      const std::string &filename) {
+int BookRep::addBook(const std::string &bookName,
+                     const std::string &author,
+                     const std::string &filename) {
     std::ifstream file(filename);
     if (!file.good())
-        throw std::runtime_error("Bad file");
+        return -1;
+    file.close();
     std::filesystem::path pathToBook = filename;
     pathToBook = std::filesystem::absolute(pathToBook);
-    std::unique_ptr<sql::PreparedStatement> prst(
-        manager_.getConnection().prepareStatement(
-            "INSERT INTO " + tableName_ +
-            " (id, name, author, filename) VALUES "
-            "(?,?,?,?)"));
-    prst->setInt(1, id);
-    prst->setString(2, bookName);
-    prst->setString(3, author);
-    prst->setString(4, pathToBook.string());
-    prst->execute();
+    try {
+        std::unique_lock l(*mutex_);
+        std::unique_ptr<sql::PreparedStatement> prst(
+            manager_.getConnection().prepareStatement(
+                "INSERT INTO " + tableName_ +
+                " (id, name, author, filename) VALUES "
+                "(?,?,?,?)"));
+        prst->setInt(1, freeId_);
+        prst->setString(2, bookName);
+        prst->setString(3, author);
+        prst->setString(4, pathToBook.string());
+
+        prst->execute();
+        return freeId_++;
+    } catch (sql::SQLException &e) {
+        return -1;
+    }
 }
 
-void BookRep::addAndSaveBook(int id,
-                             const std::string &bookName,
-                             const std::string &author,
-                             const std::string &text) {
-    std::string filename = std::to_string(id) + "|" + bookName +
-                           "|" + author + ".txt";
-    std::ofstream file(appFolder_ / filename);
-    if(!file.good())
-        throw std::runtime_error("Problems with app directory");
-    file<<text;
-    file.close();
-}
-
-void BookRep::deleteBookById(int id) {  // true if everything is ok
-    std::unique_ptr<sql::Statement> stmt(
-        manager_.getConnection().createStatement());
-    stmt->execute("DELETE FROM " + tableName_ +
-                  " WHERE id=" + std::to_string(id));
+bool BookRep::deleteBookById(int id) {  // true if everything is ok
+    try {
+        std::unique_lock l(*mutex_);
+        std::unique_ptr<sql::Statement> stmt(
+            manager_.getConnection().createStatement());
+        stmt->execute("DELETE FROM " + tableName_ +
+                      " WHERE id=" + std::to_string(id));
+        return true;
+    } catch (sql::SQLException &e) {
+        return false;
+    }
 }
 
 Book BookRep::getBookById(int id) {
+    mutex_->lock();
     std::unique_ptr<sql::Statement> stmt(
         manager_.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
         "SELECT * FROM " + tableName_ + " WHERE id=" + std::to_string(id)));
-
+    mutex_->unlock();
     if (reqRes->next()) {
         return Book{id, static_cast<std::string>(reqRes->getString("name")),
                     static_cast<std::string>(reqRes->getString("author")),
@@ -75,13 +79,14 @@ Book BookRep::getBookById(int id) {
 }
 
 std::vector<Book> BookRep::getAllBooks() {
+    mutex_->lock();
     std::unique_ptr<sql::Statement> stmt(
         manager_.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(
         stmt->executeQuery("SELECT id, name, author, filename  FROM " +
                            tableName_ + " ORDER BY name"));
     std::vector<Book> books;
-
+    mutex_->unlock();
     while (reqRes->next()) {
         books.emplace_back(
             static_cast<int>(reqRes->getInt("id")),

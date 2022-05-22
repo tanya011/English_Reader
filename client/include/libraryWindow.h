@@ -1,3 +1,6 @@
+#ifndef YAFR_LIBRARYWINDOW_H
+#define YAFR_LIBRARYWINDOW_H
+
 #ifndef LIBRARY_WINDOW_H
 #define LIBRARY_WINDOW_H
 
@@ -5,23 +8,29 @@
 #include <QDesktopWidget>
 #include <QLabel>
 #include <QPushButton>
-#include "include/bookRep.h"
 #include "include/connectingWindow.h"
-#include "include/library.h"
+#include "../include/book.h"
 
 
 class LibraryWindow : public QWidget {
 private:
-    std::vector<BookPreview> bookPreviews;
-    std::vector<QLabel *> titleLabels;
-    std::vector<QPushButton *> readBtns;
-    BookRep bookRep;
-    ConnectingWindow *parent;
+    std::vector<Book> books_;
+    std::vector<QLabel *> titleLabels_;
+    std::vector<QPushButton *> addBtns_;
+    ConnectingWindow *parent_;
+
+
+    void connectWithCollection(int bookId);
 
 public:
-    LibraryWindow(ConnectingWindow *parent, DBManager &dbManager);
+    LibraryWindow(ConnectingWindow *parent);
 
-    void connectWithReader(int bookId);
+    void updateWindow();
+
+
 };
 
 #endif  // LIBRARY_WINDOW_H
+
+
+#endif  // YAFR_LIBRARYWINDOW_H
