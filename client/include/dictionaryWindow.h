@@ -17,6 +17,8 @@
 class DictionaryWindow : public QWidget {
     QMenuBar *wordSetsToolsBar_ = new QMenuBar(this);
 
+    QPushButton *button ;
+
    // QGroupBox *wordsPlacement_ = new QGroupBox(this);
 
     //QGridLayout *layout_ = new QGridLayout;
@@ -44,6 +46,9 @@ public:
     void showWordSet(int wordSetId);
 
     std::vector<WordSet> getWordSets();
+
+private slots:
+    void update();
 
 public slots:
     void addWordSetIconToMenu(int wordSetId, const std::string &title);

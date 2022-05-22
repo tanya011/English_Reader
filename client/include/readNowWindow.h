@@ -67,7 +67,7 @@ private:
     QString authorName_ = "";
     QString title_ = "";
 
-    QPushButton *button_;  // в будущем уберется
+    QPushButton *button_;
 
 public:
 };

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "include/dictionaryWindow.h"
 
 
@@ -36,11 +37,13 @@ void DictionaryWindow::showWordSet(int wordSetId){
                 showWordSet(wordSetId);
         });
         layout1->addWidget(wordBtnsDeleteFromDictionary_[index], index, 1);
-        //qScrollArea->setWidget(wordBtnsDeleteFromDictionary_[index]);
         layout1->addWidget(wordBtnsDeleteFromWordSet_[index], index, 2);
         index++;
     }
    // wordsPlacement_->setGeometry({0, 10, 1850, 70 + height});
+}
+
+void DictionaryWindow::update(){
 
 }
 
@@ -58,21 +61,26 @@ void DictionaryWindow::deleteWordSetIconFromMenu(int wordSetId){
 }
 
 DictionaryWindow::DictionaryWindow(ConnectingWindow *parent): QWidget(parent){
-    //this->setGeometry( 100, 100, 260, 260);
 
-    //QScrollArea *scrollArea = new QScrollArea( this );
+    button = new QPushButton;
+    button->setParent(this);
+    button->setGeometry(30, 1370, 300, 70);
+    button->setText("Update");
+    button->show();
+
+    connect(button, &QPushButton::clicked, this,
+            &DictionaryWindow::update);
+
     scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
     scrollArea->setWidgetResizable( true );
-    scrollArea->setGeometry( 10, 50, 2000, 1000 );
+    scrollArea->setGeometry( 10, 50, 2200, 1300 );
+
 
     QWidget *widget = new QWidget();
     scrollArea->setWidget( widget );
 
     QVBoxLayout *layout = new QVBoxLayout();
     widget->setLayout( layout1 );
-
-
-
 
     wordSetsToolsBar_->addMenu(wordSets_);
 
@@ -85,7 +93,6 @@ DictionaryWindow::DictionaryWindow(ConnectingWindow *parent): QWidget(parent){
     auto* addWordSet = new QAction("Добавить группу", this);
 
     wordSetsToolsBar_->addAction(addWordSet);
-
 
     QObject::connect(&mLogic_, &Dictionary::groupWasCreated, this,
                      &DictionaryWindow::addWordSetIconToMenu);
@@ -103,23 +110,6 @@ DictionaryWindow::DictionaryWindow(ConnectingWindow *parent): QWidget(parent){
     });
 
     QObject::connect(&mLogic_, &Dictionary::wordWasAddedToDictionary, &mLogic_, &Dictionary::addWordAllGroups);
-
-
-    int q = mLogic_.addWord("hello", "привет");
-    int w = mLogic_.addWord("good", "хорошо");
-    int z = mLogic_.addWord("word", "слово");
-
-    int x = mLogic_.createWordSet("Гарри Поттер");
-
-    mLogic_.addWordToWordSet(q, x);
-    mLogic_.addWordToWordSet(w, x);
-
-    int y = mLogic_.createWordSet("Портрет Дориана Грея");
-
-    mLogic_.addWordToWordSet(z, y);
-
-    //wordsPlacement_->setGeometry({0, 10, 1850, 4000});
-   // wordsPlacement_->setLayout(layout1);
 
     mLogic_.downloadDictionary();
 }
