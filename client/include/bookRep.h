@@ -1,5 +1,5 @@
-#ifndef YAFR_BOOK_REP_H
-#define YAFR_BOOK_REP_H
+#ifndef YAFR_BOOKREP_H
+#define YAFR_BOOKREP_H
 
 // DB includes
 #include <cppconn/driver.h>
@@ -8,8 +8,10 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
-#include "book.h"
-//#include "db_manager.h"
+#include <filesystem>
+#include <mutex>
+#include "../include/book.h"
+#include "dbManager.h"
 
 struct BookRepException : std::runtime_error {
     explicit BookRepException(const std::string &message = "BookRep exception");
@@ -21,25 +23,27 @@ struct bookNotFoundException : BookRepException {
 
 struct BookRep {  // throws sql::SQLException& and BookRepException(see above)
     // TODO: The possibility of interrupting the connection is not handled
-    // TODO: Adding of large textes isn't supposed to work good. See TODO below
 private:
-    //DBManager &manager;
-    std::string tableName = "books";
-    int freeId = 0;
+    DBManager &manager_;
+    std::string tableName_ = "collection";
+    std::filesystem::path appFolder_;
 
 public:
-    //explicit BookRep(DBManager &m);
+    BookRep(DBManager &m, std::filesystem::path appFolder);
 
-    std::vector<BookPreview> getBookPreview;
+    std::vector<Book> getAllBooks();
 
-    int addBook(const std::string &bookName,
+    void addBook(int id, const std::string &bookName,
+                const std::string &author,
+                const std::string &filename);
+
+    void addAndSaveBook(int id, const std::string &bookName,
                 const std::string &author,
                 const std::string &text);
 
-    bool deleteBookById(int id);
+    void deleteBookById(int id);
 
-    BookPreview getBookById(
-        int id);  // TODO: this method should be in class of Collection
+    Book getBookById(int id);
 };
 
 #endif  // YAFR_LIBRARY_REP_H

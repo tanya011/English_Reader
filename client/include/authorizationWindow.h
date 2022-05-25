@@ -1,33 +1,20 @@
 #ifndef AUTHORIZATION_H
 #define AUTHORIZATION_H
 
-#include <QWidget>
+
+#include <QGridLayout>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QGridLayout>
+#include <QWidget>
+#include "connectingWindow.h"
 
 class AuthorizationWindow : public QWidget {
 private:
-
+    ConnectingWindow* parent_;
 public:
-    explicit AuthorizationWindow(QWidget *parent = nullptr)
-    : QWidget(parent) {
-        // здесь все все-равно переделывать
-        auto box = new QWidget;
-        auto layout = new QGridLayout;
-        auto line1 = new QLineEdit;
-        auto line2 = new QLineEdit;
-        layout->addWidget(line1);
-        layout->addWidget(line2);
+    explicit AuthorizationWindow(ConnectingWindow *parent = nullptr);
+    void updateWindow();
 
-        auto button_auth = new QPushButton;
-        button_auth->setText("Войти");
-        layout->addWidget(button_auth);
-
-        box->setLayout(layout);
-        box->setParent(this);
-    }
 };
 
 #endif  // AUTHORIZATION_H
-
