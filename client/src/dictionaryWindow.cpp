@@ -79,7 +79,6 @@ DictionaryWindow::DictionaryWindow(ConnectingWindow *parent): QWidget(parent){
     QWidget *widget = new QWidget();
     scrollArea->setWidget( widget );
 
-    QVBoxLayout *layout = new QVBoxLayout();
     widget->setLayout( layout1 );
 
     wordSetsToolsBar_->addMenu(wordSets_);

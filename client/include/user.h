@@ -19,6 +19,7 @@ public:
     void init(const std::string &username, const std::string &password);
     std::vector<Book> getLibraryBooks();
     void addBookToCollection(int bookId);
+    std::vector<Book> updateLibrary();
 
     bool isAuthorized();
 

@@ -22,20 +22,19 @@ int main() {
     CollectionsRep collectionsRep(dbManagerCollectionsRep,
                                   &mutexCollectionsRep);
 
-#if 0  // =1 on first run to load books
+#if 1 // =1 on first run to load books
     int id1 = bookRep.addBook(
-        "The Beatles", "Paul Shipton",
-        "/home/ekaterina/project-yafr/English_Reader/server/books/Beatles.txt");
+            "The Beatles", "Paul Shipton",
+            "/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/books/Beatles.txt");
     int id2 = bookRep.addBook("Hatiko", "Nicole Irving",
-                              "/home/ekaterina/project-yafr/English_Reader/"
-                              "server/books/book_Hachiko.txt");
+                              "/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/books/book_Hachiko.txt");
     int id3 = bookRep.addBook("Harry Potter and the Philosopher's Stone",
                               "Joanne Katheline Rowling",
-                              "/home/ekaterina/project-yafr/English_Reader/"
-                              "server/books/Harry_Potter1.txt");
+                              "/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/books/Harry_Potter1.txt");
 #endif
 
     httplib::Server svr;
+    // std::cout << 1;
     svr.Post("/init-user",
              [&](const httplib::Request &req, httplib::Response &res) {
                  std::cout << "/init-user" << std::endl;
@@ -62,6 +61,7 @@ int main() {
              [&](const httplib::Request &req, httplib::Response &res) {
                  std::cout << "/library" << std::endl;
                  std::vector<Book> books(bookRep.getAllBooks());
+                 std::cout << "Now there are " <<books.size() << " books in Library" << std::endl;
                  nlohmann::json params;
                  for (auto &book : books) {
                      params.push_back({{"id", book.getId()},
@@ -97,6 +97,11 @@ int main() {
             res.set_content("Error", "text/hplain");
         });
 
+    svr.Get("/stop", [&](const auto& req, httplib::Response& res) {
+        svr.stop();
+    });
+
     svr.listen("localhost", 8080);
+    // std::cout << 2;
     return 0;
 }

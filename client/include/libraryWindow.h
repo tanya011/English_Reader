@@ -1,6 +1,3 @@
-#ifndef YAFR_LIBRARYWINDOW_H
-#define YAFR_LIBRARYWINDOW_H
-
 #ifndef LIBRARY_WINDOW_H
 #define LIBRARY_WINDOW_H
 
@@ -8,6 +5,8 @@
 #include <QDesktopWidget>
 #include <QLabel>
 #include <QPushButton>
+#include <QGridLayout>
+#include <QScrollArea>
 #include "include/connectingWindow.h"
 #include "../include/book.h"
 
@@ -19,18 +18,19 @@ private:
     std::vector<QPushButton *> addBtns_;
     ConnectingWindow *parent_;
 
+    QWidget *box;
+    QGridLayout *layout = new QGridLayout();
+    QScrollArea *scrollArea = new QScrollArea(this);
+
 
     void connectWithCollection(int bookId);
 
 public:
     LibraryWindow(ConnectingWindow *parent);
 
+private slots:
     void updateWindow();
-
 
 };
 
 #endif  // LIBRARY_WINDOW_H
-
-
-#endif  // YAFR_LIBRARYWINDOW_H

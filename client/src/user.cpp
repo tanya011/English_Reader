@@ -34,6 +34,7 @@ std::vector<Book> User::getLibraryBooks() {
     for (auto &p : params) {
         books.emplace_back(p["id"], p["name"], p["author"]);
     }
+    std::cout << "Got " << params.size() <<" books" << std::endl;
     return books;
 }
 void User::addBookToCollection(int bookId) {

@@ -73,27 +73,3 @@ int main(int argc, char *argv[]) {
 
     return a.exec();
 }
-
-/* мы не знаем что это такое если бы мы знали что это такое
-void load_books(DBManager& m){
-    std::string path="/home/tatyana/Programming/Проект Весна
-2022/English_Reader/client/src/"; std::ifstream f(path+"booknames.txt");
-    std::vector<std::string> names;
-    std::string t;
-    while(std::getline(f, t)){
-        names.push_back(path+"books/"+t);
-    }
-    BookRep rep(m);
-    for(auto n: names){
-        std::ifstream f(n);
-        std::string name;
-        std::getline(f, name);
-        std::string author;
-        std::getline(f, author);
-        std::stringstream text;
-        text<<f.rdbuf();
-        int id = rep.addBook(name, author, text.str());
-        std::cout<< id<<", ";
-    }
-}
- */

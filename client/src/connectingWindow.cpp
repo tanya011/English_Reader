@@ -5,7 +5,7 @@
 #include "include/readNowWindow.h"
 
 ConnectingWindow::ConnectingWindow(QWidget *parent)
-    : allWindows(new QStackedWidget), QMainWindow(parent) {
+        : allWindows(new QStackedWidget), QMainWindow(parent) {
     addMenu();
 }
 void ConnectingWindow::setUser(User *u) {
@@ -38,8 +38,8 @@ void ConnectingWindow::addMenu() {
             this->setWindowTitle("Книга не выбрана");
         } else {
             this->setWindowTitle(dynamic_cast<ReadNowWindow *>(
-                                     allWindows.widget(windowIndexes.readNow))
-                                     ->getAuthorTitle());
+                                         allWindows.widget(windowIndexes.readNow))
+                                         ->getAuthorTitle());
         }
         showReadNow();
     });
@@ -65,8 +65,8 @@ void ConnectingWindow::addMenu() {
         updateDictionary();  // not implemented yet
         showDictionary();
         dynamic_cast<DictionaryWindow *>(
-            allWindows.widget(windowIndexes.dictionary))
-            ->showWordSet(1);
+                allWindows.widget(windowIndexes.dictionary))
+                ->showWordSet(1);
     });
 
     QObject::connect(authorizationAction_, &QAction::triggered, this, [=]() {
@@ -108,8 +108,8 @@ void ConnectingWindow::showAuth() {
 
 std::vector<WordSet> ConnectingWindow::getWordSets() {
     return dynamic_cast<DictionaryWindow *>(
-               allWindows.widget(windowIndexes.dictionary))
-        ->getWordSets();
+            allWindows.widget(windowIndexes.dictionary))
+            ->getWordSets();
 }
 
 void ConnectingWindow::updateLibrary() {
@@ -121,7 +121,7 @@ void ConnectingWindow::updateReadNow(const std::string &title,
                                      const std::string &author,
                                      const std::string &text) {
     auto readNow =
-        dynamic_cast<ReadNowWindow *>(allWindows.widget(windowIndexes.readNow));
+            dynamic_cast<ReadNowWindow *>(allWindows.widget(windowIndexes.readNow));
 
     readNow->printBook(QString::fromStdString(text),
                        QString::fromStdString(author),
@@ -137,7 +137,7 @@ void ConnectingWindow::updateDictionary() {
 
 void ConnectingWindow::updateCards() {
     dynamic_cast<LearnWindow *>(allWindows.widget(windowIndexes.learn))
-        ->setWordSets(getWordSets());
+            ->setWordSets(getWordSets());
 }
 void ConnectingWindow::updateCollection() {
 }
