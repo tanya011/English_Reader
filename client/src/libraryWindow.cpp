@@ -7,7 +7,7 @@
 
 LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
     box = new QWidget;
-    layout = new QGridLayoutж
+    layout = new QGridLayout;
     box->setLayout(layout);
 
     updateWindow();
