@@ -24,6 +24,9 @@ int main(int argc, char *argv[]) {
     ConnectingWindow connectingWindow;
     connectingWindow.setUser(&user);
 
+   /* bookRep.addBook(1, "The Beatles", "Paul Shipton",
+                    "/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/books/Beatles.txt");*/
+
     // The order of things below is important. readNowWindow tries to connect to
     // dictionaryWindow, so it must be initialized by that time
     try {

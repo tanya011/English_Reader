@@ -38,6 +38,12 @@ public:
     // TODO эта штука используется в library
     QTextEdit *translatedTextDisplay_{};  // окошко с переводом
 
+    QToolBar *toolBar_{};
+
+    void createActions();
+
+    void createToolBars();
+
 private slots:
     void translateText();
 
@@ -49,16 +55,15 @@ private:
     void createWindowWithTranslate();
 
     void createButtonAddPhraseToDict();  // создание кнопки "Добавить в словарь"
-    void createActions();
 
-    void createToolBars();  // панель управления
+    // панель управления
 
     int screenWidth_;
     int screenHeight_;
 
     QTextEdit *bookTextDisplay_{};  // виджет, отображающий текст
 
-    QToolBar *toolBar_{};  // панель управления
+    // панель управления
 
     QAction *translateSelectedTextAction_;
 

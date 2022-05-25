@@ -55,5 +55,6 @@ void CollectionWindow::connectWithReader(int bookId) {
     std::string author = bookRep->getBookById(bookId).getAuthor();
     std::string title = bookRep->getBookById(bookId).getName();
     parent->updateReadNow(title, author, text);  // TODO path instead of text
+
     parent->showReadNow();
 }
