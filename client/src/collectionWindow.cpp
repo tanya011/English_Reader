@@ -1,13 +1,10 @@
 #include "include/collectionWindow.h"
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QScrollArea>
 #include <QString>
 #include <iostream>
-#include <fstream>
 #include <cstdio>
 #include "include/bookRep.h"
-#include "include/libraryWindow.h"
 #include "include/readNowWindow.h"
 
 CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
@@ -67,12 +64,12 @@ CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
 
     QPushButton *button = new QPushButton;
     button->setParent(this);
-    button->setGeometry(30, 1370, 300, 70);
-    button->setText("Synchronization");
+    button->setGeometry(30, 1370, 70, 70);
+    button->setIcon(QIcon("../cmake-build-debug/yafr_files/sync.png"));
     button->show();
     QObject::connect(button, &QPushButton::clicked, this,
                      [=]() {
-
+        synchronizationCollection();
                      });
 }
 
@@ -100,7 +97,8 @@ void CollectionWindow::deleteBook(int bookId) {
 }
 
 void CollectionWindow::synchronizationCollection() {
-    // посмотреть на неотправленные запросы (добавить - удалить на сервер)
-    // отправить их
-    //
+    std::vector<ActCollectionsHistory> newActions = this->parent_->user->getNewActions(0);
+    for(auto i : newActions){
+        std::cout << i.type << " " << i.bookId << std::endl;
+    }
 }

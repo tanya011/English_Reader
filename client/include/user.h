@@ -3,6 +3,7 @@
 
 #include "../include/book.h"
 #include "../include/httplib.h"
+#include "../include/actCollectionsHistory.h"
 #include "bookRep.h"
 
 struct action{
@@ -32,6 +33,10 @@ public:
     bool isAuthorized();
 
     void exit();
+
+    void newActionInCollection(std::string action, int bookId);
+
+    std::vector<ActCollectionsHistory> getNewActions(int startAt);
 
     // TODO: sync_dict();
     // TODO: sync_collect();

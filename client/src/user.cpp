@@ -1,11 +1,13 @@
 #include "include/user.h"
 #include <nlohmann/json.hpp>
+#include "include/actCollectionsHistory.h"
 
 User::User(BookRep *bookRep) : bookRep_(bookRep) {
 }
 
 void User::init(const std::string &username, const std::string &password) {
-    httplib::Params params{{"name", username}, {"password", password}};
+    httplib::Params params{{"name",     username},
+                           {"password", password}};
     auto res = client_.Post("/init-user", params);
     if (res->status != 200)  // TODO: Check if smth went wrong
         return;
@@ -16,6 +18,7 @@ void User::init(const std::string &username, const std::string &password) {
 bool User::isAuthorized() {
     return isAuthorized_;
 }
+
 
 void User::exit() {
     token_ = "";
@@ -31,10 +34,10 @@ std::vector<Book> User::getLibraryBooks() {
                                  std::to_string(res->status));
     nlohmann::json params = nlohmann::json::parse(res->body);
     std::vector<Book> books;
-    for (auto &p : params) {
+    for (auto &p: params) {
         books.emplace_back(p["id"], p["name"], p["author"]);
     }
-    std::cout << "Got " << params.size() <<" books" << std::endl;
+    std::cout << "Got " << params.size() << " books" << std::endl;
     return books;
 }
 
@@ -65,6 +68,9 @@ int User::addBookToCollection(int bookId) {
 
     nlohmann::json book = nlohmann::json::parse(res->body);
     bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
+
+    newActionInCollection("add", bookId);
+
     return 1;
 }
 
@@ -77,8 +83,47 @@ void User::deleteCollectionBook(int bookId) {
 
     auto res = client_.Post("/delete-book", params);
 
-    if (res->status != 200)
+    if (res->status != 200) {
         throw std::runtime_error("Can't add book, error code: " +
                                  std::to_string(res->status));
+    } else {
+        newActionInCollection("delete", bookId);
+    }
 
+}
+
+void User::newActionInCollection(std::string action, int bookId) {
+    std::cout << "Deleting book from server";
+    httplib::Params params;
+    params.emplace("token", token_);
+    params.emplace("action", action);
+    params.emplace("bookId", std::to_string(bookId));
+    auto res = client_.Post("/new-collections-action", params);
+    if (res->status != 200) {
+        throw std::runtime_error("Can't add action, error code: " +
+                                 std::to_string(res->status));
+    }
+}
+
+
+std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
+    std::cout << "Try to get new actions from server";
+
+    httplib::Params params;
+    params.emplace("token", token_);
+    params.emplace("startAt", std::to_string(startAt));
+
+    auto res = client_.Post("/new-actions", params);
+    if (res->status != 200)
+        throw std::runtime_error("Can't load new actions, error code: " +
+                                 std::to_string(res->status));
+
+    nlohmann::json param = nlohmann::json::parse(res->body);
+
+    std::vector<ActCollectionsHistory> books;
+    for (auto &p: param) {
+        books.push_back({p["type"], p["bookId"]});
+    }
+    // std::cout << "Got " << params.size() << " books" << std::endl;
+    return books;
 }

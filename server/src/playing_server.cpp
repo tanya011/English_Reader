@@ -5,7 +5,7 @@
 #include "include/collectionsRep.h"
 #include "include/dbManager.h"
 #include "include/userRep.h"
-#include "include/historyCollectionsRep.h"
+#include "include/collectionsHistoryRep.h"
 
 // sudo apt-get install nlohmann-json3-dev
 
@@ -23,10 +23,10 @@ int main() {
     CollectionsRep collectionsRep(dbManagerCollectionsRep,
                                   &mutexCollectionsRep);
 
-    DBManager dbManagerHistoryCollectionsRep;
-    std::mutex mutexHistoryCollectionsRep;
-    HistoryCollectionsRep historyCollectionsRep(dbManagerHistoryCollectionsRep,
-                                  &mutexHistoryCollectionsRep);
+    DBManager dbManagerCollectionsHistoryRepRep;
+    std::mutex mutexCollectionsHistoryRep;
+    CollectionsHistoryRep collectionsHistoryRep(dbManagerCollectionsHistoryRepRep,
+                                                &mutexCollectionsHistoryRep);
 
 #if 0 // =1 on first run to load books
     int id1 = bookRep.addBook(
@@ -86,12 +86,12 @@ int main() {
                      int bookId = std::stoi(req.get_param_value("bookId"));
                      collectionsRep.addBookToUser(userId, bookId);
                      Book book = bookRep.getBookById(bookId);
-                     nlohmann::json param{{"id", book.getId()},
-                                          {"name", book.getName()},
+                     nlohmann::json param{{"id",     book.getId()},
+                                          {"name",   book.getName()},
                                           {"author", book.getAuthor()},
-                                          {"text", book.getText()},
-                                          //{"filename", book.getFileName()}
-                                          };
+                                          {"text",   book.getText()},
+                             //{"filename", book.getFileName()}
+                     };
                      res.set_content(param.dump(), "text/plain");
                  } else {
                      throw std::runtime_error("No token or bookId given");
@@ -107,6 +107,58 @@ int main() {
                      int bookId = std::stoi(req.get_param_value("bookId"));
                      collectionsRep.deleteBookFromUser(userId, bookId);
                      res.set_content(token, "text/plain");
+                 } else {
+                     throw std::runtime_error("No token or bookId given");
+                 }
+             });
+
+    svr.Post("/new-collections-action",
+             [&](const httplib::Request &req, httplib::Response &res) {
+                 std::cout << "/new_action_in_histCollection" << std::endl;
+                 if (req.has_param("token") && req.has_param("action") && req.has_param("bookId")) {
+                     auto token = req.get_param_value("token");
+                     int userId = userRep.getUserId(token);
+                     int bookId = std::stoi(req.get_param_value("bookId"));
+                     std::string action = req.get_param_value("action");
+                     std::cout << userId << " " << bookId << " " << action << std::endl;
+                     collectionsHistoryRep.addInHistory(userId, {action, bookId});
+                     res.set_content(token, "text/plain");
+                 } else {
+                     throw std::runtime_error("No token or bookId given");
+                 }
+             });
+
+    svr.Post("/user-id",
+             [&](const httplib::Request &req, httplib::Response &res) {
+                 if (req.has_param("token")) {
+                     auto token = req.get_param_value("token");
+                     int userId = userRep.getUserId(token);
+                     nlohmann::json param{{"userId", userId}
+                     };
+                     res.set_content(param.dump(), "text/plain");
+                 } else {
+                     throw std::runtime_error("No token or bookId given");
+                 }
+             });
+
+    svr.Post("/new-actions",
+             [&](const httplib::Request &req, httplib::Response &res) {
+                 std::cout << "/new-actions" << std::endl;
+                 if (req.has_param("token") && req.has_param("startAt")) {
+                     auto token = req.get_param_value("token");
+                     int userId = userRep.getUserId(token);
+                     int startAt = std::stoi(req.get_param_value("startAt"));
+
+                     std::vector<ActCollectionsHistory> books(collectionsHistoryRep.giveHistoryById(userId, startAt));
+
+                     nlohmann::json params;
+
+                     for (auto &book: books) {
+                         params.push_back({{"type",   book.type},
+                                           {"bookId", book.bookId}
+                                          });
+                     }
+                     res.set_content(params.dump(), "text/plain");
                  } else {
                      throw std::runtime_error("No token or bookId given");
                  }
