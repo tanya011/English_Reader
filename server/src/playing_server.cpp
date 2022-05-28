@@ -4,7 +4,7 @@
 #include "include/bookRep.h"
 #include "include/collectionsRep.h"
 #include "include/dbManager.h"
-#include "include/userRepLocal.h"
+#include "include/userRep.h"
 #include "include/collectionsHistoryRep.h"
 
 // sudo apt-get install nlohmann-json3-dev

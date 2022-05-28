@@ -79,6 +79,8 @@ void LibraryWindow::updateWindow() {
 
 
 void LibraryWindow::connectWithCollection(int bookId) {
-    if (parent_->user->addBookToCollection(bookId))
+    if (parent_->user->addBookToCollection(bookId)) {
         parent_->updateCollection();
+        //parent_->user->sync_collect();
+    }
 }

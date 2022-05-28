@@ -86,8 +86,9 @@ int User::addBookToCollection(int bookId) {
     nlohmann::json book = nlohmann::json::parse(res->body);
     bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
 
+    sync_collect();
     newActionInCollection("add", bookId);
-
+    userRepLocal_->newValue(1, userRepLocal_->getValue(1) + 1);
     return 1;
 }
 

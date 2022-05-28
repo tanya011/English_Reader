@@ -1,13 +1,14 @@
 #ifndef YAFR_USER_H
 #define YAFR_USER_H
 
+#include <queue>
 #include "../include/book.h"
 #include "../include/httplib.h"
 #include "../include/actCollectionsHistory.h"
 #include "bookRep.h"
 #include "userRepLocal.h"
 
-struct action{
+struct action {
     int numberOfAction; //1 = add, 0 = delete;
     int userId;
     int bookId;
@@ -23,13 +24,24 @@ private:
     std::string token_;
     std::vector<action> actionsToDBCollections;
 
+
 public:
+    std::queue<ActCollectionsHistory> Queue;
+
     User(BookRep *bookRep, UserRepLocal *userRepLocal);
+
     void init(const std::string &username, const std::string &password);
+
     std::vector<Book> getLibraryBooks();
+
+    int addBookToLocalCollection(int bookId);
+
     int addBookToCollection(int bookId);
+
     std::vector<Book> updateLibrary();
+
     std::vector<Book> getCollectionBooks();
+
     void deleteCollectionBook(int bookId);
 
     bool isAuthorized();
@@ -41,7 +53,21 @@ public:
     std::vector<ActCollectionsHistory> getNewActions(int startAt);
 
     // TODO: sync_dict();
-    // TODO: sync_collect();
+
+    void sync_collect() {
+        std::vector<ActCollectionsHistory> vec = this->getNewActions(this->userRepLocal_->getValue(1) + 1);
+        for (auto action: vec) {
+            std::cout << " action = " << action.type << std::endl;
+            if (action.type == "delete") {
+                bookRep_->deleteBookById(action.bookId);
+            }
+            else {
+                this->addBookToCollection(action.bookId);
+            }
+        }
+        userRepLocal_->newValue(1, userRepLocal_->getValue(1) + vec.size());
+    }
+
     // TODO: sync_lib();
 };
 

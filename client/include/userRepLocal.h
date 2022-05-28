@@ -29,6 +29,32 @@ public:
                       ")");
     }
 
+    int getValue(int userId){
+        std::unique_ptr<sql::Statement> stmt(
+                manager.getConnection().createStatement());
+        std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
+                "SELECT lastCollection FROM " + tableName + " WHERE userId=" + std::to_string(userId)));
+        int last = 0;
+        if (reqRes->next()) {
+            last = reqRes->getInt("lastCollection");
+        }
+        return last;
+    }
+
+    void newValue(int userId, int newValue){
+        std::unique_ptr<sql::Statement> stmt(
+                manager.getConnection().createStatement());
+        // прибавление 1 к элементу:
+        /*std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
+                "SELECT lastCollection FROM " + tableName + " WHERE userId=" + std::to_string(userId)));
+        int last = 0;
+        if (reqRes->next()) {
+            last = reqRes->getInt("lastCollection");
+        }*/
+        stmt->executeUpdate("UPDATE " + tableName +
+                      " SET lastCollection = " + std::to_string(newValue) +" WHERE userId = " + std::to_string(userId));
+    }
+
 };
 
 #endif  // YAFR_USERREPLOCAL_H
