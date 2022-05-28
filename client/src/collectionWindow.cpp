@@ -44,6 +44,14 @@ CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
                          [=]() { connectWithReader(books_[i].getId()); });
     }
 
+    for (int i = 0; i < books_.size(); i++) {
+        QObject::connect(deleteBtns_[i], &QPushButton::clicked, this,
+                         [=]() {
+            deleteBook(books_[i].getId());
+        });
+    }
+
+
     // Styles
     auto screen_width =
             QApplication::desktop()->screenGeometry().width() - 1000;
@@ -53,6 +61,8 @@ CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
     box->setFixedWidth(screen_width - 20);
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
     // Styles
+
+
 }
 
 void CollectionWindow::connectWithReader(int bookId) {
@@ -61,4 +71,8 @@ void CollectionWindow::connectWithReader(int bookId) {
     std::string title = bookRep_->getBookById(bookId).getName();
     parent_->updateReadNow(title, author, text);  // TODO path instead of text
     parent_->showReadNow();
+}
+
+void CollectionWindow::deleteBook(int bookId) {
+
 }

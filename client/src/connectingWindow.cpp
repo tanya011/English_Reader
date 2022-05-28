@@ -169,6 +169,10 @@ void ConnectingWindow::updateCollection() {
     //Collection->books_ = Collection->parent_->user->getLibraryBooks();
     Collection->books_ = Collection->parent_->user->getCollectionBooks();
 
+    Collection->box = new QWidget;
+    Collection->layout = new QGridLayout;
+    Collection->box->setLayout(Collection->layout);
+
     Collection->titleLabels_ = std::vector<QLabel *>(Collection->books_.size());
     Collection->readBtns_ = std::vector<QPushButton *>(Collection->books_.size());
     Collection->deleteBtns_ = std::vector<QPushButton *> (Collection->books_.size());
@@ -181,6 +185,7 @@ void ConnectingWindow::updateCollection() {
 
         Collection->readBtns_[i] = new QPushButton(tr("Read"));
         Collection->layout->addWidget(Collection->readBtns_[i], i, 1);
+
         Collection->deleteBtns_[i] = new QPushButton(tr("Delete"));
         Collection->layout->addWidget(Collection->deleteBtns_[i], i, 2);
 
@@ -197,4 +202,22 @@ void ConnectingWindow::updateCollection() {
         QObject::connect(Collection->readBtns_[i], &QPushButton::clicked, this,
                          [=]() { Collection->connectWithReader(Collection->books_[i].getId()); });
     }
+
+    for (int i = 0; i < Collection->books_.size(); i++) {
+        QObject::connect(Collection->deleteBtns_[i], &QPushButton::clicked, this,
+                         [=]() {
+                             Collection->deleteBook(Collection->books_[i].getId());
+                         });
+    }
+
+
+    // Styles
+    auto screen_width =
+            QApplication::desktop()->screenGeometry().width() - 1000;
+    auto screen_height =
+            QApplication::desktop()->screenGeometry().height() - 200;
+    this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
+    Collection->box->setFixedWidth(screen_width - 20);
+    Collection->scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
+    // Styles
 }

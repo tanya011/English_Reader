@@ -34,6 +34,9 @@ public:
     QScrollArea *scrollArea = new QScrollArea(this);
     QWidget *box;
     QGridLayout *layout = new QGridLayout();
+
+    void deleteBook(int bookId);
+
 };
 
 #endif  // COLLECTION_WINDOW_H
