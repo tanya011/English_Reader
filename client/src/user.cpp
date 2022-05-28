@@ -38,6 +38,10 @@ std::vector<Book> User::getLibraryBooks() {
     return books;
 }
 
+std::vector<Book> User::getCollectionBooks() {
+    return bookRep_->getAllBooks();
+}
+
 void User::addBookToCollection(int bookId) {
     std::cout << "Adding book to collection" << std::endl;
     httplib::Params params;

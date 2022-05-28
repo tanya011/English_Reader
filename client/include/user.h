@@ -20,6 +20,7 @@ public:
     std::vector<Book> getLibraryBooks();
     void addBookToCollection(int bookId);
     std::vector<Book> updateLibrary();
+    std::vector<Book> getCollectionBooks();
 
     bool isAuthorized();
 

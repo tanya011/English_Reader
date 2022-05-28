@@ -8,35 +8,62 @@
 #include "include/readNowWindow.h"
 
 CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
-    : QWidget(parent), bookRep(bookRep), parent(parent) {
-    auto box = new QWidget;
-    auto layout = new QGridLayout;
-
-    books = bookRep->getAllBooks();
-    titleLabels = std::vector<QLabel *>(books.size());
-    readBtns = std::vector<QPushButton *>(books.size());
-
-    for (int i = 0; i < books.size(); i++) {
-        titleLabels[i] = new QLabel(
-            QString("Name: %1,   Author: %2")
-                .arg(books[i].getName().c_str(), books[i].getAuthor().c_str()));
-        layout->addWidget(titleLabels[i], i, 0);
-
-        readBtns[i] = new QPushButton(tr("Read"));
-        layout->addWidget(readBtns[i], i, 1);
-
-        readBtns[i]->setFixedWidth(100);
-        readBtns[i]->setFixedHeight(50);
-    }
-
+    : QWidget(parent), bookRep_(bookRep), parent_(parent) {
+    box = new QWidget;
+    layout = new QGridLayout;
     box->setLayout(layout);
 
-    auto scrollArea = new QScrollArea(this);
+    books_ = bookRep->getAllBooks();
+    titleLabels_ = std::vector<QLabel *>(books_.size());
+    readBtns_ = std::vector<QPushButton *>(books_.size());
+
+    for (int i = 0; i < books_.size(); i++) {
+        QLayoutItem *item;
+        while ((item = layout->takeAt(0)) != nullptr) {
+            delete item->widget();
+            delete item->layout();
+            delete item;
+        }
+    }
+    titleLabels_.clear();
+    readBtns_.clear();
+
+    for (int i = 0; i < books_.size(); i++) {
+        titleLabels_[i] = new QLabel(
+            QString("Name: %1,   Author: %2")
+                .arg(books_[i].getName().c_str(), books_[i].getAuthor().c_str()));
+        layout->addWidget(titleLabels_[i], i, 0);
+
+        readBtns_[i] = new QPushButton(tr("Read"));
+        layout->addWidget(readBtns_[i], i, 1);
+
+        readBtns_[i]->setFixedWidth(100);
+        readBtns_[i]->setFixedHeight(50);
+    }
+
+
+
+    titleLabels_ = std::vector<QLabel *>(books_.size());
+    readBtns_ = std::vector<QPushButton *>(books_.size());
+
+    for (int i = 0; i < books_.size(); i++) {
+        titleLabels_[i] = new QLabel(
+                QString("Name: %1,   Author: %2")
+                        .arg(books_[i].getName().c_str(), books_[i].getAuthor().c_str()));
+        layout->addWidget(titleLabels_[i], i, 0);
+
+        readBtns_[i] = new QPushButton(tr("Read"));
+        layout->addWidget(readBtns_[i], i, 1);
+
+        readBtns_[i]->setFixedWidth(100);
+        readBtns_[i]->setFixedHeight(50);
+    }
+
     scrollArea->setWidget(box);
 
-    for (int i = 0; i < books.size(); i++) {
-        QObject::connect(readBtns[i], &QPushButton::clicked, this,
-                         [=]() { connectWithReader(books[i].getId()); });
+    for (int i = 0; i < books_.size(); i++) {
+        QObject::connect(readBtns_[i], &QPushButton::clicked, this,
+                         [=]() { connectWithReader(books_[i].getId()); });
     }
 
     // Styles
@@ -51,10 +78,9 @@ CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
 }
 
 void CollectionWindow::connectWithReader(int bookId) {
-    std::string text = bookRep->getBookById(bookId).getText();
-    std::string author = bookRep->getBookById(bookId).getAuthor();
-    std::string title = bookRep->getBookById(bookId).getName();
-    parent->updateReadNow(title, author, text);  // TODO path instead of text
-
-    parent->showReadNow();
+    std::string text = bookRep_->getBookById(bookId).getText();
+    std::string author = bookRep_->getBookById(bookId).getAuthor();
+    std::string title = bookRep_->getBookById(bookId).getName();
+    parent_->updateReadNow(title, author, text);  // TODO path instead of text
+    parent_->showReadNow();
 }
