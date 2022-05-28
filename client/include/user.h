@@ -10,7 +10,6 @@ struct User {
 private:
     BookRep *bookRep_;
     httplib::Client client_{"localhost:8080"};
-
     bool isAuthorized_ = false;
     std::string token_;
 
@@ -18,9 +17,10 @@ public:
     User(BookRep *bookRep);
     void init(const std::string &username, const std::string &password);
     std::vector<Book> getLibraryBooks();
-    void addBookToCollection(int bookId);
+    int addBookToCollection(int bookId);
     std::vector<Book> updateLibrary();
     std::vector<Book> getCollectionBooks();
+    void deleteCollectionBook(int bookId);
 
     bool isAuthorized();
 

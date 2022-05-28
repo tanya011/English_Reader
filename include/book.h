@@ -25,6 +25,7 @@ public:
     }
 
     std::string getFileName() const {
+        std::cout << filename << std::endl;
         return filename;
     }
 

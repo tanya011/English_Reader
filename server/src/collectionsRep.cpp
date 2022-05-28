@@ -43,10 +43,11 @@ void CollectionsRep::addBookToUser(int userId, int bookId) {
 
 void CollectionsRep::deleteBookFromUser(int userId, int bookId) {
     std::unique_lock l(*mutex_);
+
     std::unique_ptr<sql::PreparedStatement> prst(
         manager_.getConnection().prepareStatement(
             "DELETE FROM " + tableName_ + " WHERE bookId=? AND userId=?"));
-    prst->setInt(1, userId);
-    prst->setInt(2, bookId);
+    prst->setInt(1, bookId);
+    prst->setInt(2, userId);
     prst->execute();
 }

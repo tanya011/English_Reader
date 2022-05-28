@@ -22,7 +22,7 @@ int main() {
     CollectionsRep collectionsRep(dbManagerCollectionsRep,
                                   &mutexCollectionsRep);
 
-#if 1 // =1 on first run to load books
+#if 0 // =1 on first run to load books
     int id1 = bookRep.addBook(
             "The Beatles", "Paul Shipton",
             "/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/books/Beatles.txt");
@@ -92,16 +92,26 @@ int main() {
                  }
              });
 
+    svr.Post("/delete-book",
+             [&](const httplib::Request &req, httplib::Response &res) {
+                 std::cout << "/delete_book" << std::endl;
+                 if (req.has_param("token") && req.has_param("bookId")) {
+                     auto token = req.get_param_value("token");
+                     int userId = userRep.getUserId(token);
+                     int bookId = std::stoi(req.get_param_value("bookId"));
+                     collectionsRep.deleteBookFromUser(userId, bookId);
+                     res.set_content(token, "text/plain");
+                 } else {
+                     throw std::runtime_error("No token or bookId given");
+                 }
+             });
+
     svr.set_exception_handler(
             [](const auto &req, auto &res, std::exception &e) {
                 res.status = 500;
                 std::cerr << e.what() << std::endl;
                 res.set_content("Error", "text/hplain");
             });
-
-    svr.Get("/stop", [&](const auto &req, httplib::Response &res) {
-        svr.stop();
-    });
 
     svr.listen("localhost", 8080);
     // std::cout << 2;

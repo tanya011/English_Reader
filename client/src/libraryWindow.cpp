@@ -80,6 +80,6 @@ void LibraryWindow::updateWindow() {
 
 
 void LibraryWindow::connectWithCollection(int bookId) {
-    parent_->user->addBookToCollection(bookId);
-    parent_->updateCollection();
+    if (parent_->user->addBookToCollection(bookId))
+        parent_->updateCollection();
 }

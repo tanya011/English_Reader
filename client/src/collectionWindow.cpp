@@ -3,6 +3,9 @@
 #include <QGroupBox>
 #include <QScrollArea>
 #include <QString>
+#include <iostream>
+#include <fstream>
+#include <cstdio>
 #include "include/bookRep.h"
 #include "include/libraryWindow.h"
 #include "include/readNowWindow.h"
@@ -74,5 +77,16 @@ void CollectionWindow::connectWithReader(int bookId) {
 }
 
 void CollectionWindow::deleteBook(int bookId) {
-
+    // 1. Удалить файлик из папки
+    try{
+        std::remove(bookRep_->getBookById(bookId).getFileName().c_str());
+    }catch (...){
+        std::cout << "No such file";
+    }
+    // 2. Удалить из локальной базы данных
+    bookRep_->deleteBookById(bookId);
+    // 3. Удалить с сервера
+    parent_->user->deleteCollectionBook(bookId);
+    // 4. обновляем окно
+    parent_->updateCollection();
 }

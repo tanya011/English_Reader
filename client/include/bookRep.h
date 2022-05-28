@@ -23,8 +23,8 @@ struct bookNotFoundException : BookRepException {
 
 struct BookRep {  // throws sql::SQLException& and BookRepException(see above)
     // TODO: The possibility of interrupting the connection is not handled
-private:
     DBManager &manager_;
+private:
     std::string tableName_ = "collection";
     std::filesystem::path appFolder_;
 

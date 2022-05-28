@@ -42,7 +42,16 @@ std::vector<Book> User::getCollectionBooks() {
     return bookRep_->getAllBooks();
 }
 
-void User::addBookToCollection(int bookId) {
+int User::addBookToCollection(int bookId) {
+    std::unique_ptr<sql::Statement> stmt(
+            bookRep_->manager_.getConnection().createStatement());
+    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
+            "SELECT * FROM collection WHERE id=" + std::to_string(bookId)));
+
+    if (reqRes->next()) {
+        return 0;
+    }
+
     std::cout << "Adding book to collection" << std::endl;
     httplib::Params params;
     params.emplace("token", token_);
@@ -56,4 +65,28 @@ void User::addBookToCollection(int bookId) {
 
     nlohmann::json book = nlohmann::json::parse(res->body);
     bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
+    return 1;
+}
+
+void User::deleteCollectionBook(int bookId) {
+    try {
+        std::unique_ptr<sql::Statement> stmt(
+                bookRep_->manager_.getConnection().createStatement());
+        std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
+                "SELECT * FROM collection WHERE id=" + std::to_string(bookId)));
+    } catch (...){
+        std::cout << "(Server db) No book";
+    }
+    std::cout << "Deleting book from server";
+
+    httplib::Params params;
+    params.emplace("token", token_);
+    params.emplace("bookId", std::to_string(bookId));
+
+    auto res = client_.Post("/delete-book", params);
+
+    if (res->status != 200)
+        throw std::runtime_error("Can't add book, error code: " +
+                                 std::to_string(res->status));
+
 }
