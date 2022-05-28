@@ -2,7 +2,7 @@
 #include <nlohmann/json.hpp>
 #include "include/actCollectionsHistory.h"
 
-User::User(BookRep *bookRep) : bookRep_(bookRep) {
+User::User(BookRep *bookRep, UserRepLocal *userRepLocal) : bookRep_(bookRep), userRepLocal_(userRepLocal) {
 }
 
 void User::init(const std::string &username, const std::string &password) {
@@ -13,6 +13,23 @@ void User::init(const std::string &username, const std::string &password) {
         return;
     token_ = res->body;
     isAuthorized_ = true;
+
+    // табличка для синхронизации личной коллекции книг
+    std::unique_ptr<sql::Statement> stmt(
+            userRepLocal_->manager.getConnection().createStatement());
+    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
+            "SELECT * FROM userCollHistory WHERE userId=" + token_));
+    if (reqRes->next()) {
+
+    } else {
+        std::unique_ptr<sql::PreparedStatement> prst(
+                userRepLocal_->manager.getConnection().prepareStatement(
+                        "INSERT INTO userCollHistory (userId, lastCollection) VALUES "
+                        "(?,?)"));
+        prst->setString(1, token_);
+        prst->setInt(2, 0);
+        prst->execute();
+    }
 }
 
 bool User::isAuthorized() {

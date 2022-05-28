@@ -32,7 +32,6 @@ void UserRep::addUser(const std::string &name,
     prst->setString(2, name);
     prst->setString(3, hash);
     prst->setString(4, token);
-
     prst->execute();
     freeId++;
 }

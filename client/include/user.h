@@ -5,6 +5,7 @@
 #include "../include/httplib.h"
 #include "../include/actCollectionsHistory.h"
 #include "bookRep.h"
+#include "userRepLocal.h"
 
 struct action{
     int numberOfAction; //1 = add, 0 = delete;
@@ -16,13 +17,14 @@ struct action{
 struct User {
 private:
     BookRep *bookRep_;
+    UserRepLocal *userRepLocal_;
     httplib::Client client_{"localhost:8080"};
     bool isAuthorized_ = false;
     std::string token_;
     std::vector<action> actionsToDBCollections;
 
 public:
-    User(BookRep *bookRep);
+    User(BookRep *bookRep, UserRepLocal *userRepLocal);
     void init(const std::string &username, const std::string &password);
     std::vector<Book> getLibraryBooks();
     int addBookToCollection(int bookId);

@@ -12,14 +12,14 @@
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
-
     std::string folderName="yafr_files";
     std::filesystem::create_directories(folderName);
     std::filesystem::path appFolder=std::filesystem::absolute("./yafr_files");
 
     DBManager dbManager;
     BookRep bookRep(dbManager, appFolder);
-    User user(&bookRep);
+    UserRepLocal userRepLocal(dbManager);
+    User user(&bookRep, &userRepLocal);
 
     ConnectingWindow connectingWindow;
     connectingWindow.setUser(&user);
