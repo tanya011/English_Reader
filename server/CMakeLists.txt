@@ -20,7 +20,7 @@ set(PROJECT_SOURCES
         src/userRep.cpp
         src/bookRep.cpp
         src/collectionsRep.cpp
-        )
+        include/historyCollectionsRep.h)
 
 add_executable(YAFR
         ${PROJECT_SOURCES}

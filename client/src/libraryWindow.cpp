@@ -34,7 +34,6 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
 }
 
 void LibraryWindow::updateWindow() {
-
     std::vector<Book> old_books = books_;
 
     try {

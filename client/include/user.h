@@ -5,6 +5,12 @@
 #include "../include/httplib.h"
 #include "bookRep.h"
 
+struct action{
+    int numberOfAction; //1 = add, 0 = delete;
+    int userId;
+    int bookId;
+};
+
 // Here http used, so we can't send password to server safely
 struct User {
 private:
@@ -12,6 +18,7 @@ private:
     httplib::Client client_{"localhost:8080"};
     bool isAuthorized_ = false;
     std::string token_;
+    std::vector<action> actionsToDBCollections;
 
 public:
     User(BookRep *bookRep);

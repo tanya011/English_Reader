@@ -23,7 +23,7 @@ public:
 
     void connectWithReader(int bookId);
 
-    void updateWindow();
+    void synchronizationCollection();
 
     std::vector<Book> books_;
     std::vector<QLabel *> titleLabels_;

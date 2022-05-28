@@ -5,6 +5,7 @@
 #include "include/collectionsRep.h"
 #include "include/dbManager.h"
 #include "include/userRep.h"
+#include "include/historyCollectionsRep.h"
 
 // sudo apt-get install nlohmann-json3-dev
 
@@ -21,6 +22,11 @@ int main() {
     std::mutex mutexCollectionsRep;
     CollectionsRep collectionsRep(dbManagerCollectionsRep,
                                   &mutexCollectionsRep);
+
+    DBManager dbManagerHistoryCollectionsRep;
+    std::mutex mutexHistoryCollectionsRep;
+    HistoryCollectionsRep historyCollectionsRep(dbManagerHistoryCollectionsRep,
+                                  &mutexHistoryCollectionsRep);
 
 #if 0 // =1 on first run to load books
     int id1 = bookRep.addBook(

@@ -65,7 +65,15 @@ CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
     // Styles
 
+    QPushButton *button = new QPushButton;
+    button->setParent(this);
+    button->setGeometry(30, 1370, 300, 70);
+    button->setText("Synchronization");
+    button->show();
+    QObject::connect(button, &QPushButton::clicked, this,
+                     [=]() {
 
+                     });
 }
 
 void CollectionWindow::connectWithReader(int bookId) {
@@ -89,4 +97,10 @@ void CollectionWindow::deleteBook(int bookId) {
     parent_->user->deleteCollectionBook(bookId);
     // 4. обновляем окно
     parent_->updateCollection();
+}
+
+void CollectionWindow::synchronizationCollection() {
+    // посмотреть на неотправленные запросы (добавить - удалить на сервер)
+    // отправить их
+    //
 }
