@@ -69,14 +69,6 @@ int User::addBookToCollection(int bookId) {
 }
 
 void User::deleteCollectionBook(int bookId) {
-    try {
-        std::unique_ptr<sql::Statement> stmt(
-                bookRep_->manager_.getConnection().createStatement());
-        std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-                "SELECT * FROM collection WHERE id=" + std::to_string(bookId)));
-    } catch (...){
-        std::cout << "(Server db) No book";
-    }
     std::cout << "Deleting book from server";
 
     httplib::Params params;
