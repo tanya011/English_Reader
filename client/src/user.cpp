@@ -105,7 +105,9 @@ void User::deleteCollectionBook(int bookId) {
         throw std::runtime_error("Can't add book, error code: " +
                                  std::to_string(res->status));
     } else {
+        sync_collect();
         newActionInCollection("delete", bookId);
+        userRepLocal_->newValue(1, userRepLocal_->getValue(1) + 1);
     }
 
 }
@@ -142,6 +144,5 @@ std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
     for (auto &p: param) {
         books.push_back({p["type"], p["bookId"]});
     }
-    // std::cout << "Got " << params.size() << " books" << std::endl;
     return books;
 }

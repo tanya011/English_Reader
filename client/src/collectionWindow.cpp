@@ -97,8 +97,5 @@ void CollectionWindow::deleteBook(int bookId) {
 }
 
 void CollectionWindow::synchronizationCollection() {
-    std::vector<ActCollectionsHistory> newActions = this->parent_->user->getNewActions(0);
-    for(auto i : newActions){
-        std::cout << i.type << " " << i.bookId << std::endl;
-    }
+    parent_->user->sync_collect();
 }
