@@ -43,6 +43,14 @@ void BookRep::addAndSaveBook(int id,
                              const std::string &bookName,
                              const std::string &author,
                              const std::string &text) {
+    std::unique_ptr<sql::Statement> stmt(
+            manager_.getConnection().createStatement());
+    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
+            "SELECT * FROM " + tableName_ + " WHERE id=" + std::to_string(id)));
+    if (reqRes->next()) {
+        return;
+    }
+    
     std::string filename = appFolder_.string() + std::to_string(id) + "|" + bookName +
                            "|" + author + ".txt";
     std::cout << "new_file_name : "<< filename << std::endl;
