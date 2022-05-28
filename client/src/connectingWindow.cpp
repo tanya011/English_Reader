@@ -106,6 +106,8 @@ void ConnectingWindow::showAuth() {
     allWindows.setCurrentIndex(windowIndexes.auth);
 }
 
+
+
 std::vector<WordSet> ConnectingWindow::getWordSets() {
     return dynamic_cast<DictionaryWindow *>(
             allWindows.widget(windowIndexes.dictionary))

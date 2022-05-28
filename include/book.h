@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <iostream>
 
 struct Book {
 private:
@@ -21,6 +22,10 @@ public:
     }
     Book(int id, std::string name, std::string author)
         : id(id), name(std::move(name)), author(std::move(author)) {
+    }
+
+    std::string getFileName() const {
+        return filename;
     }
 
     [[nodiscard]] int getId() const {

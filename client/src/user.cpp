@@ -37,15 +37,19 @@ std::vector<Book> User::getLibraryBooks() {
     std::cout << "Got " << params.size() <<" books" << std::endl;
     return books;
 }
+
 void User::addBookToCollection(int bookId) {
     std::cout << "Adding book to collection" << std::endl;
     httplib::Params params;
     params.emplace("token", token_);
     params.emplace("bookId", std::to_string(bookId));
+
     auto res = client_.Post("/add-book", params);
+
     if (res->status != 200)
         throw std::runtime_error("Can't add book, error code: " +
                                  std::to_string(res->status));
+
     nlohmann::json book = nlohmann::json::parse(res->body);
-    bookRep_->addBook(book["id"], book["name"], book["author"], book["text"]);
+    bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
 }

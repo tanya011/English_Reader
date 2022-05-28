@@ -29,6 +29,10 @@ public:
     void showAuth();
     void showLibrary();
 
+    void authAddExit(){
+
+    }
+
     void updateLibrary();
     void updateReadNow(const std::string &title,
                        const std::string &author,

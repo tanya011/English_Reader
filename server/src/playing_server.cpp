@@ -61,11 +61,11 @@ int main() {
              [&](const httplib::Request &req, httplib::Response &res) {
                  std::cout << "/library" << std::endl;
                  std::vector<Book> books(bookRep.getAllBooks());
-                 std::cout << "Now there are " <<books.size() << " books in Library" << std::endl;
+                 std::cout << "Now there are " << books.size() << " books in Library" << std::endl;
                  nlohmann::json params;
-                 for (auto &book : books) {
-                     params.push_back({{"id", book.getId()},
-                                       {"name", book.getName()},
+                 for (auto &book: books) {
+                     params.push_back({{"id",     book.getId()},
+                                       {"name",   book.getName()},
                                        {"author", book.getAuthor()}});
                  }
                  res.set_content(params.dump(), "text/plain");
@@ -83,7 +83,9 @@ int main() {
                      nlohmann::json param{{"id", book.getId()},
                                           {"name", book.getName()},
                                           {"author", book.getAuthor()},
-                                          {"text", book.getText()}};
+                                          {"text", book.getText()},
+                                          //{"filename", book.getFileName()}
+                                          };
                      res.set_content(param.dump(), "text/plain");
                  } else {
                      throw std::runtime_error("No token or bookId given");
@@ -91,13 +93,13 @@ int main() {
              });
 
     svr.set_exception_handler(
-        [](const auto &req, auto &res, std::exception &e) {
-            res.status = 500;
-            std::cerr << e.what() << std::endl;
-            res.set_content("Error", "text/hplain");
-        });
+            [](const auto &req, auto &res, std::exception &e) {
+                res.status = 500;
+                std::cerr << e.what() << std::endl;
+                res.set_content("Error", "text/hplain");
+            });
 
-    svr.Get("/stop", [&](const auto& req, httplib::Response& res) {
+    svr.Get("/stop", [&](const auto &req, httplib::Response &res) {
         svr.stop();
     });
 
