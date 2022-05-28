@@ -171,6 +171,7 @@ void ConnectingWindow::updateCollection() {
 
     Collection->titleLabels_ = std::vector<QLabel *>(Collection->books_.size());
     Collection->readBtns_ = std::vector<QPushButton *>(Collection->books_.size());
+    Collection->deleteBtns_ = std::vector<QPushButton *> (Collection->books_.size());
 
     for (int i = 0; i < Collection->books_.size(); i++) {
         Collection->titleLabels_[i] = new QLabel(
@@ -180,9 +181,14 @@ void ConnectingWindow::updateCollection() {
 
         Collection->readBtns_[i] = new QPushButton(tr("Read"));
         Collection->layout->addWidget(Collection->readBtns_[i], i, 1);
+        Collection->deleteBtns_[i] = new QPushButton(tr("Delete"));
+        Collection->layout->addWidget(Collection->deleteBtns_[i], i, 2);
 
         Collection->readBtns_[i]->setFixedWidth(100);
         Collection->readBtns_[i]->setFixedHeight(50);
+
+        Collection->deleteBtns_[i]->setFixedWidth(100);
+        Collection->deleteBtns_[i]->setFixedHeight(50);
     }
 
     Collection->scrollArea->setWidget(Collection->box);

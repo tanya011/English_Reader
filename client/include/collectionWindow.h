@@ -17,8 +17,10 @@ private:
 
 
 public:
-    CollectionWindow(ConnectingWindow *parent, BookRep* bookRep);
-    BookRep* bookRep_;
+    CollectionWindow(ConnectingWindow *parent, BookRep *bookRep);
+
+    BookRep *bookRep_;
+
     void connectWithReader(int bookId);
 
     void updateWindow();
@@ -26,11 +28,12 @@ public:
     std::vector<Book> books_;
     std::vector<QLabel *> titleLabels_;
     std::vector<QPushButton *> readBtns_;
+    std::vector<QPushButton *> deleteBtns_;
     ConnectingWindow *parent_;
 
-    QScrollArea* scrollArea = new QScrollArea(this);
-    QWidget* box;
-    QGridLayout* layout = new QGridLayout();
+    QScrollArea *scrollArea = new QScrollArea(this);
+    QWidget *box;
+    QGridLayout *layout = new QGridLayout();
 };
 
 #endif  // COLLECTION_WINDOW_H
