@@ -6,7 +6,11 @@
 #include "../include/httplib.h"
 #include "../include/actCollectionsHistory.h"
 #include "bookRep.h"
-#include "userRepLocal.h"
+
+namespace userRepLocal{
+    int getValue();
+    void newValue(int newValue);
+}
 
 struct action {
     int numberOfAction; //1 = add, 0 = delete;
@@ -18,7 +22,6 @@ struct action {
 struct User {
 private:
     BookRep *bookRep_;
-    UserRepLocal *userRepLocal_;
     httplib::Client client_{"localhost:8080"};
     bool isAuthorized_ = false;
     std::string token_;
@@ -28,7 +31,7 @@ private:
 public:
     std::queue<ActCollectionsHistory> Queue;
 
-    User(BookRep *bookRep, UserRepLocal *userRepLocal);
+    User(BookRep *bookRep);
 
     void init(const std::string &username, const std::string &password);
 
@@ -54,19 +57,7 @@ public:
 
     // TODO: sync_dict();
 
-    void sync_collect() {
-        std::vector<ActCollectionsHistory> vec = this->getNewActions(this->userRepLocal_->getValue(1) + 1);
-        for (auto action: vec) {
-            std::cout << " action = " << action.type << std::endl;
-            if (action.type == "delete") {
-                bookRep_->deleteBookById(action.bookId);
-            }
-            else {
-                this->addBookToCollection(action.bookId);
-            }
-        }
-        userRepLocal_->newValue(1, userRepLocal_->getValue(1) + vec.size());
-    }
+    void sync_collect();
 
     // TODO: sync_lib();
 };

@@ -2,7 +2,7 @@
 #include <nlohmann/json.hpp>
 #include "include/actCollectionsHistory.h"
 
-User::User(BookRep *bookRep, UserRepLocal *userRepLocal) : bookRep_(bookRep), userRepLocal_(userRepLocal) {
+User::User(BookRep *bookRep) : bookRep_(bookRep) {
 }
 
 void User::init(const std::string &username, const std::string &password) {
@@ -13,23 +13,6 @@ void User::init(const std::string &username, const std::string &password) {
         return;
     token_ = res->body;
     isAuthorized_ = true;
-
-    // табличка для синхронизации личной коллекции книг
-    std::unique_ptr<sql::Statement> stmt(
-            userRepLocal_->manager.getConnection().createStatement());
-    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-            "SELECT * FROM userCollHistory WHERE userId=" + token_));
-    if (reqRes->next()) {
-
-    } else {
-        std::unique_ptr<sql::PreparedStatement> prst(
-                userRepLocal_->manager.getConnection().prepareStatement(
-                        "INSERT INTO userCollHistory (userId, lastCollection) VALUES "
-                        "(?,?)"));
-        prst->setString(1, token_);
-        prst->setInt(2, 0);
-        prst->execute();
-    }
 }
 
 bool User::isAuthorized() {
@@ -88,7 +71,7 @@ int User::addBookToCollection(int bookId) {
 
     sync_collect();
     newActionInCollection("add", bookId);
-    userRepLocal_->newValue(1, userRepLocal_->getValue(1) + 1);
+    userRepLocal::newValue(userRepLocal::getValue() + 1);
     return 1;
 }
 
@@ -107,7 +90,7 @@ void User::deleteCollectionBook(int bookId) {
     } else {
         sync_collect();
         newActionInCollection("delete", bookId);
-        userRepLocal_->newValue(1, userRepLocal_->getValue(1) + 1);
+        userRepLocal::newValue(userRepLocal::getValue() + 1);
     }
 
 }
@@ -145,4 +128,18 @@ std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
         books.push_back({p["type"], p["bookId"]});
     }
     return books;
+}
+
+void User::sync_collect() {
+    std::vector<ActCollectionsHistory> vec = this->getNewActions(userRepLocal::getValue() + 1);
+    for (auto action: vec) {
+        std::cout << " action = " << action.type << std::endl;
+        if (action.type == "delete") {
+            bookRep_->deleteBookById(action.bookId);
+        }
+        else {
+            this->addBookToCollection(action.bookId);
+        }
+    }
+    userRepLocal::newValue(userRepLocal::getValue() + vec.size());
 }

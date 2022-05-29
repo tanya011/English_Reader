@@ -60,7 +60,7 @@ set(PROJECT_SOURCES
         include/libraryWindow.h
 
 
-        include/actCollectionsHistory.h include/userRepLocal.h)
+        include/actCollectionsHistory.h src/userRepLocal.cpp)
 
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)

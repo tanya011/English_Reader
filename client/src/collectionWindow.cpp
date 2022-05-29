@@ -65,7 +65,7 @@ CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
     QPushButton *button = new QPushButton;
     button->setParent(this);
     button->setGeometry(30, 1370, 70, 70);
-    button->setIcon(QIcon("../cmake-build-debug/yafr_files/sync.png"));
+    button->setIcon(QIcon("files/sync.png"));
     button->show();
     QObject::connect(button, &QPushButton::clicked, this,
                      [=]() {
@@ -98,4 +98,5 @@ void CollectionWindow::deleteBook(int bookId) {
 
 void CollectionWindow::synchronizationCollection() {
     parent_->user->sync_collect();
+    parent_->updateCollection();
 }
