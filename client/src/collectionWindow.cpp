@@ -65,7 +65,8 @@ CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
     QPushButton *button = new QPushButton;
     button->setParent(this);
     button->setGeometry(30, 1370, 70, 70);
-    button->setIcon(QIcon("files/sync.png"));
+    // TODO can`t add not absolute
+    button->setIcon(QIcon("/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/files/sync.png"));
     button->show();
     QObject::connect(button, &QPushButton::clicked, this,
                      [=]() {
