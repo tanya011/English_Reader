@@ -6,6 +6,7 @@ namespace userRepLocal {
 
     int getValue(){
         int buff;
+        //TODO not absolute path
         std::ifstream file("/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/files/numColl");
         if(!file.good()){
             throw "error";
@@ -17,6 +18,7 @@ namespace userRepLocal {
     }
 
     void newValue(int newValue) {
+        //TODO not absolute path
         std::ofstream file("/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/files/numColl", std::ios_base::out | std::ios_base::trunc);
         file << newValue;
         file.close();
