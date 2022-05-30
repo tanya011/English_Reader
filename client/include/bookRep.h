@@ -44,6 +44,8 @@ public:
     void deleteBookById(int id);
 
     Book getBookById(int id);
+
+    void clear();
 };
 
 #endif  // YAFR_LIBRARY_REP_H

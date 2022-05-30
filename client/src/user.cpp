@@ -6,8 +6,7 @@ User::User(BookRep *bookRep) : bookRep_(bookRep) {
 }
 
 void User::init(const std::string &username, const std::string &password) {
-    httplib::Params params{{"name",     username},
-                           {"password", password}};
+    httplib::Params params{{"name", username}, {"password", password}};
     auto res = client_.Post("/init-user", params);
     if (res->status != 200)  // TODO: Check if smth went wrong
         return;
@@ -15,15 +14,15 @@ void User::init(const std::string &username, const std::string &password) {
     isAuthorized_ = true;
 }
 
-bool User::isAuthorized() {
+bool User::isAuthorized() const {
     return isAuthorized_;
 }
-
 
 void User::exit() {
     token_ = "";
     isAuthorized_ = false;
-    // TODO: drop tables with books and words
+    bookRep_->clear();
+    // TODO: drop table with  words
 }
 
 std::vector<Book> User::getLibraryBooks() {
@@ -34,7 +33,7 @@ std::vector<Book> User::getLibraryBooks() {
                                  std::to_string(res->status));
     nlohmann::json params = nlohmann::json::parse(res->body);
     std::vector<Book> books;
-    for (auto &p: params) {
+    for (auto &p : params) {
         books.emplace_back(p["id"], p["name"], p["author"]);
     }
     std::cout << "Got " << params.size() << " books" << std::endl;
@@ -43,9 +42,9 @@ std::vector<Book> User::getLibraryBooks() {
 
 int User::addBookToCollection(int bookId) {
     std::unique_ptr<sql::Statement> stmt(
-            bookRep_->manager_.getConnection().createStatement());
+        bookRep_->manager_.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-            "SELECT * FROM collection WHERE id=" + std::to_string(bookId)));
+        "SELECT * FROM collection WHERE id=" + std::to_string(bookId)));
 
     if (reqRes->next()) {
         return 0;
@@ -63,7 +62,8 @@ int User::addBookToCollection(int bookId) {
                                  std::to_string(res->status));
 
     nlohmann::json book = nlohmann::json::parse(res->body);
-    bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
+    bookRep_->addAndSaveBook(book["id"], book["name"], book["author"],
+                             book["text"]);
 
     syncCollection();
     newActionInCollection("add", bookId);
@@ -88,7 +88,6 @@ void User::deleteCollectionBook(int bookId) {
         newActionInCollection("delete", bookId);
         userRepLocal::newValue(userRepLocal::getValue() + 1);
     }
-
 }
 
 void User::newActionInCollection(std::string action, int bookId) {
@@ -103,7 +102,6 @@ void User::newActionInCollection(std::string action, int bookId) {
                                  std::to_string(res->status));
     }
 }
-
 
 std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
     std::cout << "Try to get new actions from server";
@@ -120,20 +118,20 @@ std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
     nlohmann::json param = nlohmann::json::parse(res->body);
 
     std::vector<ActCollectionsHistory> books;
-    for (auto &p: param) {
+    for (auto &p : param) {
         books.push_back({p["type"], p["bookId"]});
     }
     return books;
 }
 
 void User::syncCollection() {
-    std::vector<ActCollectionsHistory> vec = this->getNewActions(userRepLocal::getValue() + 1);
-    for (auto action: vec) {
+    std::vector<ActCollectionsHistory> vec =
+        this->getNewActions(userRepLocal::getValue() + 1);
+    for (auto action : vec) {
         std::cout << " action = " << action.type << std::endl;
         if (action.type == "delete") {
             bookRep_->deleteBookById(action.bookId);
-        }
-        else {
+        } else {
             this->addBookToCollection(action.bookId);
         }
     }
