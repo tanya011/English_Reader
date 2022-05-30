@@ -78,6 +78,7 @@ bool UserRep::isUserExist(const std::string &name, const std::string &hash) {
     }
     return false;
 }
+
 int UserRep::getUserId(const std::string &token) {
     std::unique_lock l(*mutex_);
     std::unique_ptr<sql::Statement> stmt(

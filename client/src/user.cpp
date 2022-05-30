@@ -2,6 +2,10 @@
 #include <nlohmann/json.hpp>
 #include "include/actCollectionsHistory.h"
 
+namespace userRepLocal{
+    void newValue(int value);
+}
+
 User::User(BookRep *bookRep) : bookRep_(bookRep) {
 }
 
@@ -13,6 +17,9 @@ void User::init(const std::string &username, const std::string &password) {
         return;
     token_ = res->body;
     isAuthorized_ = true;
+
+    int lastCollectionAction = getLastCollectionAction();
+    std::cout << "lastcoll = " << lastCollectionAction << std::endl;
 }
 
 bool User::isAuthorized() {
@@ -76,7 +83,7 @@ int User::addBookToCollection(int bookId) {
 }
 
 void User::deleteCollectionBook(int bookId) {
-    std::cout << "Deleting book from server";
+    std::cout << "Deleting book from server" << std::endl;
 
     httplib::Params params;
     params.emplace("token", token_);
@@ -96,7 +103,7 @@ void User::deleteCollectionBook(int bookId) {
 }
 
 void User::newActionInCollection(std::string action, int bookId) {
-    std::cout << "Deleting book from server";
+    std::cout << "Deleting book from server" << std::endl;
     httplib::Params params;
     params.emplace("token", token_);
     params.emplace("action", action);
@@ -109,8 +116,17 @@ void User::newActionInCollection(std::string action, int bookId) {
 }
 
 
+int User::getLastCollectionAction() {
+    std::cout << "Getting last collection action" << std::endl;
+    httplib::Params params;
+    params.emplace("token", token_);
+    auto res = client_.Post("/get-last-collection-action", params);
+    nlohmann::json param = nlohmann::json::parse(res->body);
+    return param["lastAct"];
+}
+
 std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
-    std::cout << "Try to get new actions from server";
+    std::cout << "Try to get new actions from server" << std::endl ;
 
     httplib::Params params;
     params.emplace("token", token_);

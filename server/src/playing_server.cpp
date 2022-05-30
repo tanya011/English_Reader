@@ -164,6 +164,20 @@ int main() {
                  }
              });
 
+    svr.Post("/get-last-collection-action",
+             [&](const httplib::Request &req, httplib::Response &res) {
+                 if (req.has_param("token")) {
+                     auto token = req.get_param_value("token");
+                     int userId = userRep.getUserId(token);
+                     int lastAction = collectionsHistoryRep.lastAction(userId);
+                     nlohmann::json param{{"lastAct", lastAction}
+                     };
+                     res.set_content(param.dump(), "text/plain");
+                 } else {
+                     throw std::runtime_error("No token given");
+                 }
+             });
+
     svr.set_exception_handler(
             [](const auto &req, auto &res, std::exception &e) {
                 res.status = 500;

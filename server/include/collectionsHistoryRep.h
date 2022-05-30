@@ -45,6 +45,22 @@ public:
         return actions;
     }
 
+    int lastAction(int userId){
+        std::unique_lock l(*mutex_);
+        std::unique_ptr<sql::Statement> stmt(
+                manager_.getConnection().createStatement());
+
+        std::unique_ptr<sql::ResultSet> lastActionN = std::unique_ptr<sql::ResultSet>(
+                stmt->executeQuery(R"(SELECT MAX(ActionNum) AS "ActionNum" FROM )" + tableName_ +
+                                   " WHERE userId="+std::to_string(userId)));
+
+        int action = 0;
+        while (lastActionN->next()){
+            action = lastActionN->getInt("ActionNum");
+        }
+        return action;
+    }
+
     void addInHistory(int userId, ActCollectionsHistory action) {
         std::unique_lock l(*mutex_);
         std::unique_ptr<sql::Statement> stmt(

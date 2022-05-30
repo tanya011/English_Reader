@@ -43,10 +43,11 @@ void BookRep::addAndSaveBook(int id,
                              const std::string &bookName,
                              const std::string &author,
                              const std::string &text) {
-    std::string filename = appFolder_.string() + std::to_string(id) + "|" + bookName +
+    std::string filename = std::to_string(id) + "|" + bookName +
                            "|" + author + ".txt";
     std::cout << "new_file_name : "<< filename << std::endl;
-    std::ofstream file(appFolder_ / filename);
+    auto folder = appFolder_ / "book" / filename;
+    std::ofstream file(folder);
     if(!file.good())
         throw std::runtime_error("Problems with app directory");
     file<<text;

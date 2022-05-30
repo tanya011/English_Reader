@@ -11,6 +11,8 @@
 class AuthorizationWindow : public QWidget {
 private:
     ConnectingWindow* parent_;
+    QWidget* box;
+    QVBoxLayout* layout = new QVBoxLayout();
 public:
     explicit AuthorizationWindow(ConnectingWindow *parent = nullptr);
     void updateWindow();
