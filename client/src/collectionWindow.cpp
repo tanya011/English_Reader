@@ -2,26 +2,55 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QString>
-#include <iostream>
 #include <cstdio>
+#include <iostream>
 #include "include/bookRep.h"
 #include "include/readNowWindow.h"
 
 CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
-        : QWidget(parent), bookRep_(bookRep), parent_(parent) {
+    : QWidget(parent), bookRep_(bookRep), parent_(parent) {
+    updateWindow(false);
+    QPushButton *button = new QPushButton;
+    button->setParent(this);
+    button->setGeometry(30, 1370, 70, 70);
+    // TODO can`t add not absolute
+    button->setIcon(
+        QIcon("/home/tatyana/Programming/Проект Весна "
+              "2022/English_Reader/client/src/files/sync.png"));
+    button->show();
+    QObject::connect(button, &QPushButton::clicked, this,
+                     [=]() { synchronizationCollection(); });
+}
+
+void CollectionWindow::updateWindow(bool firstUpdate) {
+    if (firstUpdate) {
+        for (int i = 0; i < books_.size(); i++) {
+            QLayoutItem *item;
+            while ((item = layout->takeAt(0)) != nullptr) {
+                delete item->widget();
+                delete item->layout();
+                delete item;
+            }
+        }
+        titleLabels_.clear();
+        readBtns_.clear();
+    }
+
+    parent_->user->syncCollection();
+    books_ = bookRep_->getAllBooks();
+
     box = new QWidget;
     layout = new QGridLayout;
     box->setLayout(layout);
 
-    books_ = bookRep->getAllBooks();
     titleLabels_ = std::vector<QLabel *>(books_.size());
     readBtns_ = std::vector<QPushButton *>(books_.size());
-    deleteBtns_ = std::vector<QPushButton *> (books_.size());
+    deleteBtns_ = std::vector<QPushButton *>(books_.size());
 
     for (int i = 0; i < books_.size(); i++) {
-        titleLabels_[i] = new QLabel(
-                QString("Name: %1,   Author: %2")
-                        .arg(books_[i].getName().c_str(), books_[i].getAuthor().c_str()));
+        titleLabels_[i] = new QLabel(QString("Name: %1,   Author: %2")
+                                         .arg(books_[i].getName().c_str(),
+                                              books_[i].getAuthor().c_str()));
         layout->addWidget(titleLabels_[i], i, 0);
 
         readBtns_[i] = new QPushButton(tr("Read"));
@@ -46,32 +75,18 @@ CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
 
     for (int i = 0; i < books_.size(); i++) {
         QObject::connect(deleteBtns_[i], &QPushButton::clicked, this,
-                         [=]() {
-            deleteBook(books_[i].getId());
-        });
+                         [=]() { deleteBook(books_[i].getId()); });
     }
-
 
     // Styles
     auto screen_width =
-            QApplication::desktop()->screenGeometry().width() - 1000;
+        QApplication::desktop()->screenGeometry().width() - 1000;
     auto screen_height =
-            QApplication::desktop()->screenGeometry().height() - 200;
+        QApplication::desktop()->screenGeometry().height() - 200;
     this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
     box->setFixedWidth(screen_width - 20);
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
     // Styles
-
-    QPushButton *button = new QPushButton;
-    button->setParent(this);
-    button->setGeometry(30, 1370, 70, 70);
-    // TODO can`t add not absolute
-    button->setIcon(QIcon("/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/files/sync.png"));
-    button->show();
-    QObject::connect(button, &QPushButton::clicked, this,
-                     [=]() {
-        synchronizationCollection();
-                     });
 }
 
 void CollectionWindow::connectWithReader(int bookId) {
@@ -84,9 +99,9 @@ void CollectionWindow::connectWithReader(int bookId) {
 
 void CollectionWindow::deleteBook(int bookId) {
     // 1. Удалить файлик из папки
-    try{
+    try {
         std::remove(bookRep_->getBookById(bookId).getFileName().c_str());
-    }catch (...){
+    } catch (...) {
         std::cout << "No such file";
     }
     // 2. Удалить из локальной базы данных
@@ -98,6 +113,6 @@ void CollectionWindow::deleteBook(int bookId) {
 }
 
 void CollectionWindow::synchronizationCollection() {
-    parent_->user->sync_collect();
+    parent_->user->syncCollection();
     parent_->updateCollection();
 }

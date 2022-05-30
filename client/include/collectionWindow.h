@@ -25,6 +25,8 @@ public:
 
     void synchronizationCollection();
 
+    void updateWindow(bool firstUpdate=true);
+
     std::vector<Book> books_;
     std::vector<QLabel *> titleLabels_;
     std::vector<QPushButton *> readBtns_;

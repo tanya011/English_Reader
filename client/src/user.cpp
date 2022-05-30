@@ -41,10 +41,6 @@ std::vector<Book> User::getLibraryBooks() {
     return books;
 }
 
-std::vector<Book> User::getCollectionBooks() {
-    return bookRep_->getAllBooks();
-}
-
 int User::addBookToCollection(int bookId) {
     std::unique_ptr<sql::Statement> stmt(
             bookRep_->manager_.getConnection().createStatement());
@@ -69,7 +65,7 @@ int User::addBookToCollection(int bookId) {
     nlohmann::json book = nlohmann::json::parse(res->body);
     bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
 
-    sync_collect();
+    syncCollection();
     newActionInCollection("add", bookId);
     userRepLocal::newValue(userRepLocal::getValue() + 1);
     return 1;
@@ -88,7 +84,7 @@ void User::deleteCollectionBook(int bookId) {
         throw std::runtime_error("Can't add book, error code: " +
                                  std::to_string(res->status));
     } else {
-        sync_collect();
+        syncCollection();
         newActionInCollection("delete", bookId);
         userRepLocal::newValue(userRepLocal::getValue() + 1);
     }
@@ -130,7 +126,7 @@ std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
     return books;
 }
 
-void User::sync_collect() {
+void User::syncCollection() {
     std::vector<ActCollectionsHistory> vec = this->getNewActions(userRepLocal::getValue() + 1);
     for (auto action: vec) {
         std::cout << " action = " << action.type << std::endl;
