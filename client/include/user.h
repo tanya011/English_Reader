@@ -59,7 +59,7 @@ public:
 
     // TODO: sync_dict();
 
-    void sync_collect();
+    void syncCollection();
 
     // TODO: sync_lib();
 };

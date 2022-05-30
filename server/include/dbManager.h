@@ -21,7 +21,7 @@ private:
 public:
     DBManager()  // TODO: no connection options
         : driver(get_driver_instance()),
-          con(driver->connect("tcp://127.0.0.1:3306", "root", "password")) {
+          con(driver->connect("tcp://127.0.0.1:3306", "root", "root")) {
         std::unique_ptr<sql::Statement> stmt(con->createStatement());
         stmt->execute("CREATE DATABASE IF NOT EXISTS " + dbName);
         con->setSchema(dbName);
