@@ -39,6 +39,8 @@ public:
 
     int addBookToLocalCollection(int bookId);
 
+    int getLastCollectionAction();
+
     int addBookToCollection(int bookId);
 
     std::vector<Book> updateLibrary();

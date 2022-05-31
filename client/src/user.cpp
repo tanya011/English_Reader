@@ -22,7 +22,7 @@ void User::init(const std::string &username, const std::string &password) {
     std::cout << "lastcoll = " << lastCollectionAction << std::endl;
 }
 
-bool User::isAuthorized() {
+bool User::isAuthorized() const {
     return isAuthorized_;
 }
 
