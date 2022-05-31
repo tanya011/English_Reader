@@ -43,14 +43,14 @@ void BookRep::addAndSaveBook(int id,
                              const std::string &bookName,
                              const std::string &author,
                              const std::string &text) {
-    std::string filename = std::to_string(id) + "|" + bookName +
-                           "|" + author + ".txt";
-    std::cout << "new_file_name : "<< filename << std::endl;
+    std::string filename =
+        std::to_string(id) + "|" + bookName + "|" + author + ".txt";
+    std::cout << "new_file_name : " << filename << std::endl;
     auto folder = appFolder_ / "books" / filename;
     std::ofstream file(folder, std::ios::out);
-    if(!file.good())
+    if (!file.good())
         throw std::runtime_error("Problems with app directory");
-    file<<text;
+    file << text;
     this->addBook(id, bookName, author, folder);
 }
 
@@ -92,6 +92,14 @@ std::vector<Book> BookRep::getAllBooks() {
             static_cast<std::string>(reqRes->getString("filename")));
     }
     return books;
+}
+void BookRep::clear() {
+    std::filesystem::remove_all(appFolder_ / "books");
+    create_directories(appFolder_ / "books");
+    std::unique_ptr<sql::Statement> stmt(
+        manager_.getConnection().createStatement());
+    stmt->execute("DELETE FROM " + tableName_);
+    std::cout << "Books deleted" << std::endl;
 }
 
 BookRepException::BookRepException(const std::string &message)

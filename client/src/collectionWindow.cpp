@@ -34,11 +34,10 @@ void CollectionWindow::updateWindow(bool firstUpdate) {
         }
         titleLabels_.clear();
         readBtns_.clear();
+        parent_->user->syncCollection();
     }
 
-    parent_->user->syncCollection();
     books_ = bookRep_->getAllBooks();
-
     box = new QWidget;
     layout = new QGridLayout;
     box->setLayout(layout);

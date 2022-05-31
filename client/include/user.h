@@ -47,9 +47,7 @@ public:
 
     void deleteCollectionBook(int bookId);
 
-    int getLastCollectionAction();
-
-    bool isAuthorized();
+    bool isAuthorized() const;
 
     void exit();
 
