@@ -18,8 +18,21 @@ void User::init(const std::string &username, const std::string &password) {
     token_ = res->body;
     isAuthorized_ = true;
 
+
+    // личная коллекция книг, получаем последний номер в истории данного пользователя
     int lastCollectionAction = getLastCollectionAction();
     std::cout << "lastcoll = " << lastCollectionAction << std::endl;
+
+    // создаем файл "numColl", в котором будет храниться этот номер
+    std::string filename = "numCollection.txt";
+    std::string folderName="yafr_files/files";
+    std::filesystem::create_directories(folderName);
+    std::filesystem::path appFolder=std::filesystem::absolute("./yafr_files");
+    auto folder = appFolder / "files" / filename;
+    std::ofstream file(folder, std::ios::out);
+    if (!file.good())
+        throw std::runtime_error("Problems with app directory");
+    file << lastCollectionAction;
 }
 
 bool User::isAuthorized() const {
