@@ -33,6 +33,8 @@ void User::init(const std::string &username, const std::string &password) {
     if (!file.good())
         throw std::runtime_error("Problems with app directory");
     file << lastCollectionAction;
+
+    getCollectionBooks();
 }
 
 bool User::isAuthorized() const {
@@ -43,21 +45,44 @@ bool User::isAuthorized() const {
 void User::exit() {
     token_ = "";
     isAuthorized_ = false;
-    // TODO: drop tables with books and words
+    bookRep_->clear();
+    // TODO: drop tables with words
+}
+
+std::vector<Book> User::getCollectionBooks() {
+    std::cout << "Getting Collection Books..." << std::endl;
+
+    httplib::Params param;
+    param.emplace("token", token_);
+
+    auto res = client_.Post("/collection", param);
+    if (res->status != 200)
+        throw std::runtime_error("Can't load collection, error code: " +
+                                 std::to_string(res->status));
+    nlohmann::json params = nlohmann::json::parse(res->body);
+    std::vector<Book> books;
+    for (auto &book: params) {
+        bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
+    }
+    std::cout << "Got " << params.size() << " books from collection" << std::endl;
+    return books;
 }
 
 std::vector<Book> User::getLibraryBooks() {
-    std::cout << "Getting Books..." << std::endl;
+    std::cout << "Getting Library Books..." << std::endl;
+
     auto res = client_.Post("/library");
+
     if (res->status != 200)
         throw std::runtime_error("Can't load library, error code: " +
                                  std::to_string(res->status));
+
     nlohmann::json params = nlohmann::json::parse(res->body);
     std::vector<Book> books;
     for (auto &p: params) {
         books.emplace_back(p["id"], p["name"], p["author"]);
     }
-    std::cout << "Got " << params.size() << " books" << std::endl;
+    std::cout << "Got " << params.size() << " books from library" << std::endl;
     return books;
 }
 

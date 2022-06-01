@@ -77,6 +77,30 @@ int main() {
                  res.set_content(params.dump(), "text/plain");
              });
 
+    svr.Post("/collection",
+             [&](const httplib::Request &req, httplib::Response &res) {
+                 std::cout << "/collection" << std::endl;
+                 if (req.has_param("token")) {
+                     auto token = req.get_param_value("token");
+                     int userId = userRep.getUserId(token);
+                     std::vector<Book> books;
+                     for(auto bookId : collectionsRep.getUserBookId(userId)){
+                         books.push_back(bookRep.getBookById(bookId));
+                     }
+                     std::cout << "Now there are " << books.size() << " books in Library" << std::endl;
+                     nlohmann::json params;
+                     for (auto &book: books) {
+                         params.push_back({{"id",     book.getId()},
+                                           {"name",   book.getName()},
+                                           {"author", book.getAuthor()},
+                                           {"text",   book.getText()}});
+                     }
+                     res.set_content(params.dump(), "text/plain");
+                 }else {
+                     throw std::runtime_error("No token given");
+                 }
+             });
+
     svr.Post("/add-book",
              [&](const httplib::Request &req, httplib::Response &res) {
                  std::cout << "/add_book" << std::endl;

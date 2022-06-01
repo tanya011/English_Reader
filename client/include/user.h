@@ -35,6 +35,8 @@ public:
 
     void init(const std::string &username, const std::string &password);
 
+    std::vector<Book> getCollectionBooks();
+
     std::vector<Book> getLibraryBooks();
 
     int addBookToLocalCollection(int bookId);
@@ -44,8 +46,6 @@ public:
     int addBookToCollection(int bookId);
 
     std::vector<Book> updateLibrary();
-
-    std::vector<Book> getCollectionBooks();
 
     void deleteCollectionBook(int bookId);
 

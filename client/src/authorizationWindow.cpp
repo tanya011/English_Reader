@@ -26,6 +26,7 @@ void AuthorizationWindow::updateWindow() {
             auto username = nameField_->text().toStdString();
             auto password = passwordField_->text().toStdString();
             parent_->user->init(username, password);
+            parent_->updateCollection();
             this->updateWindow();
         });
     } else {
