@@ -25,7 +25,28 @@ ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent) {
     createButtonAddPhraseToDict();
     createActions();   // создаем Actions
     createToolBars();  // создаем панель
+    std::cout << "im fine before makeConnect" << std::endl;
+    makeConnectWithDict();
+    std::cout << "im fine after makeConnect" << std::endl;
 };
+
+
+void ReadNowWindow::makeConnectWithDict() {
+    assert(parent != nullptr);
+    std::cout << "im fine after assert parent not nullptr" << std::endl;
+    auto dictionary = dynamic_cast<DictionaryWindow *>(                        //TODO DOESNT WORK
+            parent->allWindows.widget(parent->windowIndexes.dictionary));
+    std::cout << "im fine after make dictionary " << std::endl;
+    assert(dictionary != nullptr);
+    connect(button_, &QPushButton::clicked, dictionary, [=]() {
+        if (translatedTextDisplay_ != nullptr) {
+            assert(dictionary != nullptr);
+            dictionary->executeRequestFromReadNow(
+                    selectedText_.toStdString(), translatedText_.toStdString(),
+                    authorName_.toStdString() + " " + title_.toStdString());
+        }
+    });
+}
 
 void ReadNowWindow::translateText() {
     if (translatedTextDisplay_) {

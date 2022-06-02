@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QToolBar>
 #include "connectingWindow.h"
-#include "dictionary.h"
 #include "dictionaryWindow.h"
 
 namespace translate {

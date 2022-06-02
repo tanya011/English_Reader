@@ -48,4 +48,4 @@ public:
     void clear();
 };
 
-#endif  // YAFR_LIBRARY_REP_H
+#endif  // YAFR_BOOKREP_H

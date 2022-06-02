@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
         connectingWindow.windowIndexes.library =
             connectingWindow.allWindows.addWidget(libraryWindow);
 
-        auto dictionaryWindow = new DictionaryWindow(&connectingWindow);
+        auto dictionaryWindow = new DictionaryWindow(dbManager, &connectingWindow);
         connectingWindow.windowIndexes.dictionary =
             connectingWindow.allWindows.addWidget(dictionaryWindow);
 
@@ -67,7 +67,6 @@ int main(int argc, char *argv[]) {
 
         // Note 3: We can change parent of widget, as they all inherit QWidget,
         // and it's parent is QWidget
-
         connectingWindow.show();
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;

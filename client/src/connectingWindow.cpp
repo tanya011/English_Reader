@@ -137,7 +137,8 @@ void ConnectingWindow::updateReadNow(const std::string &title,
 }
 
 void ConnectingWindow::updateDictionary() {
-    // TODO: same as in updateLibrary
+    auto dictionary = dynamic_cast<DictionaryWindow*>(allWindows.widget(windowIndexes.dictionary));
+    dictionary->downloadDictDataFromServer();
 }
 
 void ConnectingWindow::updateCards() {
