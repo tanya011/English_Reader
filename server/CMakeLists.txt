@@ -22,7 +22,7 @@ set(PROJECT_SOURCES
         src/collectionsRep.cpp
         src/wordRep.cpp
         src/wordSetRep.cpp
-        src/wordSetContent.cpp
+        src/wordSetContentRep.cpp
         include/collectionsHistoryRep.h
         include/actCollectionsHistory.h)
 
