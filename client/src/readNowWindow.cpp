@@ -10,7 +10,7 @@
 #include <QDesktopWidget>
 
 
-ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent) {
+ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent), parent_(parent) {
     auto *layout = new QHBoxLayout;
 
     //parent->setWindowTitle("Читаю сейчас");
@@ -32,11 +32,11 @@ ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent) {
 
 
 void ReadNowWindow::makeConnectWithDict() {
-    assert(parent != nullptr);
+    assert(parent_ != nullptr);
     std::cout << "im fine after assert parent not nullptr" << std::endl;
-    std::cerr << parent->windowIndexes.dictionary << std::endl;
+    std::cerr << parent_->windowIndexes.dictionary << std::endl;
     auto dictionary = dynamic_cast<DictionaryWindow *>(                        //TODO DOESNT WORK
-            parent->allWindows.widget(parent->windowIndexes.dictionary));
+            parent_->allWindows.widget(parent_->windowIndexes.dictionary));
     std::cout << "im fine after make dictionary " << std::endl;
     assert(dictionary != nullptr);
     connect(button_, &QPushButton::clicked, dictionary, [=]() {

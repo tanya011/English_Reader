@@ -47,7 +47,7 @@ private slots:
     void translateText();
 
 private:
-    ConnectingWindow* parent;
+    ConnectingWindow* parent_;
 
     [[nodiscard]] QSize sizeHint() const override;
 

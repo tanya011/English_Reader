@@ -41,7 +41,7 @@ std::string UserRep::getUserToken(const std::string &name) {
     std::unique_ptr<sql::Statement> stmt(
         manager.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-        "SELECT * FROM " + tableName + " WHERE name=" + name));
+        "SELECT * FROM " + tableName + " WHERE name='" + name + "'"));
     if (reqRes->next()) {
         return static_cast<std::string>(reqRes->getString("token"));
     } else {
@@ -54,7 +54,7 @@ std::string UserRep::getUserName(const std::string &token) {
     std::unique_ptr<sql::Statement> stmt(
         manager.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-        "SELECT * FROM " + tableName + " WHERE token=" + token));
+        "SELECT * FROM " + tableName + " WHERE token='" + token + "'"));
     if (reqRes->next()) {
         return static_cast<std::string>(reqRes->getString("token"));
     } else {
