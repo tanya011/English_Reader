@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
 
     DBManager dbManager;
     BookRep bookRep(dbManager, appFolder);
+
     User user(&bookRep);
 
     ConnectingWindow connectingWindow;

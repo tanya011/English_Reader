@@ -22,13 +22,14 @@ struct action {
 struct User {
 private:
     BookRep *bookRep_;
+
     httplib::Client client_{"localhost:8080"};
     bool isAuthorized_ = false;
     std::string token_;
     std::vector<action> actionsToDBCollections;
 
-
 public:
+
     std::queue<ActCollectionsHistory> Queue;
 
     User(BookRep *bookRep);

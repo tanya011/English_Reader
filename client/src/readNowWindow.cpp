@@ -43,6 +43,9 @@ void ReadNowWindow::createButtonAddPhraseToDict() {
     button_->setGeometry(screenWidth_ - 850, 660, 600, 50);
     button_->setText("Добавить в словарь");
     button_->show();
+    connect(button_, &QPushButton::clicked, this,
+            [=]() {
+    });
 }
 
 void ReadNowWindow::createWindowWithTranslate() {

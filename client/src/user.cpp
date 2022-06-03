@@ -6,7 +6,7 @@ namespace userRepLocal{
     void newValue(int value);
 }
 
-User::User(BookRep *bookRep) : bookRep_(bookRep) {
+User::User(BookRep *bookRep) : bookRep_(bookRep){
 }
 
 void User::init(const std::string &username, const std::string &password) {
@@ -73,9 +73,9 @@ std::vector<Book> User::getLibraryBooks() {
 
     auto res = client_.Post("/library");
 
-    if (res->status != 200)
-        throw std::runtime_error("Can't load library, error code: " +
-                                 std::to_string(res->status));
+    if (res->status != 200) {
+        //throw std::runtime_error("Can't load library, error code: " + std::to_string(res->status));
+    }
 
     nlohmann::json params = nlohmann::json::parse(res->body);
     std::vector<Book> books;

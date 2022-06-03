@@ -41,6 +41,7 @@ public:
     void updateCards();
     void updateCollection();
 
+    void makeConnectWithDict();
 
 private:
     QAction *collectionAction_;

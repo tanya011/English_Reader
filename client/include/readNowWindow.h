@@ -19,8 +19,7 @@ public:
                    const QString &title = nullptr);
     ~ReadNowWindow() override = default;
 
-    // TODO toolbar создается для всех книг один ... Что это вообще такое?
-    // будет переделано
+
     void buttonsInLibraryConnectWithReader() {  // эта функция вызывается в
                                                 // libraryWindow
         this->removeToolBar(this->toolBar_);
@@ -29,7 +28,9 @@ public:
         this->createToolBars();
     }
 
-    void makeConnectWithDict();
+    void makeConnectWithDict(){
+
+    }
 
     QString getAuthorTitle() {
         return authorName_ + " " + title_;
