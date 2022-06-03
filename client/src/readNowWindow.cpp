@@ -10,7 +10,7 @@
 #include <QDesktopWidget>
 
 
-ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : parent_(parent) {
+ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent), parent_(parent) {
     auto *layout = new QHBoxLayout;
 
     //parent->setWindowTitle("Читаю сейчас");
@@ -25,8 +25,29 @@ ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : parent_(parent) {
     createButtonAddPhraseToDict();
     createActions();   // создаем Actions
     createToolBars();  // создаем панель
+    std::cout << "im fine before makeConnect" << std::endl;
     makeConnectWithDict();
+    std::cout << "im fine after makeConnect" << std::endl;
 };
+
+
+void ReadNowWindow::makeConnectWithDict() {
+    assert(parent_ != nullptr);
+    std::cout << "im fine after assert parent not nullptr" << std::endl;
+    std::cerr << parent_->windowIndexes.dictionary << std::endl;
+    auto dictionary = dynamic_cast<DictionaryWindow *>(                        //TODO DOESNT WORK
+            parent_->allWindows.widget(parent_->windowIndexes.dictionary));
+    std::cout << "im fine after make dictionary " << std::endl;
+    assert(dictionary != nullptr);
+    connect(button_, &QPushButton::clicked, dictionary, [=]() {
+        if (translatedTextDisplay_ != nullptr) {
+            assert(dictionary != nullptr);
+            dictionary->executeRequestFromReadNow(
+                    selectedText_.toStdString(), translatedText_.toStdString(),
+                    authorName_.toStdString() + " " + title_.toStdString());
+        }
+    });
+}
 
 void ReadNowWindow::translateText() {
     if (translatedTextDisplay_) {
@@ -44,9 +65,6 @@ void ReadNowWindow::createButtonAddPhraseToDict() {
     button_->setGeometry(screenWidth_ - 850, 660, 600, 50);
     button_->setText("Добавить в словарь");
     button_->show();
-    connect(button_, &QPushButton::clicked, this,
-            [=]() {
-    });
 }
 
 void ReadNowWindow::createWindowWithTranslate() {
@@ -99,19 +117,4 @@ void ReadNowWindow::createToolBars() {
 
 [[nodiscard]] QSize ReadNowWindow::sizeHint() const {
     return {1000, 500};
-}
-
-void ReadNowWindow::makeConnectWithDict() {
-    assert(parent_ != nullptr);
-    auto dictionary = dynamic_cast<DictionaryWindow *>(
-            parent_->allWindows.widget(parent_->windowIndexes.dictionary));
-    assert(dictionary != nullptr);
-    connect(button_, &QPushButton::clicked, dictionary, [=]() {
-        if (translatedTextDisplay_ != nullptr) {
-            assert(dictionary != nullptr);
-            /*dictionary->executeRequestFromReadNow(
-                    selectedText_.toStdString(), translatedText_.toStdString(),
-                    authorName_.toStdString() + " " + title_.toStdString());*/
-        }
-    });
 }

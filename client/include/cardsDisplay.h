@@ -5,7 +5,7 @@
 #include <QDesktopWidget>
 #include <QWidget>
 #include "connectingWindow.h"
-#include "wordset.h"
+#include "../include/wordset.h"
 
 class CardsDisplay : public QWidget {
 private:

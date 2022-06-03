@@ -13,8 +13,7 @@
 #include <vector>
 #include "cardsDisplay.h"
 #include "connectingWindow.h"
-#include "dictionary.h"
-#include "wordset.h"
+#include "../include/wordset.h"
 
 class LearnWindow : public QWidget {
 public:

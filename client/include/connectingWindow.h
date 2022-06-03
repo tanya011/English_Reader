@@ -1,10 +1,10 @@
-#ifndef SECTIONBASE_H
-#define SECTIONBASE_H
+#ifndef CONNECTINGWINDOW_H
+#define CONNECTINGWINDOW_H
 
 #include <QMainWindow>
 #include <QStackedWidget>
 #include "user.h"
-#include "wordset.h"
+#include "../include/wordset.h"
 
 class ConnectingWindow : public QMainWindow {
     Q_OBJECT
@@ -56,4 +56,4 @@ private:
     void addMenu();
 };
 
-#endif  // SECTIONBASE_H
+#endif  // CONNECTINGWINDOW_H

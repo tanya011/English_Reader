@@ -137,7 +137,6 @@ void ConnectingWindow::updateReadNow(const std::string &title,
 }
 
 void ConnectingWindow::updateDictionary() {
-    // TODO: same as in updateLibrary
 }
 
 void ConnectingWindow::updateCards() {
