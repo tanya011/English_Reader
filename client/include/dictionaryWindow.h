@@ -62,6 +62,8 @@ public slots:
     void removeWordIcon(int wordId, int wordSetId);
 
     void removeWordSetsIcons(int wordSetId);
+
+
 };
 
 #endif  // DICTIONARY_WINDOW_H

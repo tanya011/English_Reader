@@ -10,7 +10,7 @@
 #include <QDesktopWidget>
 
 
-ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent) {
+ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : parent_(parent) {
     auto *layout = new QHBoxLayout;
 
     //parent->setWindowTitle("Читаю сейчас");
@@ -25,6 +25,7 @@ ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent) {
     createButtonAddPhraseToDict();
     createActions();   // создаем Actions
     createToolBars();  // создаем панель
+    makeConnectWithDict();
 };
 
 void ReadNowWindow::translateText() {
@@ -98,4 +99,19 @@ void ReadNowWindow::createToolBars() {
 
 [[nodiscard]] QSize ReadNowWindow::sizeHint() const {
     return {1000, 500};
+}
+
+void ReadNowWindow::makeConnectWithDict() {
+    assert(parent_ != nullptr);
+    auto dictionary = dynamic_cast<DictionaryWindow *>(
+            parent_->allWindows.widget(parent_->windowIndexes.dictionary));
+    assert(dictionary != nullptr);
+    connect(button_, &QPushButton::clicked, dictionary, [=]() {
+        if (translatedTextDisplay_ != nullptr) {
+            assert(dictionary != nullptr);
+            /*dictionary->executeRequestFromReadNow(
+                    selectedText_.toStdString(), translatedText_.toStdString(),
+                    authorName_.toStdString() + " " + title_.toStdString());*/
+        }
+    });
 }
