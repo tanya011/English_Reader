@@ -34,19 +34,20 @@ Q_OBJECT
     std::map<int, QAction *>
             wordSetIconForMenu_;  // Helps to add name of wordSet in wordSet menu
 
+
+    QAction* allWords_ = new QAction("Все группы", this);
+
     QMenu *wordSets_ = new QMenu("Выбор группы", wordSetsToolsBar_);
 
     std::vector<QPushButton *> wordBtnsDeleteFromDictionary_;
     std::vector<QPushButton *> wordBtnsDeleteFromWordSet_;
 
-    bool firstOpening_ = true;
-
-    WordRep wordRep_;
-    WordSetRep wordSetRep_;
-    WordSetContentRep wordSetContentRep_;
+    WordRep *wordRep_;
+    WordSetRep *wordSetRep_;
+    WordSetContentRep *wordSetContentRep_;
 
 public:
-    explicit DictionaryWindow(DBManager &m,  ConnectingWindow *parent = nullptr);
+    explicit DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep ,  ConnectingWindow *parent = nullptr);
 
     void showWordSet(int wordSetId);
 
@@ -54,7 +55,6 @@ public:
 
     void dictSyncButtonConnect();
 
-    void downloadDictDataFromServer();
 
     void clearTables();
 

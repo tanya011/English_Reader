@@ -14,6 +14,7 @@ WordSetRep::WordSetRep(DBManager &m)
     if (maxId->next()) {
         freeId = maxId->getInt(1) + 1;
     }
+    makeWordSetAllWords();
 }
 
 int WordSetRep::addWordSet(const std::string &wordSetName) {

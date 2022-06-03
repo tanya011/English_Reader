@@ -1,7 +1,7 @@
 #include "include/dictionaryWindow.h"
 
 void DictionaryWindow::showWordSet(int wordSetId) {
-    int prevSize = wordSetContentRep_.getWordSetSize(curOpenWordSetId_);
+    int prevSize = wordSetContentRep_->getWordSetSize(curOpenWordSetId_);
     for (int i = 0; i < prevSize; i++) {
         QLayoutItem *item;
         while ((item = layout_->takeAt(0)) != nullptr) {
@@ -12,14 +12,14 @@ void DictionaryWindow::showWordSet(int wordSetId) {
         wordBtnsDeleteFromWordSet_.clear();
     }
     curOpenWordSetId_ = wordSetId;
-    int curSize = wordSetContentRep_.getWordSetSize(wordSetId);
+    int curSize = wordSetContentRep_->getWordSetSize(wordSetId);
     wordBtnsDeleteFromDictionary_.resize(curSize);
     wordBtnsDeleteFromWordSet_.resize(curSize);
     int index = 0;
     int height = 0;
-    std::vector<int> wordIds = wordSetContentRep_.getWordSetContent(wordSetId);
+    std::vector<int> wordIds = wordSetContentRep_->getWordSetContent(wordSetId);
     for (int i = 0; i < curSize; i++) {
-        Word curWord = wordRep_.getWordById(wordIds[i]);
+        Word curWord = wordRep_->getWordById(wordIds[i]);
         int id = curWord.getId();
         std::string fullWord = curWord.getOriginal() + " - " +
                                curWord.getTranslation();
@@ -34,13 +34,13 @@ void DictionaryWindow::showWordSet(int wordSetId) {
                 new QPushButton("Удалить из группы");
         QObject::connect(wordBtnsDeleteFromDictionary_[index],
                          &QPushButton::clicked, this, [=]() {
-                    wordSetContentRep_.deleteWordFromAllSets(id);
-                    wordRep_.deleteWordById(id);
+                    wordSetContentRep_->deleteWordFromAllSets(id);
+                    wordRep_->deleteWordById(id);
                     showWordSet(wordSetId);
                 });
         QObject::connect(wordBtnsDeleteFromWordSet_[index],
                          &QPushButton::clicked, this, [=]() {
-                    wordSetContentRep_.deleteWordFromSet(wordSetId,
+                    wordSetContentRep_->deleteWordFromSet(wordSetId,
                                                          id);
                     showWordSet(wordSetId);
                 });
@@ -66,20 +66,26 @@ void DictionaryWindow::deleteWordSetIconFromMenu(int wordSetId) {
     wordSetIconForMenu_.erase(wordSetId);
 }
 
-DictionaryWindow::DictionaryWindow(DBManager &m, ConnectingWindow *parent)
-        : QWidget(parent), wordRep_(m), wordSetRep_(m), wordSetContentRep_(m), parent_(parent) {
+DictionaryWindow::DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep ,  ConnectingWindow *parent)
+        : QWidget(parent), wordRep_(wordRep), wordSetRep_(wordSetRep), wordSetContentRep_(wordSetContentRep), parent_(parent) {
 
     wordSetsToolsBar_->addMenu(wordSets_);
 
+    wordSets_->addAction(allWords_);
+
+    QObject::connect(allWords_, &QAction::triggered, this,
+                     [=]() { showWordSet(1); });
+    wordSetIconForMenu_[1] = allWords_;
+
     //makeIcons();  function if we work without network, it draws wordSet icons;
 
-    QObject::connect(&wordSetRep_, &WordSetRep::wordSetWasCreated, this,
+    QObject::connect(wordSetRep_, &WordSetRep::wordSetWasCreated, this,
                      &DictionaryWindow::addWordSetIconToMenu);
-    QObject::connect(&wordSetRep_, &WordSetRep::wordSetWasDeleted, this,
+    QObject::connect(wordSetRep_, &WordSetRep::wordSetWasDeleted, this,
                      &DictionaryWindow::deleteWordSetIconFromMenu);
 
-    QObject::connect(&wordRep_, &WordRep::wordCreated,
-                     &wordSetContentRep_, &WordSetContentRep::addWordToSetTable);
+    QObject::connect(wordRep_, &WordRep::wordCreated,
+                     wordSetContentRep_, &WordSetContentRep::addWordToSetTable);
 
     wordsPlacement_->setGeometry({0, 10, 1850, 4000});
     wordsPlacement_->setLayout(layout_);
@@ -90,7 +96,7 @@ DictionaryWindow::DictionaryWindow(DBManager &m, ConnectingWindow *parent)
 }
 std::vector<WordSet> DictionaryWindow::getWordSets() {
     std::vector<WordSet> wordSets;
-    for (const auto &g : wordSetRep_.getWordSets()) {
+    for (const auto &g : wordSetRep_->getWordSets()) {
         wordSets.push_back(g);
     }
     return wordSets;
@@ -106,41 +112,22 @@ void DictionaryWindow::dictSyncButtonConnect() {
     });
 }
 
-void DictionaryWindow::downloadDictDataFromServer() {
-    if (!firstOpening_) return;
-    firstOpening_ = false;
-    std::vector<Word> words = parent_->user->getWords();
-    std::vector<WordSet> wordSets = parent_->user->getWordSets();
-    std::vector<std::pair<int,int>> content = parent_->user->getSetContents();
-    std::cout << "i've got " << content.size() << " contents, expected 0";
-    clearTables();
-    for (auto &word: words){
-        wordRep_.addWord(word);
-    }
-    for (auto &wordSet: wordSets){
-        wordSetRep_.addWordSet(wordSet);
-    }
-    for (auto &wordSet_word: content){
-        wordSetContentRep_.addWordToSetTable(wordSet_word.first, wordSet_word.second);
-    }
-}
-
 void DictionaryWindow::clearTables() {
-    wordRep_.clear();
-    wordSetRep_.clear();
-    wordSetContentRep_.clear();
+    wordRep_->clear();
+    wordSetRep_->clear();
+    wordSetContentRep_->clear();
 }
 
 void DictionaryWindow::executeRequestFromReadNow(const std::string& original, const std::string& translation,
                                                  const std::string& wordSetTitle, const std::string& context) {
-    int wordId = wordRep_.addWord(original, translation, context);
-    int wordSetId = wordSetRep_.addWordSet(wordSetTitle);
-    wordSetContentRep_.addWordToSetTable( wordSetId,wordId);
-    wordSetContentRep_.saveHistoryAddWordToSet(wordSetId, wordId);
+    int wordId = wordRep_->addWord(original, translation, context);
+    int wordSetId = wordSetRep_->addWordSet(wordSetTitle);
+    wordSetContentRep_->addWordToSetTable( wordSetId,wordId);
+    wordSetContentRep_->saveHistoryAddWordToSet(wordSetId, wordId);
 }
 
 void DictionaryWindow::makeIcons(){
-    std::vector<WordSet> wordSets = wordSetRep_.getWordSets();
+    std::vector<WordSet> wordSets = wordSetRep_->getWordSets();
     auto * allWordSets = new QAction("Все группы", this);
     wordSets_->addAction(allWordSets);
     QObject::connect(allWordSets, &QAction::triggered, this, [=](){
@@ -159,13 +146,13 @@ void DictionaryWindow::makeIcons(){
 }
 
 void DictionaryWindow::updateDictionaryChanges() {
-    std::deque<HistoryChangeWordRep> wordRepHistory = wordRep_.getHistoryChanges();
-    std::deque<HistoryChangeWordSetRep> wordSetRepHistory = wordSetRep_.getHistoryChanges();
-    std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory = wordSetContentRep_.getHistoryChanges();
+    std::deque<HistoryChangeWordRep> wordRepHistory = wordRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordSetRep> wordSetRepHistory = wordSetRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory = wordSetContentRep_->getHistoryChanges();
 
-    wordRep_.clearHistory();
-    wordSetRep_.clearHistory();
-    wordSetContentRep_.clearHistory();
+    wordRep_->clearHistory();
+    wordSetRep_->clearHistory();
+    wordSetContentRep_->clearHistory();
 
     while (!wordRepHistory.empty()){
         parent_->user->sendWordRepHistoryChange(wordRepHistory.back());

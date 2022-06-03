@@ -6,7 +6,7 @@ namespace userRepLocal{
     void newValue(int value);
 }
 
-User::User(BookRep *bookRep) : bookRep_(bookRep) {
+User::User(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep, BookRep *bookRep) : bookRep_(bookRep), wordRep_(wordRep), wordSetRep_(wordSetRep), wordSetContentRep_(wordSetContentRep) {
 }
 
 void User::init(const std::string &username, const std::string &password) {
@@ -18,6 +18,7 @@ void User::init(const std::string &username, const std::string &password) {
     token_ = res->body;
     isAuthorized_ = true;
 
+    downloadDictDataFromServer();
 
     // личная коллекция книг, получаем последний номер в истории данного пользователя
     int lastCollectionAction = getLastCollectionAction();
@@ -46,6 +47,7 @@ void User::exit() {
     token_ = "";
     isAuthorized_ = false;
     bookRep_->clear();
+    clearTablesDict();
     // TODO: drop tables with words
 }
 
@@ -288,4 +290,28 @@ void User::sendWordSetContentRepHistoryChange(HistoryChangeWordSetContentRep cha
     auto res = client_.Post("/wordSetContentRepChange", params);
     if (res->status != 200)
         throw std::runtime_error("Can't change wordSetContentRep, error code: " + std::to_string(res->status));
+}
+
+void User::downloadDictDataFromServer() {
+    std::vector<Word> words = getWords();
+    std::vector<WordSet> wordSets = getWordSets();
+    std::vector<std::pair<int,int>> content = getSetContents();
+    clearTablesDict();
+    for (auto &word: words){
+        wordRep_->addWord(word);
+    }
+    for (auto &wordSet: wordSets){
+        if (wordSet.getId() != 1) {
+            wordSetRep_->addWordSet(wordSet);
+        }
+    }
+    for (auto &wordSet_word: content){
+        wordSetContentRep_->addWordToSetTable(wordSet_word.first, wordSet_word.second);
+    }
+}
+
+void User::clearTablesDict() {
+    wordRep_->clear();
+    wordSetRep_->clear();
+    wordSetContentRep_->clear();
 }

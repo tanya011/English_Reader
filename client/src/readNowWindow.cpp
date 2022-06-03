@@ -34,6 +34,7 @@ ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent) {
 void ReadNowWindow::makeConnectWithDict() {
     assert(parent != nullptr);
     std::cout << "im fine after assert parent not nullptr" << std::endl;
+    std::cerr << parent->windowIndexes.dictionary << std::endl;
     auto dictionary = dynamic_cast<DictionaryWindow *>(                        //TODO DOESNT WORK
             parent->allWindows.widget(parent->windowIndexes.dictionary));
     std::cout << "im fine after make dictionary " << std::endl;

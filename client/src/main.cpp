@@ -16,9 +16,15 @@ int main(int argc, char *argv[]) {
     std::filesystem::create_directories(folderName);
     std::filesystem::path appFolder=std::filesystem::absolute("./yafr_files");
 
-    DBManager dbManager;
-    BookRep bookRep(dbManager, appFolder);
-    User user(&bookRep);
+    DBManager dbManager1;
+    DBManager dbManager2;
+    DBManager dbManager3;
+    DBManager dbManager4;
+    BookRep bookRep(dbManager1, appFolder);
+    WordRep wordRep(dbManager2);
+    WordSetRep wordSetRep(dbManager3);
+    WordSetContentRep wordSetContentRep(dbManager4);
+    User user(&wordRep, &wordSetRep, &wordSetContentRep, &bookRep);
 
     ConnectingWindow connectingWindow;
     connectingWindow.setUser(&user);
@@ -37,7 +43,7 @@ int main(int argc, char *argv[]) {
         connectingWindow.windowIndexes.library =
             connectingWindow.allWindows.addWidget(libraryWindow);
 
-        auto dictionaryWindow = new DictionaryWindow(dbManager, &connectingWindow);
+        auto dictionaryWindow = new DictionaryWindow(&wordRep, &wordSetRep, &wordSetContentRep, &connectingWindow);
         connectingWindow.windowIndexes.dictionary =
             connectingWindow.allWindows.addWidget(dictionaryWindow);
 

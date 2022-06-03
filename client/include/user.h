@@ -27,6 +27,10 @@ struct action {
 struct User {
 private:
     BookRep *bookRep_;
+    WordRep *wordRep_;
+    WordSetRep *wordSetRep_;
+    WordSetContentRep *wordSetContentRep_;
+
     httplib::Client client_{"localhost:8080"};
     bool isAuthorized_ = false;
     std::string token_;
@@ -36,7 +40,7 @@ private:
 public:
     std::queue<ActCollectionsHistory> Queue;
 
-    User(BookRep *bookRep);
+    User(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep, BookRep *bookRep);
 
     void init(const std::string &username, const std::string &password);
 
@@ -50,11 +54,15 @@ public:
 
     std::vector<std::pair<int,int>> getSetContents();
 
+    void downloadDictDataFromServer();
+
     void sendWordRepHistoryChange(HistoryChangeWordRep change);
 
     void sendWordSetRepHistoryChange(HistoryChangeWordSetRep change);
 
     void sendWordSetContentRepHistoryChange(HistoryChangeWordSetContentRep change);
+
+    void clearTablesDict();
 
     int addBookToLocalCollection(int bookId);
 
