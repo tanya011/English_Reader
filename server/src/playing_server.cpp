@@ -218,6 +218,129 @@ int main() {
                  }
              });
 
+
+    svr.Get("/getWords",
+            [&](const httplib::Request &req, httplib::Response &res){
+                std::cout << "/getWords" << std::endl;
+                if (req.has_header("token")){
+                    auto token = req.get_header_value("token");
+                    int userId = userRep.getUserId(token);
+                    std::vector<Word> wordsTmp(wordRep.getUserWords(userId));
+                    nlohmann::json usersWords;
+                    for (auto &word : wordsTmp){
+                        usersWords.push_back({
+                                                     {"id", word.getId()},
+                                                     {"original", word.getOriginal()},
+                                                     {"translation", word.getTranslation()},
+                                                     {"context", word.getContext()}
+                                             });
+                    }
+                    res.set_content(usersWords.dump(), "text/plain");
+                } else{
+                    throw std::runtime_error("No token given");
+                }
+            });
+
+    svr.Get("/getWordSets",
+            [&](const httplib::Request &req, httplib::Response &res){
+                std::cout << "/getWordSets" << std::endl;
+                if (req.has_header("token")){
+                    auto token = req.get_header_value("token");
+                    int userId = userRep.getUserId(token);
+                    std::vector<WordSet> wordSetsTmp(wordSetRep.getUserWordSets(userId));
+                    nlohmann::json usersWordSets;
+                    for (auto &wordSet : wordSetsTmp){
+                        usersWordSets.push_back({
+                                                        {"id", wordSet.getId()},
+                                                        {"name", wordSet.getTitle()},
+                                                });
+                    }
+                    res.set_content(usersWordSets.dump(), "text/plain");
+                } else{
+                    throw std::runtime_error("No token given");
+                }
+            });
+
+    svr.Get("/getSetsContents",
+            [&](const httplib::Request &req, httplib::Response &res){
+                std::cout << "/getSetsContents" << std::endl;
+                if (req.has_header("token")){
+                    auto token = req.get_header_value("token");
+                    int userId = userRep.getUserId(token);
+                    std::vector<std::pair<int, int>> wordSetContentsTmp(wordSetContentRep.getUserWordSetsContents(userId));
+                    nlohmann::json usersWordSetsContents;
+                    for (auto &wordset_word : wordSetContentsTmp){
+                        usersWordSetsContents.push_back({
+                                                                {"wordSetId", wordset_word.first},
+                                                                {"wordId", wordset_word.second},
+                                                        });
+                    }
+                    std::cout << "i send " << usersWordSetsContents.size() << " contents, expected 0";
+                    res.set_content(usersWordSetsContents.dump(), "text/plain");
+                } else{
+                    throw std::runtime_error("No token given");
+                }
+            });
+
+    svr.Post("/wordRepChange", [&](const httplib::Request &req, httplib::Response &res){
+        std::cout << "/wordRepChange" << std::endl;
+        if (req.has_param("token")){
+            auto token = req.get_param_value("token");
+            int userId = userRep.getUserId(token);
+            auto operation = req.get_param_value("operation");
+            auto id = std::stoi(req.get_param_value("id"));
+            if (operation == "wordAdded"){
+                auto original = req.get_param_value("original");
+                auto translation = req.get_param_value("translation");
+                auto context = req.get_param_value("context");
+                wordRep.addWord(userId, id, original, translation, context);
+            }
+            else{
+                wordRep.deleteWordById(userId, id);
+            }
+        }
+        else{
+            throw std::runtime_error("No token given");
+        }
+    });
+
+    svr.Post("/wordSetRepChange", [&](const httplib::Request &req, httplib::Response &res){
+        std::cout << "/wordSetRepChange" << std::endl;
+        if (req.has_param("token")) {
+            auto token = req.get_param_value("token");
+            int userId = userRep.getUserId(token);
+            auto name = req.get_param_value("name");
+            auto id = std::stoi(req.get_param_value("id"));
+            wordSetRep.addWordSet(userId, id, name);
+        }
+        else{
+            throw std::runtime_error("No token given");
+        }
+    });
+
+    svr.Post("/wordSetContentRepChange", [&](const httplib::Request &req, httplib::Response &res){
+        std::cout << "/wordSetContentChange" << std::endl;
+        if (req.has_param("token")){
+            auto token = req.get_param_value("token");
+            int userId = userRep.getUserId(token);
+            auto wordSetId = std::stoi(req.get_param_value("wordSetId"));
+            auto wordId = std::stoi(req.get_param_value("wordId"));
+            auto operation = req.get_param_value("operation");
+            if (operation == "wordAdded"){
+                wordSetContentRep.addWordToSetTable(userId, wordSetId, wordId);
+            }
+            else if (operation == "wordDeleted"){
+                wordSetContentRep.deleteWordFromSetTable(userId, wordSetId, wordId);
+            }
+            else{
+                wordSetContentRep.deleteWordFromAllSets(userId, wordId);
+            }
+        }
+        else{
+            throw std::runtime_error("No token given");
+        }
+    });
+
     svr.Get("/getWords",
             [&](const httplib::Request &req, httplib::Response &res){
                 std::cout << "/getWords" << std::endl;

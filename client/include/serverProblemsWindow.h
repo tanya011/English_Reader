@@ -1,45 +1,110 @@
 #ifndef YAFR_SERVERPROBLEMSWINDOW_H
 #define YAFR_SERVERPROBLEMSWINDOW_H
 
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QLabel>
-#include <QPushButton>
-#include <QGridLayout>
-#include <QScrollArea>
-#include "include/connectingWindow.h"
-#include "../include/book.h"
+#include <QWidget>
+#include <QMessageBox>
+#include "include/serverProblemsException.h"
 
 
-class LibraryWindow : public QWidget {
+class ServerProblemsWindow : public QWidget {
 private:
-    ConnectingWindow *parent_;
-    QWidget *box;
-    QGridLayout *layout = new QGridLayout();
+    QMessageBox messageBox_;
+    int res;
 
 public:
-    LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
-        box = new QWidget;
-        layout = new QGridLayout;
-        box->setLayout(layout);
-
-        QPushButton *button = new QPushButton;
-        button->setParent(this);
-        button->setGeometry(30, 1370, 300, 70);
-        button->setText("Test Update");
-        button->show();
-
-        // Styles
-        auto screen_width =
-                QApplication::desktop()->screenGeometry().width() - 1000;
-        auto screen_height =
-                QApplication::desktop()->screenGeometry().height() - 200;
-        this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
-        box->setFixedWidth(screen_width - 20);
-        // Styles
-
+    ServerProblemsWindow() {
+        messageBox_.setText("There was a problem connecting to the server!");
+        messageBox_.setDetailedText("Из-за проблем с подключением к серверу невозможно войти в аккаунт."
+                                    "Вы можете переподключиться или выйти из приложения. ");
+        messageBox_.setWindowTitle("Failed");
+        messageBox_.setFixedSize(1200,400);
+        messageBox_.setIcon(QMessageBox::Warning);
+        messageBox_.addButton(QMessageBox::Abort);
+        messageBox_.addButton(tr("Reconnect"), QMessageBox::NoRole);
+        res = messageBox_.exec();
+        if (res == QMessageBox::Abort) {
+            throw ServerProblemsExceptionAbort();
+        }
+        else {
+            throw ServerProblemsExceptionReconnect();
+        }
     }
 
+    void show() {
+        messageBox_.show();
+    }
+
+    int result(){
+        return res;
+    }
+};
+
+class ServerProblemsWindowUpdateLibrary : public QWidget {
+private:
+    QMessageBox messageBox_;
+    int res;
+
+public:
+    ServerProblemsWindowUpdateLibrary() {
+        messageBox_.setText("There was a problem connecting to the server!");
+        messageBox_.setDetailedText("Из-за проблем с подключением к серверу невозможно подгрузить книги из библиотеки."
+                                    "Вы можете переподключиться или не подгружать книги. ");
+        messageBox_.setWindowTitle("Failed");
+        messageBox_.setFixedSize(1200,400);
+        messageBox_.setIcon(QMessageBox::Warning);
+        //messageBox_.addButton(tr("Show details"), QMessageBox::detailedText);
+        messageBox_.addButton(QMessageBox::Abort);
+        messageBox_.addButton(tr("Reconnect"), QMessageBox::NoRole);
+        res = messageBox_.exec();
+        if (res == QMessageBox::Abort) {
+            throw ServerProblemsExceptionNotUploadLibrary();
+        }
+        else {
+            throw ServerProblemsExceptionReconnect();
+        }
+    }
+
+    void show() {
+        messageBox_.show();
+    }
+
+    int result(){
+        return res;
+    }
+};
+
+class ServerProblemsWindowAddInCollection : public QWidget {
+private:
+    QMessageBox messageBox_;
+    int res;
+
+public:
+    ServerProblemsWindowAddInCollection() {
+        messageBox_.setText("There was a problem connecting to the server!");
+        messageBox_.setDetailedText("Из-за проблем с подключением к серверу невозможно добавить книгу в коллекцию."
+                                    "Вы можете переподключиться или не добавлять книгу. ");
+        messageBox_.setWindowTitle("Failed");
+        messageBox_.setFixedSize(1200,400);
+        messageBox_.setIcon(QMessageBox::Warning);
+        //messageBox_.addButton(tr("Show details"), QMessageBox::detailedText);
+        messageBox_.addButton(QMessageBox::Abort);
+        messageBox_.addButton(tr("Reconnect"), QMessageBox::NoRole);
+        res = messageBox_.exec();
+        if (res == QMessageBox::Abort) {
+            throw ServerProblemsExceptionNotAddInCollection();
+        }
+        else {
+            throw ServerProblemsExceptionReconnect();
+        }
+    }
+
+    void show() {
+        messageBox_.show();
+    }
+
+    int result(){
+        return res;
+    }
 };
 
 #endif //YAFR_SERVERPROBLEMSWINDOW_H

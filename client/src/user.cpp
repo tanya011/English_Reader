@@ -1,6 +1,7 @@
 #include "include/user.h"
 #include <nlohmann/json.hpp>
 #include "include/actCollectionsHistory.h"
+#include "include/serverProblemsWindow.h"
 
 namespace userRepLocal{
     void newValue(int value);
@@ -10,32 +11,41 @@ User::User(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetC
 }
 
 void User::init(const std::string &username, const std::string &password) {
-    httplib::Params params{{"name",     username},
-                           {"password", password}};
-    auto res = client_.Post("/init-user", params);
-    if (res->status != 200)  // TODO: Check if smth went wrong
-        return;
-    token_ = res->body;
-    isAuthorized_ = true;
 
-    downloadDictDataFromServer();
+        httplib::Params params{{"name",     username},
+                               {"password", password}};
+        auto res = client_.Post("/init-user", params);
 
-    // личная коллекция книг, получаем последний номер в истории данного пользователя
-    int lastCollectionAction = getLastCollectionAction();
-    std::cout << "lastcoll = " << lastCollectionAction << std::endl;
+        if(!res){
+            ServerProblemsWindow serverProblemsWindow;
+            serverProblemsWindow.show();
+        }
 
-    // создаем файл "numColl", в котором будет храниться этот номер
-    std::string filename = "numCollection.txt";
-    std::string folderName="yafr_files/files";
-    std::filesystem::create_directories(folderName);
-    std::filesystem::path appFolder=std::filesystem::absolute("./yafr_files");
-    auto folder = appFolder / "files" / filename;
-    std::ofstream file(folder, std::ios::out);
-    if (!file.good())
-        throw std::runtime_error("Problems with app directory");
-    file << lastCollectionAction;
+        if (res->status != 200) {  // TODO: Check if smth went wrong
+            throw std::runtime_error("Can not init");
+        }
+        token_ = res->body;
+        isAuthorized_ = true;
 
-    getCollectionBooks();
+        downloadDictDataFromServer();
+
+        // личная коллекция книг, получаем последний номер в истории данного пользователя
+        int lastCollectionAction = getLastCollectionAction();
+        std::cout << "lastcoll = " << lastCollectionAction << std::endl;
+
+        // создаем файл "numColl", в котором будет храниться этот номер
+        std::string filename = "numCollection.txt";
+        std::string folderName = "yafr_files/files";
+        std::filesystem::create_directories(folderName);
+        std::filesystem::path appFolder = std::filesystem::absolute("./yafr_files");
+        auto folder = appFolder / "files" / filename;
+        std::ofstream file(folder, std::ios::out);
+        if (!file.good())
+            throw std::runtime_error("Problems with app directory");
+        file << lastCollectionAction;
+
+        getCollectionBooks();
+
 }
 
 bool User::isAuthorized() const {
@@ -52,22 +62,26 @@ void User::exit() {
 }
 
 std::vector<Book> User::getCollectionBooks() {
-    std::cout << "Getting Collection Books..." << std::endl;
+        std::cout << "Getting Collection Books..." << std::endl;
 
-    httplib::Params param;
-    param.emplace("token", token_);
+        httplib::Params param;
+        param.emplace("token", token_);
 
-    auto res = client_.Post("/collection", param);
-    if (res->status != 200)
-        throw std::runtime_error("Can't load collection, error code: " +
-                                 std::to_string(res->status));
-    nlohmann::json params = nlohmann::json::parse(res->body);
-    std::vector<Book> books;
-    for (auto &book: params) {
-        bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
-    }
-    std::cout << "Got " << params.size() << " books from collection" << std::endl;
-    return books;
+        auto res = client_.Post("/collection", param);
+        if (res->status != 200) {
+            ServerProblemsWindow serverProblemsWindow;
+            serverProblemsWindow.show();
+
+            throw std::runtime_error("Can't load collection, error code: " + std::to_string(res->status));
+        }
+        nlohmann::json params = nlohmann::json::parse(res->body);
+        std::vector<Book> books;
+        for (auto &book: params) {
+            bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
+        }
+        std::cout << "Got " << params.size() << " books from collection" << std::endl;
+        return books;
+
 }
 
 std::vector<Book> User::getLibraryBooks() {
@@ -75,9 +89,16 @@ std::vector<Book> User::getLibraryBooks() {
 
     auto res = client_.Post("/library");
 
-    if (res->status != 200)
+    if(!res){
+        ServerProblemsWindowUpdateLibrary updateLibraryProblem;
+        updateLibraryProblem.show();
+    }
+
+    if (res->status != 200){
         throw std::runtime_error("Can't load library, error code: " +
                                  std::to_string(res->status));
+    }
+
 
     nlohmann::json params = nlohmann::json::parse(res->body);
     std::vector<Book> books;
@@ -104,6 +125,11 @@ int User::addBookToCollection(int bookId) {
     params.emplace("bookId", std::to_string(bookId));
 
     auto res = client_.Post("/add-book", params);
+
+    if(!res){
+        ServerProblemsWindowAddInCollection addInCollection;
+        addInCollection.show();
+    }
 
     if (res->status != 200)
         throw std::runtime_error("Can't add book, error code: " +

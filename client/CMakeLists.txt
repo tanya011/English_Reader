@@ -43,9 +43,6 @@ set(PROJECT_SOURCES
         src/wordSetContentRep.cpp
         src/userRepLocal.cpp
 
-
-
-
         include/bookRep.h
         include/dbManager.h
         include/readNowWindow.h
@@ -59,9 +56,10 @@ set(PROJECT_SOURCES
         include/wordRep.h
         include/wordSetRep.h
         include/wordSetContentRep.h
-
-
-        include/actCollectionsHistory.h src/userRepLocal.cpp)
+        include/actCollectionsHistory.h
+        include/serverProblemsWindow.h
+        include/serverProblemsException.h
+        )
 
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -3,9 +3,27 @@
 
 #include <exception>
 
-struct ServerProblemsException : public std::exception {
-    const char * what () const throw () {
-        return "C++ Exception";
+struct ServerProblemsExceptionAbort : public std::exception {
+    const char *what() const noexcept override {
+        return "abort";
+    }
+};
+
+struct ServerProblemsExceptionReconnect : public std::exception {
+    const char *what() const noexcept override {
+        return "reconnect";
+    }
+};
+
+struct ServerProblemsExceptionNotUploadLibrary : public std::exception {
+    const char *what() const noexcept override {
+        return "not upload library";
+    }
+};
+
+struct ServerProblemsExceptionNotAddInCollection : public std::exception {
+    const char *what() const noexcept override {
+        return "not add in collection";
     }
 };
 

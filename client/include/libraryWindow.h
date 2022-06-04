@@ -28,7 +28,7 @@ private:
 public:
     LibraryWindow(ConnectingWindow *parent);
 
-private slots:
+public:
     void updateWindow();
 
 };
