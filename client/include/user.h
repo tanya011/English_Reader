@@ -1,7 +1,7 @@
 #ifndef YAFR_USER_H
 #define YAFR_USER_H
 
-#define CPPHTTPLIB_OPENSSL_SUPPORT
+//#define CPPHTTPLIB_OPENSSL_SUPPORT
 
 #include <queue>
 #include "../include/actCollectionsHistory.h"
@@ -34,7 +34,7 @@ private:
     WordSetContentRep *wordSetContentRep_;
 
 
-    httplib::SSLClient client_;
+    httplib::Client client_;
 
 
     bool isAuthorized_ = false;
