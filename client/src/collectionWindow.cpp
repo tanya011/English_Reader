@@ -6,17 +6,19 @@
 #include <iostream>
 #include "include/bookRep.h"
 #include "include/readNowWindow.h"
+#include "include/serverProblemsException.h"
+#include "include/serverProblemsWindow.h"
 
 CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
-    : QWidget(parent), bookRep_(bookRep), parent_(parent) {
+        : QWidget(parent), bookRep_(bookRep), parent_(parent) {
     updateWindow(false);
     QPushButton *button = new QPushButton;
     button->setParent(this);
     button->setGeometry(30, 1370, 70, 70);
     // TODO can`t add not absolute
     button->setIcon(
-        QIcon("/home/tatyana/Programming/Проект Весна "
-              "2022/English_Reader/client/src/files/sync.png"));
+            QIcon("/home/tatyana/Programming/Проект Весна "
+                  "2022/English_Reader/client/src/files/sync.png"));
     button->show();
     QObject::connect(button, &QPushButton::clicked, this,
                      [=]() { synchronizationCollection(); });
@@ -48,8 +50,8 @@ void CollectionWindow::updateWindow(bool firstUpdate) {
 
     for (int i = 0; i < books_.size(); i++) {
         titleLabels_[i] = new QLabel(QString("Name: %1,   Author: %2")
-                                         .arg(books_[i].getName().c_str(),
-                                              books_[i].getAuthor().c_str()));
+                                             .arg(books_[i].getName().c_str(),
+                                                  books_[i].getAuthor().c_str()));
         layout->addWidget(titleLabels_[i], i, 0);
 
         readBtns_[i] = new QPushButton(tr("Read"));
@@ -79,9 +81,9 @@ void CollectionWindow::updateWindow(bool firstUpdate) {
 
     // Styles
     auto screen_width =
-        QApplication::desktop()->screenGeometry().width() - 1000;
+            QApplication::desktop()->screenGeometry().width() - 1000;
     auto screen_height =
-        QApplication::desktop()->screenGeometry().height() - 200;
+            QApplication::desktop()->screenGeometry().height() - 200;
     this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
     box->setFixedWidth(screen_width - 20);
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
@@ -97,18 +99,28 @@ void CollectionWindow::connectWithReader(int bookId) {
 }
 
 void CollectionWindow::deleteBook(int bookId) {
-    // 1. Удалить файлик из папки
-    try {
-        std::remove(bookRep_->getBookById(bookId).getFileName().c_str());
-    } catch (...) {
-        std::cout << "No such file";
-    }
-    // 2. Удалить из локальной базы данных
-    bookRep_->deleteBookById(bookId);
-    // 3. Удалить с сервера
-    parent_->user->deleteCollectionBook(bookId);
-    // 4. обновляем окно
-    parent_->updateCollection();
+    while (true)
+        try {
+            // 3. Удалить с сервера
+            parent_->user->deleteCollectionBook(bookId);
+
+            // 1. Удалить файлик из папки
+            try {
+                std::remove(bookRep_->getBookById(bookId).getFileName().c_str());
+            } catch (...) {
+                std::cout << "No such file";
+            }
+            // 2. Удалить из локальной базы данных
+            bookRep_->deleteBookById(bookId);
+
+            // 4. обновляем окно
+            parent_->updateCollection();
+            break;
+        } catch (ServerProblemsExceptionReconnect &) {
+            continue;
+        } catch (ServerProblemsExceptionNotDeleteInCollection &){
+            break;
+        }
 }
 
 void CollectionWindow::synchronizationCollection() {

@@ -1,4 +1,5 @@
 #include "include/authorizationWindow.h"
+#include "include/serverProblemsException.h"
 
 AuthorizationWindow::AuthorizationWindow(ConnectingWindow *parent)
     : QWidget(parent),
@@ -25,7 +26,21 @@ void AuthorizationWindow::updateWindow() {
         QObject::connect(authBtn_, &QPushButton::clicked, this, [=]() {
             auto username = nameField_->text().toStdString();
             auto password = passwordField_->text().toStdString();
-            parent_->user->init(username, password);
+            while (true) {
+                try {
+                    std::cout << "==========================HERE" << std::endl;
+                    parent_->user->init(username, password);
+                    std::cout << "===========================AND HERE" << std::endl;
+                    break;
+                } catch (ServerProblemsExceptionAbort &e) {
+                    exit(0);
+                } catch (ServerProblemsExceptionReconnect &){
+                    continue;
+                } catch (std::exception &e){
+                    std::cout << e.what() << std::endl;
+                    break;
+                }
+            }
             parent_->updateCollection();
             this->updateWindow();
         });

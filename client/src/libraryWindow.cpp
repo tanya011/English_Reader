@@ -5,13 +5,16 @@
 #include <QString>
 #include <exception>
 #include "include/readNowWindow.h"
+#include "include/serverProblemsWindow.h"
+#include "include/serverProblemsException.h"
 
 LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
     box = new QWidget;
     layout = new QGridLayout;
     box->setLayout(layout);
 
-    updateWindow();
+    if (parent_->user->isAuthorized())
+        updateWindow();
 
     QPushButton *button = new QPushButton;
     button->setParent(this);
@@ -36,51 +39,71 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
 void LibraryWindow::updateWindow() {
     std::vector<Book> old_books = books_;
 
-    try {
-        books_ = parent_->user->getLibraryBooks();
-
-        for (int i = 0; i < old_books.size(); i++) {
-            QLayoutItem *item;
-            while ((item = layout->takeAt(0)) != nullptr) {
-                delete item->widget();
-                delete item->layout();
-                delete item;
-            }
+    while (true) {
+        try {
+            books_ = parent_->user->getLibraryBooks();
+            break;
+        } catch (ServerProblemsExceptionReconnect &) {
+            continue;
+        } catch (ServerProblemsExceptionNotUploadLibrary &) {
+            books_ = old_books;
+            break;
         }
-        titleLabels_.clear();
-        addBtns_.clear();
-
-        titleLabels_ = std::vector<QLabel *>(books_.size());
-        addBtns_ = std::vector<QPushButton *>(books_.size());
-
-        for (int i = 0; i < books_.size(); i++) {
-            titleLabels_[i] = new QLabel(
-                    QString("Name: %1,   Author: %2")
-                            .arg(books_[i].getName().c_str(), books_[i].getAuthor().c_str()));
-            layout->addWidget(titleLabels_[i], i, 0);
-
-            addBtns_[i] = new QPushButton(tr("Add"));
-            layout->addWidget(addBtns_[i], i, 1);
-
-            addBtns_[i]->setFixedWidth(100);
-            addBtns_[i]->setFixedHeight(50);
-        }
-
-        scrollArea->setWidget(box);
-
-        for (int i = 0; i < books_.size(); i++) {
-            QObject::connect(addBtns_[i], &QPushButton::clicked, this,
-                             [=]() { connectWithCollection(books_[i].getId()); });
-        }
-    } catch (std::exception &e) {
-        std::cout << e.what() << '\n';
     }
+
+
+    for (int i = 0; i < old_books.size(); i++) {
+        QLayoutItem *item;
+        while ((item = layout->takeAt(0)) != nullptr) {
+            delete item->widget();
+            delete item->layout();
+            delete item;
+        }
+    }
+    titleLabels_.clear();
+    addBtns_.clear();
+
+    titleLabels_ = std::vector<QLabel *>(books_.size());
+    addBtns_ = std::vector<QPushButton *>(books_.size());
+
+    for (int i = 0; i < books_.size(); i++) {
+        titleLabels_[i] = new QLabel(
+                QString("Name: %1,   Author: %2")
+                        .arg(books_[i].getName().c_str(), books_[i].getAuthor().c_str()));
+        layout->addWidget(titleLabels_[i], i, 0);
+
+        addBtns_[i] = new QPushButton(tr("Add"));
+        layout->addWidget(addBtns_[i], i, 1);
+
+        addBtns_[i]->setFixedWidth(100);
+        addBtns_[i]->setFixedHeight(50);
+    }
+
+    scrollArea->setWidget(box);
+
+    for (int i = 0; i < books_.size(); i++) {
+        QObject::connect(addBtns_[i], &QPushButton::clicked, this,
+                         [=]() { connectWithCollection(books_[i].getId()); });
+    }
+    /*} catch (std::exception &e) {
+        std::cout << e.what() << '\n';
+    }*/
 }
 
 
 void LibraryWindow::connectWithCollection(int bookId) {
-    if (parent_->user->addBookToCollection(bookId)) {
-        parent_->updateCollection();
-        //parent_->user->sync_collect();
+    while (true) {
+        try {
+            if (parent_->user->addBookToCollection(bookId)) {
+                parent_->updateCollection();
+                //parent_->user->sync_collect();
+            }
+            break;
+        } catch (ServerProblemsExceptionReconnect &){
+            continue;
+        } catch (ServerProblemsExceptionNotAddInCollection &){
+            break;
+        }
+
     }
 }

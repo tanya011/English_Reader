@@ -1,10 +1,10 @@
-#ifndef SECTIONBASE_H
-#define SECTIONBASE_H
+#ifndef CONNECTINGWINDOW_H
+#define CONNECTINGWINDOW_H
 
 #include <QMainWindow>
 #include <QStackedWidget>
 #include "user.h"
-#include "wordset.h"
+#include "../include/wordset.h"
 
 class ConnectingWindow : public QMainWindow {
     Q_OBJECT
@@ -15,7 +15,7 @@ public:
     QStackedWidget allWindows;
     struct WindowIndexes {
         int library = -1, readNow = -1, dictionary = -1, auth = -1, learn = -1,
-            cards = -1, collection = -1;
+            cards = -1, collection = -1, serverProblems = -1;
     } windowIndexes;
 
     explicit ConnectingWindow(QWidget *parent = nullptr);
@@ -28,6 +28,7 @@ public:
     void showCards();
     void showAuth();
     void showLibrary();
+    void showServerProblems();
 
     void authAddExit(){
 
@@ -40,7 +41,7 @@ public:
     void updateDictionary();
     void updateCards();
     void updateCollection();
-
+    void makeConnectWithDict();
 
 private:
     QAction *collectionAction_;
@@ -55,4 +56,4 @@ private:
     void addMenu();
 };
 
-#endif  // SECTIONBASE_H
+#endif  // CONNECTINGWINDOW_H

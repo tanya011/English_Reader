@@ -26,6 +26,9 @@ set(PROJECT_SOURCES
         src/userRep.cpp
         src/bookRep.cpp
         src/collectionsRep.cpp
+        src/wordRep.cpp
+        src/wordSetRep.cpp
+        src/wordSetContentRep.cpp
         include/collectionsHistoryRep.h
         include/actCollectionsHistory.h)
 

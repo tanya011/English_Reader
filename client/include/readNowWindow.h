@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QToolBar>
 #include "connectingWindow.h"
-#include "dictionary.h"
 #include "dictionaryWindow.h"
 
 namespace translate {
@@ -19,8 +18,7 @@ public:
                    const QString &title = nullptr);
     ~ReadNowWindow() override = default;
 
-    // TODO toolbar создается для всех книг один ... Что это вообще такое?
-    // будет переделано
+
     void buttonsInLibraryConnectWithReader() {  // эта функция вызывается в
                                                 // libraryWindow
         this->removeToolBar(this->toolBar_);
@@ -48,7 +46,7 @@ private slots:
     void translateText();
 
 private:
-    ConnectingWindow* parent;
+    ConnectingWindow* parent_;
 
     [[nodiscard]] QSize sizeHint() const override;
 

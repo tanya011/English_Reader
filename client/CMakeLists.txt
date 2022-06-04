@@ -27,11 +27,8 @@ include_directories(${CURL_INCLUDE_DIR})
 
 set(PROJECT_SOURCES
         src/main.cpp
-        src/word.cpp
-        src/wordset.cpp
         src/cardsDisplay.cpp
         src/connectingWindow.cpp
-        src/dictionary.cpp
         src/readNowWindow.cpp
         src/dictionaryWindow.cpp
         src/bookRep.cpp
@@ -41,26 +38,28 @@ set(PROJECT_SOURCES
         src/user.cpp
         src/authorizationWindow.cpp
         src/libraryWindow.cpp
-
-
-
+        src/wordRep.cpp
+        src/wordSetRep.cpp
+        src/wordSetContentRep.cpp
+        src/userRepLocal.cpp
 
         include/bookRep.h
         include/dbManager.h
         include/readNowWindow.h
         include/collectionWindow.h
-        include/dictionary.h
         include/dictionaryWindow.h
         include/connectingWindow.h
-        include/word.h
-        include/wordset.h
         include/learnWindow.h
         include/authorizationWindow.h
         include/user.h
         include/libraryWindow.h
-
-
-        include/actCollectionsHistory.h src/userRepLocal.cpp)
+        include/wordRep.h
+        include/wordSetRep.h
+        include/wordSetContentRep.h
+        include/actCollectionsHistory.h
+        include/serverProblemsWindow.h
+        include/serverProblemsException.h
+        )
 
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)

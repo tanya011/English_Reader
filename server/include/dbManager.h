@@ -19,12 +19,14 @@ private:
     const std::string dbName_;
 
 public:
+
     DBManager(std::string dbName, std::string dbAddress, std::string dBUser, std::string dbPassword)
         : dbName_(dbName), driver_(get_driver_instance()),
           con_(driver_->connect(dbAddress, dBUser, dbPassword)) {
         std::unique_ptr<sql::Statement> stmt(con_->createStatement());
         stmt->execute("CREATE DATABASE IF NOT EXISTS " + dbName_);
         con_->setSchema(dbName_);
+
     }
 
     sql::Connection &getConnection() {

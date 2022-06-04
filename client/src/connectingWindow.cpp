@@ -4,6 +4,7 @@
 #include "include/dictionaryWindow.h"
 #include "include/learnWindow.h"
 #include "include/readNowWindow.h"
+#include "include/libraryWindow.h"
 
 ConnectingWindow::ConnectingWindow(QWidget *parent)
     : allWindows(new QStackedWidget), QMainWindow(parent) {
@@ -55,6 +56,7 @@ void ConnectingWindow::addMenu() {
         if (!user->isAuthorized())
             return;
         this->setWindowTitle("Библиотека");
+        updateLibrary();
         showLibrary();
     });
 
@@ -113,9 +115,14 @@ std::vector<WordSet> ConnectingWindow::getWordSets() {
 }
 
 void ConnectingWindow::updateLibrary() {
-    // TODO: checking for new books in database, now book are loaded only on
-    // creation
+    dynamic_cast<LibraryWindow *>(
+            allWindows.widget(windowIndexes.library))->updateWindow();
 }
+
+void ConnectingWindow::showServerProblems() {
+    allWindows.setCurrentIndex(windowIndexes.serverProblems);
+}
+
 
 void ConnectingWindow::updateReadNow(const std::string &title,
                                      const std::string &author,
@@ -137,7 +144,6 @@ void ConnectingWindow::updateReadNow(const std::string &title,
 }
 
 void ConnectingWindow::updateDictionary() {
-    // TODO: same as in updateLibrary
 }
 
 void ConnectingWindow::updateCards() {
