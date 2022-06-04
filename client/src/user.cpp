@@ -1,7 +1,6 @@
 
 #include "include/user.h"
 #include <nlohmann/json.hpp>
-#include "../include/config.h"
 #include "include/actCollectionsHistory.h"
 #include "include/serverProblemsWindow.h"
 
@@ -19,7 +18,8 @@ User::User(WordRep *wordRep,
       wordRep_(wordRep),
       wordSetRep_(wordSetRep),
       wordSetContentRep_(wordSetContentRep),
-      client_(config.get("SERVER_ADDRESS")) {
+      client_(config.get("SERVER_ADDRESS"), std::stoi(config.get("SERVER_PORT"))) {
+    client_.enable_server_certificate_verification(false);
 }
 
 void User::init(const std::string &username, const std::string &password) {
@@ -409,9 +409,7 @@ void User::updateDictionaryChanges() {
     std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory =
         wordSetContentRep_->getHistoryChanges();
 
-
-    while (!wordRepHistory.empty()){
-
+    while (!wordRepHistory.empty()) {
         sendWordRepHistoryChange(wordRepHistory.back());
         wordRepHistory.pop_back();
     }
