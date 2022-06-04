@@ -101,9 +101,34 @@ public:
     void show() {
         messageBox_.show();
     }
+};
 
-    int result(){
-        return res;
+class ServerProblemsWindowDeleteInCollection : public QWidget {
+private:
+    QMessageBox messageBox_;
+    int res;
+public:
+    ServerProblemsWindowDeleteInCollection() {
+        messageBox_.setText("There was a problem connecting to the server!");
+        messageBox_.setDetailedText("Из-за проблем с подключением к серверу невозможно удалить книгу в коллекции."
+                                    "Вы можете переподключиться или не удалять книгу. ");
+        messageBox_.setWindowTitle("Failed");
+        messageBox_.setFixedSize(1200,400);
+        messageBox_.setIcon(QMessageBox::Warning);
+        //messageBox_.addButton(tr("Show details"), QMessageBox::detailedText);
+        messageBox_.addButton(QMessageBox::Abort);
+        messageBox_.addButton(tr("Reconnect"), QMessageBox::NoRole);
+        res = messageBox_.exec();
+        if (res == QMessageBox::Abort) {
+            throw ServerProblemsExceptionNotDeleteInCollection();
+        }
+        else {
+            throw ServerProblemsExceptionReconnect();
+        }
+    }
+
+    void show() {
+        messageBox_.show();
     }
 };
 

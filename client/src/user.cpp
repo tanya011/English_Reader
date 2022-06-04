@@ -153,6 +153,11 @@ void User::deleteCollectionBook(int bookId) {
 
     auto res = client_.Post("/delete-book", params);
 
+    if(!res){
+        ServerProblemsWindowDeleteInCollection deleteInCollection;
+        deleteInCollection.show();
+    }
+
     if (res->status != 200) {
         throw std::runtime_error("Can't add book, error code: " +
                                  std::to_string(res->status));
@@ -288,6 +293,11 @@ void User::sendWordRepHistoryChange(HistoryChangeWordRep change) {
         };
     }
     auto res = client_.Post("/wordRepChange", params);
+
+    if(!res){
+
+    }
+
     if (res->status != 200)
         throw std::runtime_error("Can't change wordRep, error code: " +
                                  std::to_string(res->status));

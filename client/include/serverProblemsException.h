@@ -27,4 +27,10 @@ struct ServerProblemsExceptionNotAddInCollection : public std::exception {
     }
 };
 
+struct ServerProblemsExceptionNotDeleteInCollection : public std::exception {
+    const char *what() const noexcept override {
+        return "not delete in collection";
+    }
+};
+
 #endif //YAFR_SERVERPROBLEMSEXCEPTION_H
