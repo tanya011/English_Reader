@@ -132,4 +132,33 @@ public:
     }
 };
 
+class ServerProblemsWindowSaveDict : public QWidget {
+private:
+    QMessageBox messageBox_;
+    int res;
+public:
+    ServerProblemsWindowSaveDict() {
+        messageBox_.setText("There was a problem connecting to the server!");
+        messageBox_.setDetailedText("Из-за проблем с подключением к серверу невозможно сохранить слова на сервер."
+                                    "Вы можете переподключиться или сделать это позже. ");
+        messageBox_.setWindowTitle("Failed");
+        messageBox_.setFixedSize(1200,400);
+        messageBox_.setIcon(QMessageBox::Warning);
+        //messageBox_.addButton(tr("Show details"), QMessageBox::detailedText);
+        messageBox_.addButton(QMessageBox::Abort);
+        messageBox_.addButton(tr("Reconnect"), QMessageBox::NoRole);
+        res = messageBox_.exec();
+        if (res == QMessageBox::Abort) {
+            throw ServerProblemsExceptionNotSaveDict();
+        }
+        else {
+            throw ServerProblemsExceptionReconnect();
+        }
+    }
+
+    void show() {
+        messageBox_.show();
+    }
+};
+
 #endif //YAFR_SERVERPROBLEMSWINDOW_H

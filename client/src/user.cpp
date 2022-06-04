@@ -295,7 +295,8 @@ void User::sendWordRepHistoryChange(HistoryChangeWordRep change) {
     auto res = client_.Post("/wordRepChange", params);
 
     if(!res){
-
+        ServerProblemsWindowSaveDict saveDict;
+        saveDict.show();
     }
 
     if (res->status != 200)

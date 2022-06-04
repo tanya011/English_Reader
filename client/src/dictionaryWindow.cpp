@@ -1,4 +1,5 @@
 #include "include/dictionaryWindow.h"
+#include "include/serverProblemsException.h"
 
 void DictionaryWindow::showWordSet(int wordSetId) {
     int prevSize = wordSetContentRep_->getWordSetSize(curOpenWordSetId_);
@@ -41,7 +42,7 @@ void DictionaryWindow::showWordSet(int wordSetId) {
         QObject::connect(wordBtnsDeleteFromWordSet_[index],
                          &QPushButton::clicked, this, [=]() {
                     wordSetContentRep_->deleteWordFromSet(wordSetId,
-                                                         id);
+                                                          id);
                     showWordSet(wordSetId);
                 });
         layout_->addWidget(wordBtnsDeleteFromDictionary_[index], index, 1);
@@ -66,8 +67,10 @@ void DictionaryWindow::deleteWordSetIconFromMenu(int wordSetId) {
     wordSetIconForMenu_.erase(wordSetId);
 }
 
-DictionaryWindow::DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep ,  ConnectingWindow *parent)
-        : QWidget(parent), wordRep_(wordRep), wordSetRep_(wordSetRep), wordSetContentRep_(wordSetContentRep), parent_(parent) {
+DictionaryWindow::DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep,
+                                   ConnectingWindow *parent)
+        : QWidget(parent), wordRep_(wordRep), wordSetRep_(wordSetRep), wordSetContentRep_(wordSetContentRep),
+          parent_(parent) {
 
     wordSetsToolsBar_->addMenu(wordSets_);
 
@@ -94,9 +97,10 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, Wor
 
     dictSyncButtonConnect();
 }
+
 std::vector<WordSet> DictionaryWindow::getWordSets() {
     std::vector<WordSet> wordSets;
-    for (const auto &g : wordSetRep_->getWordSets()) {
+    for (const auto &g: wordSetRep_->getWordSets()) {
         wordSets.push_back(g);
     }
     return wordSets;
@@ -107,7 +111,8 @@ void DictionaryWindow::dictSyncButtonConnect() {
     serverSync_->setGeometry(750, 850, 300, 100);
     serverSync_->setText("Синхронизация");
     serverSync_->show();
-    QObject::connect(serverSync_, &QPushButton::clicked, this, [=](){
+    QObject::connect(serverSync_, &QPushButton::clicked, this, [=]() {
+        std::cout << "Clicked" << std::endl;
         updateDictionaryChanges();
     });
 }
@@ -118,52 +123,62 @@ void DictionaryWindow::clearTables() {
     wordSetContentRep_->clear();
 }
 
-void DictionaryWindow::executeRequestFromReadNow(const std::string& original, const std::string& translation,
-                                                 const std::string& wordSetTitle, const std::string& context) {
+void DictionaryWindow::executeRequestFromReadNow(const std::string &original, const std::string &translation,
+                                                 const std::string &wordSetTitle, const std::string &context) {
     int wordId = wordRep_->addWord(original, translation, context);
     int wordSetId = wordSetRep_->addWordSet(wordSetTitle);
-    wordSetContentRep_->addWordToSetTable( wordSetId,wordId);
+    wordSetContentRep_->addWordToSetTable(wordSetId, wordId);
     wordSetContentRep_->saveHistoryAddWordToSet(wordSetId, wordId);
 }
 
-void DictionaryWindow::makeIcons(){
+void DictionaryWindow::makeIcons() {
     std::vector<WordSet> wordSets = wordSetRep_->getWordSets();
-    auto * allWordSets = new QAction("Все группы", this);
+    auto *allWordSets = new QAction("Все группы", this);
     wordSets_->addAction(allWordSets);
-    QObject::connect(allWordSets, &QAction::triggered, this, [=](){
+    QObject::connect(allWordSets, &QAction::triggered, this, [=]() {
         showWordSet(1);
     });
-    for (auto &wordSet: wordSets){
-        if (wordSet.getId() == 1){
+    for (auto &wordSet: wordSets) {
+        if (wordSet.getId() == 1) {
             continue;
         }
-        auto * action = new QAction(wordSet.getTitle().c_str(), this);
+        auto *action = new QAction(wordSet.getTitle().c_str(), this);
         wordSets_->addAction(action);
-        QObject::connect(action, &QAction::triggered, this, [=](){
+        QObject::connect(action, &QAction::triggered, this, [=]() {
             showWordSet(wordSet.getId());
         });
     }
 }
 
 void DictionaryWindow::updateDictionaryChanges() {
+
     std::deque<HistoryChangeWordRep> wordRepHistory = wordRep_->getHistoryChanges();
     std::deque<HistoryChangeWordSetRep> wordSetRepHistory = wordSetRep_->getHistoryChanges();
     std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory = wordSetContentRep_->getHistoryChanges();
+    while (true) {
+        try {
+            while (!wordRepHistory.empty()) {
 
-    wordRep_->clearHistory();
-    wordSetRep_->clearHistory();
-    wordSetContentRep_->clearHistory();
 
-    while (!wordRepHistory.empty()){
-        parent_->user->sendWordRepHistoryChange(wordRepHistory.back());
-        wordRepHistory.pop_back();
-    }
-    while (!wordSetRepHistory.empty()){
-        parent_->user->sendWordSetRepHistoryChange(wordSetRepHistory.back());
-        wordSetRepHistory.pop_back();
-    }
-    while (!wordSetContentRepHistory.empty()){
-        parent_->user->sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
-        wordSetContentRepHistory.pop_back();
+                parent_->user->sendWordRepHistoryChange(wordRepHistory.back());
+                wordRepHistory.pop_back();
+            }
+            while (!wordSetRepHistory.empty()) {
+                parent_->user->sendWordSetRepHistoryChange(wordSetRepHistory.back());
+                wordSetRepHistory.pop_back();
+            }
+            while (!wordSetContentRepHistory.empty()) {
+                parent_->user->sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
+                wordSetContentRepHistory.pop_back();
+            }
+            wordRep_->clearHistory();
+            wordSetRep_->clearHistory();
+            wordSetContentRep_->clearHistory();
+            break;
+        } catch (ServerProblemsExceptionNotSaveDict &) {
+            break;
+        } catch (ServerProblemsExceptionReconnect &) {
+            continue;
+        }
     }
 }

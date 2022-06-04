@@ -33,4 +33,10 @@ struct ServerProblemsExceptionNotDeleteInCollection : public std::exception {
     }
 };
 
+struct ServerProblemsExceptionNotSaveDict : public std::exception {
+    const char *what() const noexcept override {
+        return "not save in dict";
+    }
+};
+
 #endif //YAFR_SERVERPROBLEMSEXCEPTION_H
