@@ -1,4 +1,5 @@
 #include "include/dictionaryWindow.h"
+#include "include/serverProblemsException.h"
 
 void DictionaryWindow::showWordSet(int wordSetId) {
     int prevSize = wordSetContentRep_->getWordSetSize(curOpenWordSetId_);
@@ -111,7 +112,16 @@ void DictionaryWindow::dictSyncButtonConnect() {
     serverSync_->setText("Синхронизация");
     serverSync_->show();
     QObject::connect(serverSync_, &QPushButton::clicked, this, [=](){
-        updateDictionaryChanges();
+        while (true) {
+            try {
+                updateDictionaryChanges();
+                break;
+            } catch (ServerProblemsExceptionReconnect &) {
+                continue;
+            } catch (ServerProblemsExceptionNotSaveDict &) {
+                break;
+            }
+        }
     });
 }
 
@@ -153,10 +163,6 @@ void DictionaryWindow::updateDictionaryChanges() {
     std::deque<HistoryChangeWordSetRep> wordSetRepHistory = wordSetRep_->getHistoryChanges();
     std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory = wordSetContentRep_->getHistoryChanges();
 
-    wordRep_->clearHistory();
-    wordSetRep_->clearHistory();
-    wordSetContentRep_->clearHistory();
-
     while (!wordRepHistory.empty()){
         parent_->user->sendWordRepHistoryChange(wordRepHistory.back());
         wordRepHistory.pop_back();
@@ -169,6 +175,10 @@ void DictionaryWindow::updateDictionaryChanges() {
         parent_->user->sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
         wordSetContentRepHistory.pop_back();
     }
+
+    wordRep_->clearHistory();
+    wordSetRep_->clearHistory();
+    wordSetContentRep_->clearHistory();
 }
 
 void DictionaryWindow::removeIcons() {
