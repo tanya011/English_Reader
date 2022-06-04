@@ -4,17 +4,21 @@
 #include "include/serverProblemsWindow.h"
 
 namespace userRepLocal {
-    void newValue(int value);
+void newValue(int value);
 }
 
-User::User(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep, BookRep *bookRep) : bookRep_(
-        bookRep), wordRep_(wordRep), wordSetRep_(wordSetRep), wordSetContentRep_(wordSetContentRep) {
+User::User(WordRep *wordRep,
+           WordSetRep *wordSetRep,
+           WordSetContentRep *wordSetContentRep,
+           BookRep *bookRep)
+    : bookRep_(bookRep),
+      wordRep_(wordRep),
+      wordSetRep_(wordSetRep),
+      wordSetContentRep_(wordSetContentRep) {
 }
 
 void User::init(const std::string &username, const std::string &password) {
-
-    httplib::Params params{{"name",     username},
-                           {"password", password}};
+    httplib::Params params{{"name", username}, {"password", password}};
     auto res = client_.Post("/init-user", params);
 
     if (!res) {
@@ -26,11 +30,13 @@ void User::init(const std::string &username, const std::string &password) {
         throw std::runtime_error("Can not init");
     }
     token_ = res->body;
+    std::cout << "MY TOKEN: " << token_ << std::endl;
     isAuthorized_ = true;
 
     downloadDictDataFromServer();
 
-    // личная коллекция книг, получаем последний номер в истории данного пользователя
+    // личная коллекция книг, получаем последний номер в истории данного
+    // пользователя
     int lastCollectionAction = getLastCollectionAction();
     std::cout << "lastcoll = " << lastCollectionAction << std::endl;
 
@@ -46,13 +52,11 @@ void User::init(const std::string &username, const std::string &password) {
     file << lastCollectionAction;
 
     getCollectionBooks();
-
 }
 
 bool User::isAuthorized() const {
     return isAuthorized_;
 }
-
 
 void User::exit() {
     token_ = "";
@@ -73,16 +77,18 @@ std::vector<Book> User::getCollectionBooks() {
         ServerProblemsWindow serverProblemsWindow;
         serverProblemsWindow.show();
 
-        throw std::runtime_error("Can't load collection, error code: " + std::to_string(res->status));
+        throw std::runtime_error("Can't load collection, error code: " +
+                                 std::to_string(res->status));
     }
     nlohmann::json params = nlohmann::json::parse(res->body);
     std::vector<Book> books;
-    for (auto &book: params) {
-        bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
+    for (auto &book : params) {
+        bookRep_->addAndSaveBook(book["id"], book["name"], book["author"],
+                                 book["text"]);
     }
-    std::cout << "Got " << params.size() << " books from collection" << std::endl;
+    std::cout << "Got " << params.size() << " books from collection"
+              << std::endl;
     return books;
-
 }
 
 std::vector<Book> User::getLibraryBooks() {
@@ -100,10 +106,9 @@ std::vector<Book> User::getLibraryBooks() {
                                  std::to_string(res->status));
     }
 
-
     nlohmann::json params = nlohmann::json::parse(res->body);
     std::vector<Book> books;
-    for (auto &p: params) {
+    for (auto &p : params) {
         books.emplace_back(p["id"], p["name"], p["author"]);
     }
     std::cout << "Got " << params.size() << " books from library" << std::endl;
@@ -112,9 +117,9 @@ std::vector<Book> User::getLibraryBooks() {
 
 int User::addBookToCollection(int bookId) {
     std::unique_ptr<sql::Statement> stmt(
-            bookRep_->manager_.getConnection().createStatement());
+        bookRep_->manager_.getConnection().createStatement());
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-            "SELECT * FROM collection WHERE id=" + std::to_string(bookId)));
+        "SELECT * FROM collection WHERE id=" + std::to_string(bookId)));
 
     if (reqRes->next()) {
         return 0;
@@ -137,7 +142,8 @@ int User::addBookToCollection(int bookId) {
                                  std::to_string(res->status));
 
     nlohmann::json book = nlohmann::json::parse(res->body);
-    bookRep_->addAndSaveBook(book["id"], book["name"], book["author"], book["text"]);
+    bookRep_->addAndSaveBook(book["id"], book["name"], book["author"],
+                             book["text"]);
 
     syncCollection();
     newActionInCollection("add", bookId);
@@ -167,7 +173,6 @@ void User::deleteCollectionBook(int bookId) {
         newActionInCollection("delete", bookId);
         userRepLocal::newValue(userRepLocal::getValue() + 1);
     }
-
 }
 
 void User::newActionInCollection(std::string action, int bookId) {
@@ -182,7 +187,6 @@ void User::newActionInCollection(std::string action, int bookId) {
                                  std::to_string(res->status));
     }
 }
-
 
 int User::getLastCollectionAction() {
     std::cout << "Getting last collection action" << std::endl;
@@ -208,15 +212,16 @@ std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
     nlohmann::json param = nlohmann::json::parse(res->body);
 
     std::vector<ActCollectionsHistory> books;
-    for (auto &p: param) {
+    for (auto &p : param) {
         books.push_back({p["type"], p["bookId"]});
     }
     return books;
 }
 
 void User::syncCollection() {
-    std::vector<ActCollectionsHistory> vec = this->getNewActions(userRepLocal::getValue() + 1);
-    for (auto action: vec) {
+    std::vector<ActCollectionsHistory> vec =
+        this->getNewActions(userRepLocal::getValue() + 1);
+    for (auto action : vec) {
         std::cout << " action = " << action.type << std::endl;
         if (action.type == "delete") {
             bookRep_->deleteBookById(action.bookId);
@@ -232,22 +237,23 @@ std::vector<Word> User::getWords() {
     httplib::Headers headers = {{"token", token_}};
     auto res = client_.Get("/getWords", headers);
 
-    if(!res){
+    if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
     }
 
     if (res->status != 200)
-        throw std::runtime_error("Can't load words from dictionary, error code: " +
-                                 std::to_string(res->status));
+        throw std::runtime_error(
+            "Can't load words from dictionary, error code: " +
+            std::to_string(res->status));
     nlohmann::json wordsTmp = nlohmann::json::parse(res->body);
     std::vector<Word> words;
-    for (auto &word: wordsTmp) {
-        words.emplace_back(word["id"], word["original"], word["translation"], word["context"]);
+    for (auto &word : wordsTmp) {
+        words.emplace_back(word["id"], word["original"], word["translation"],
+                           word["context"]);
     }
     return words;
 }
-
 
 std::vector<WordSet> User::getWordSets() {
     std::cout << "Getting wordsets..." << std::endl;
@@ -255,16 +261,18 @@ std::vector<WordSet> User::getWordSets() {
     headers.emplace("token", token_);
     auto res = client_.Get("/getWordSets", headers);
 
-    if(!res){
+    if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
     }
 
     if (res->status != 200)
-        throw std::runtime_error("Can't load wordsets from dictionary, error code: " + std::to_string(res->status));
+        throw std::runtime_error(
+            "Can't load wordsets from dictionary, error code: " +
+            std::to_string(res->status));
     nlohmann::json wordSetsTmp = nlohmann::json::parse(res->body);
     std::vector<WordSet> wordSets;
-    for (auto &wordSet: wordSetsTmp) {
+    for (auto &wordSet : wordSetsTmp) {
         wordSets.emplace_back(wordSet["id"], wordSet["name"]);
     }
     return wordSets;
@@ -276,21 +284,25 @@ std::vector<std::pair<int, int>> User::getSetContents() {
     headers.emplace("token", token_);
     auto res = client_.Get("/getSetsContents", headers);
 
-    if(!res){
+    if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
     }
 
     if (res->status != 200)
         throw std::runtime_error(
-                "Can't load wordset's content from dictionary, error code : " + std::to_string(res->status));
+            "Can't load wordset's content from dictionary, error code : " +
+            std::to_string(res->status));
     nlohmann::json contentTmp = nlohmann::json::parse(res->body);
-    std::cout << "getSetContents got content size : " << contentTmp.size() << "\n";
+    std::cout << "getSetContents got content size : " << contentTmp.size()
+              << "\n";
     std::vector<std::pair<int, int>> wordSetsContents;
-    for (auto &word_wordset: contentTmp) {
-        wordSetsContents.emplace_back(word_wordset["wordSetId"], word_wordset["wordId"]);
+    for (auto &word_wordset : contentTmp) {
+        wordSetsContents.emplace_back(word_wordset["wordSetId"],
+                                      word_wordset["wordId"]);
     }
-    std::cout << "still getSetContents, parsed json size : " << wordSetsContents.size() << "\n";
+    std::cout << "still getSetContents, parsed json size : "
+              << wordSetsContents.size() << "\n";
     return wordSetsContents;
 }
 
@@ -298,17 +310,16 @@ void User::sendWordRepHistoryChange(HistoryChangeWordRep change) {
     std::cout << "Sending wordRep's history change..." << std::endl;
     httplib::Params params;
     if (change.operation == "wordDeleted") {
-        params = {{"token",     token_},
+        params = {{"token", token_},
                   {"operation", change.operation},
-                  {"id",        std::to_string(change.wordId)}};
+                  {"id", std::to_string(change.wordId)}};
     } else {
-        params = {{"token",       token_},
-                  {"operation",   change.operation},
-                  {"id",          std::to_string(change.wordId)},
-                  {"original",    change.original},
+        params = {{"token", token_},
+                  {"operation", change.operation},
+                  {"id", std::to_string(change.wordId)},
+                  {"original", change.original},
                   {"translation", change.translation},
-                  {"context",     change.context}
-        };
+                  {"context", change.context}};
     }
     auto res = client_.Post("/wordRepChange", params);
 
@@ -325,12 +336,11 @@ void User::sendWordRepHistoryChange(HistoryChangeWordRep change) {
 void User::sendWordSetRepHistoryChange(HistoryChangeWordSetRep change) {
     std::cout << "Sending wordSetRep's history change..." << std::endl;
     httplib::Params params = {{"token", token_},
-                              {"id",    std::to_string(change.wordSetId)},
-                              {"name",  change.wordSetName}
-    };
+                              {"id", std::to_string(change.wordSetId)},
+                              {"name", change.wordSetName}};
     auto res = client_.Post("/wordSetRepChange", params);
 
-    if(!res){
+    if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
     }
@@ -340,14 +350,13 @@ void User::sendWordSetRepHistoryChange(HistoryChangeWordSetRep change) {
                                  std::to_string(res->status));
 }
 
-void User::sendWordSetContentRepHistoryChange(HistoryChangeWordSetContentRep change) {
+void User::sendWordSetContentRepHistoryChange(
+    HistoryChangeWordSetContentRep change) {
     std::cout << "Sending wordSetContentRep's history change..." << std::endl;
-    httplib::Params params = {
-            {"token",     token_},
-            {"operation", change.operation},
-            {"wordSetId", std::to_string(change.wordSetId)},
-            {"wordId",    std::to_string(change.wordId)}
-    };
+    httplib::Params params = {{"token", token_},
+                              {"operation", change.operation},
+                              {"wordSetId", std::to_string(change.wordSetId)},
+                              {"wordId", std::to_string(change.wordId)}};
     auto res = client_.Post("/wordSetContentRepChange", params);
 
     if (!res) {
@@ -356,7 +365,9 @@ void User::sendWordSetContentRepHistoryChange(HistoryChangeWordSetContentRep cha
     }
 
     if (res->status != 200)
-        throw std::runtime_error("Can't change wordSetContentRep, error code: " + std::to_string(res->status));
+        throw std::runtime_error(
+            "Can't change wordSetContentRep, error code: " +
+            std::to_string(res->status));
 }
 
 void User::downloadDictDataFromServer() {
@@ -364,16 +375,17 @@ void User::downloadDictDataFromServer() {
     std::vector<WordSet> wordSets = getWordSets();
     std::vector<std::pair<int, int>> content = getSetContents();
     clearTablesDict();
-    for (auto &word: words) {
+    for (auto &word : words) {
         wordRep_->addWord(word);
     }
-    for (auto &wordSet: wordSets) {
+    for (auto &wordSet : wordSets) {
         if (wordSet.getId() != 1) {
             wordSetRep_->addWordSet(wordSet);
         }
     }
-    for (auto &wordSet_word: content) {
-        wordSetContentRep_->addWordToSetTable(wordSet_word.first, wordSet_word.second);
+    for (auto &wordSet_word : content) {
+        wordSetContentRep_->addWordToSetTable(wordSet_word.first,
+                                              wordSet_word.second);
     }
 }
 

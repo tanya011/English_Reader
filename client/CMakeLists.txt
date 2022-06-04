@@ -108,3 +108,4 @@ if (QT_VERSION_MAJOR EQUAL 6)
 endif ()
 
 add_compile_definitions(CONFIG_PATH="../../config.json")
+add_compile_definitions(NUM_COLL="../files/numColl")
