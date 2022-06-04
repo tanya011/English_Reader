@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include "include/actCollectionsHistory.h"
 #include "include/serverProblemsWindow.h"
+#include "include/serverProblemsException.h"
 
 namespace userRepLocal {
     void newValue(int value);

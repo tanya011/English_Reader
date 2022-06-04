@@ -2,6 +2,7 @@
 #define YAFR_SERVERPROBLEMSWINDOW_H
 
 #include <QWidget>
+#include <QMessageBox>
 
 class ServerProblemsWindow : public QWidget {
 private:
