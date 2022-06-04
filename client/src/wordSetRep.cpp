@@ -11,42 +11,48 @@ WordSetRep::WordSetRep(DBManager &m)
 
     std::unique_ptr<sql::ResultSet> maxId(
             stmt->executeQuery("SELECT MAX(id) FROM " + tableName));
+    makeWordSetAllWords();
     if (maxId->next()) {
         freeId = maxId->getInt(1) + 1;
     }
-    makeWordSetAllWords();
 }
 
 int WordSetRep::addWordSet(const std::string &wordSetName) {
     try {
-        std::unique_ptr<sql::ResultSet> reqRes(
-                stmt->executeQuery("SELECT id FROM " + tableName + " WHERE name='" +
-                                   wordSetName + "'"));
+        std::unique_ptr<sql::PreparedStatement> prst1(
+                manager.getConnection().prepareStatement("SELECT id FROM " + tableName + " WHERE name=?"));
+        prst1->setString(1, wordSetName);
+
+        std::unique_ptr<sql::ResultSet> reqRes(prst1->executeQuery());
+
         if (reqRes->next()) {
             return static_cast<int>(reqRes->getInt("id"));
         } else {
-            std::unique_ptr<sql::PreparedStatement> prst(
+            std::unique_ptr<sql::PreparedStatement> prst2(
                     manager.getConnection().prepareStatement("INSERT INTO " +
                                                              tableName +
                                                              " (id, name) VALUES "
                                                              "(?,?)"));
-            prst->setInt(1, freeId);
-            prst->setString(2, wordSetName);
+            prst2->setInt(1, freeId);
+            prst2->setString(2, wordSetName);
 
-            prst->execute();
+            prst2->execute();
             historyChanges_.push_front({"wordSetAdded", freeId, wordSetName});
             return freeId++;
         }
     } catch (sql::SQLException &e) {
+        std::cout << e.what();
         return -1;
     }
 }
 
 int WordSetRep::addWordSet(WordSet &wordSet) {
     try {
-        std::unique_ptr<sql::ResultSet> reqRes(
-                stmt->executeQuery("SELECT id FROM " + tableName + " WHERE id=" + std::to_string(wordSet.getId()) + " AND name='" +
-                                   wordSet.getTitle() + "'"));
+        std::unique_ptr<sql::PreparedStatement> prst1(
+                manager.getConnection().prepareStatement("SELECT id FROM " + tableName + " WHERE id=?" + " AND name=?'"));
+        prst1->setInt(1, wordSet.getId());
+        prst1->setString(2, wordSet.getTitle());
+        std::unique_ptr<sql::ResultSet> reqRes(prst1->executeQuery());
         if (reqRes->next()) {
             return static_cast<int>(reqRes->getInt("id"));
         } else {

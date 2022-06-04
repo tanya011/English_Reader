@@ -134,7 +134,9 @@ void DictionaryWindow::clearTables() {
 void DictionaryWindow::executeRequestFromReadNow(const std::string& original, const std::string& translation,
                                                  const std::string& wordSetTitle, const std::string& context) {
     int wordId = wordRep_->addWord(original, translation, context);
+    std::cout << "before wordSetRep" << std::endl;
     int wordSetId = wordSetRep_->addWordSet(wordSetTitle);
+    std::cout << "after wordSetRep" << std::endl;
     wordSetContentRep_->addWordToSetTable( wordSetId,wordId);
     wordSetContentRep_->saveHistoryAddWordToSet(wordSetId, wordId);
 }
