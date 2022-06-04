@@ -58,6 +58,7 @@ void AuthorizationWindow::updateWindow() {
         QObject::connect(exitBtn_, &QPushButton::clicked, this, [=]() {
             parent_->user->exit();
             this->updateWindow();
+            parent_->updateReadNow("", "", "Select text");
         });
     }
 }

@@ -49,7 +49,7 @@ void DictionaryWindow::showWordSet(int wordSetId) {
         layout_->addWidget(wordBtnsDeleteFromWordSet_[index], index, 2);
         index++;
     }
-    wordsPlacement_->setGeometry({0, 10, 1850, 70 + height});
+    //wordsPlacement_->setGeometry({0, 10, 1850, 70 + height});
 }
 
 void DictionaryWindow::addWordSetIconToMenu(int wordSetId,
@@ -70,6 +70,16 @@ void DictionaryWindow::deleteWordSetIconFromMenu(int wordSetId) {
 DictionaryWindow::DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep ,  ConnectingWindow *parent)
         : QWidget(parent), wordRep_(wordRep), wordSetRep_(wordSetRep), wordSetContentRep_(wordSetContentRep), parent_(parent) {
 
+    scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+    scrollArea->setWidgetResizable( true );
+    scrollArea->setGeometry( 10, 50, 2000, 1000 );
+
+    QWidget *widget = new QWidget();
+    scrollArea->setWidget( widget );
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    widget->setLayout( layout_ );
+
     wordSetsToolsBar_->addMenu(wordSets_);
 
     wordSets_->addAction(allWords_);
@@ -81,8 +91,8 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, Wor
     QObject::connect(wordRep_, &WordRep::wordCreated,
                      wordSetContentRep_, &WordSetContentRep::addWordToSetTable);
 
-    wordsPlacement_->setGeometry({0, 10, 1850, 4000});
-    wordsPlacement_->setLayout(layout_);
+    //wordsPlacement_->setGeometry({0, 10, 1850, 4000});
+    //wordsPlacement_->setLayout(layout_);
 
     dictSyncButtonConnect();
 }

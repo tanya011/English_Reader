@@ -1,10 +1,9 @@
-//#define CPPHTTPLIB_OPENSSL_SUPPORT
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <openssl/sha.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "../include/config.h"
 #include "../include/httplib.h"
-#include "../include/config.h"
 #include "include/bookRep.h"
 #include "include/collectionsHistoryRep.h"
 #include "include/collectionsRep.h"
@@ -94,7 +93,7 @@ int main() {
         t.detach();
     */
 
-    httplib::Server svr;//(config.get("PATH_TO_CERT").c_str(), config.get("PATH_TO_KEY").c_str());
+    httplib::SSLServer svr(config.get("PATH_TO_CERT").c_str(), config.get("PATH_TO_KEY").c_str());
 
 
     svr.Post("/init-user",

@@ -2,15 +2,11 @@
 #define YAFT_DB_MANAGER_H
 #include "../include/config.h"
 
-// DB includes
+
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
-
-// This class handles the app DB, which is supposed to contain two tables:
-// library and users.
-// TODO: may be it is a bad idea to keep both library and users at the same DB
 
 struct DBManager {  // throws sql::SQLException&
 private:
