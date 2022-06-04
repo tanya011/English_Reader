@@ -6,41 +6,28 @@
 #include "connectingWindow.h"
 #include "dictionaryWindow.h"
 
+// Функция перевода
 namespace translate {
-std::string translate(const std::string &text);
+    std::string translate(const std::string &text);
 }
 
 class ReadNowWindow : public QMainWindow {
 public:
     explicit ReadNowWindow(ConnectingWindow *parent);
+
     void printBook(const QString &book = nullptr,
                    const QString &author = nullptr,
                    const QString &title = nullptr);
+
     ~ReadNowWindow() override = default;
 
+    QString getAuthorTitle();
 
-    void buttonsInLibraryConnectWithReader() {  // эта функция вызывается в
-                                                // libraryWindow
-        this->removeToolBar(this->toolBar_);
-        this->toolBar_->clear();
-        this->createActions();
-        this->createToolBars();
-    }
+    bool emptyTranslatedTextDisplay();
 
-    void makeConnectWithDict();
+    void cleanTranslatedTextDisplay();
 
-    QString getAuthorTitle() {
-        return authorName_ + " " + title_;
-    }
-
-    // TODO эта штука используется в library
-    QTextEdit *translatedTextDisplay_{};  // окошко с переводом
-
-    QToolBar *toolBar_{};
-
-    void createActions();
-
-    void createToolBars();
+    void updateToolBar();
 
 private slots:
     void translateText();
@@ -48,20 +35,13 @@ private slots:
 private:
     ConnectingWindow* parent_;
 
-    [[nodiscard]] QSize sizeHint() const override;
-
-    void createWindowWithTranslate();
-
+    void createWindowWithTranslate(); // создаем окошко с переводом
     void createButtonAddPhraseToDict();  // создание кнопки "Добавить в словарь"
-
-    // панель управления
+    QTextEdit *bookTextDisplay_{};  // виджет, отображающий текст
+    QPushButton *button_; // Кнопка "Добавить в словарь"
 
     int screenWidth_;
     int screenHeight_;
-
-    QTextEdit *bookTextDisplay_{};  // виджет, отображающий текст
-
-    // панель управления
 
     QAction *translateSelectedTextAction_;
 
@@ -70,9 +50,12 @@ private:
     QString authorName_ = "";
     QString title_ = "";
 
-    QPushButton *button_;
+    QTextEdit *translatedTextDisplay_{};  // окошко с переводом
+    QToolBar *toolBar_{};
+    void createActions();
+    void createToolBars();
 
-public:
+    void makeConnectWithDict();
 };
 
 #endif  // READNOW_H

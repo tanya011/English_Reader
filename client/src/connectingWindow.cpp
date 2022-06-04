@@ -133,14 +133,10 @@ void ConnectingWindow::updateReadNow(const std::string &title,
     readNow->printBook(QString::fromStdString(text),
                        QString::fromStdString(author),
                        QString::fromStdString(title));
-    if (readNow->translatedTextDisplay_ != nullptr) {
-        readNow->translatedTextDisplay_->clear();
+    if (readNow->emptyTranslatedTextDisplay()) {
+        readNow->cleanTranslatedTextDisplay();
     }
-
-    removeToolBar(readNow->toolBar_);
-    readNow->toolBar_->clear();
-    readNow->createActions();
-    readNow->createToolBars();
+    readNow->updateToolBar();
 }
 
 void ConnectingWindow::updateDictionary() {

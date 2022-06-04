@@ -13,8 +13,6 @@
 ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent), parent_(parent) {
     auto *layout = new QHBoxLayout;
 
-    //parent->setWindowTitle("Читаю сейчас");
-
     screenWidth_ = QApplication::desktop()->screenGeometry().width();
     screenHeight_ = QApplication::desktop()->screenGeometry().height();
 
@@ -25,15 +23,12 @@ ReadNowWindow::ReadNowWindow(ConnectingWindow *parent) : QMainWindow(parent), pa
     createButtonAddPhraseToDict();
     createActions();   // создаем Actions
     createToolBars();  // создаем панель
-    std::cout << "im fine before makeConnect" << std::endl;
     makeConnectWithDict();
-    std::cout << "im fine after makeConnect" << std::endl;
 };
 
 
 void ReadNowWindow::makeConnectWithDict() {
     assert(parent_ != nullptr);
-    std::cerr << parent_->windowIndexes.dictionary << std::endl;
     auto dictionary = dynamic_cast<DictionaryWindow *>(
             parent_->allWindows.widget(parent_->windowIndexes.dictionary));
     assert(dictionary != nullptr);
@@ -71,7 +66,6 @@ void ReadNowWindow::createWindowWithTranslate() {
     translatedTextDisplay_->setGeometry(screenWidth_ - 900, 120, 700, 500);
 
     auto font = translatedTextDisplay_->font();
-    //font.setBold(true);
     font.setPointSize(12);
     translatedTextDisplay_->setFont(font);
 }
@@ -90,8 +84,7 @@ void ReadNowWindow::printBook(const QString &book, const QString &author, const 
     bookTextDisplay_->setGeometry(40, 120, screenWidth_ - 1000, screenHeight_ - 350);
 
     auto font = bookTextDisplay_->font();
-    //font.setBold(true);
-    font.setPointSize(13);
+    font.setPointSize(20);
     bookTextDisplay_->setFont(font);
 }
 
@@ -114,6 +107,23 @@ void ReadNowWindow::createToolBars() {
     toolBar_->addAction(translateSelectedTextAction_);
 }
 
-[[nodiscard]] QSize ReadNowWindow::sizeHint() const {
-    return {1000, 500};
+QString ReadNowWindow::getAuthorTitle() {
+    return authorName_ + " " + title_;
+}
+
+bool ReadNowWindow::emptyTranslatedTextDisplay() {
+    return (translatedTextDisplay_ == nullptr);
+}
+
+void ReadNowWindow::cleanTranslatedTextDisplay() {
+    if (translatedTextDisplay_ != nullptr) {
+        translatedTextDisplay_->clear();
+    }
+}
+
+void ReadNowWindow::updateToolBar() {
+    removeToolBar(toolBar_);
+    toolBar_->clear();
+    createActions();
+    createToolBars();
 }
