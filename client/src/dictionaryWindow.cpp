@@ -12,9 +12,7 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep,
       wordSetRep_(wordSetRep),
       wordSetContentRep_(wordSetContentRep),
       parent_(parent) {
-    box_ = new QWidget;
-    layout_ = new QGridLayout;
-    box_->setLayout(layout_);
+
 
     wordSetsToolsBar_->addMenu(wordSets_);
     wordSets_->addAction(allWords_);
@@ -26,28 +24,16 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep,
     QObject::connect(wordRep_, &WordRep::wordCreated, wordSetContentRep_,
                      &WordSetContentRep::addWordToSetTable);
 
-    // Styles
-    auto screen_width =
-        QApplication::desktop()->screenGeometry().width() - 1000;
-    auto screen_height =
-        QApplication::desktop()->screenGeometry().height() - 200;
-    this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
-    box_->setFixedWidth(screen_width - 20);
-    scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
-    // Styles
-
     dictSyncButtonConnect();
 }
 
 void DictionaryWindow::showWordSet(int wordSetId) {
-    int prevSize = wordSetContentRep_->getWordSetSize(curOpenWordSetId_);
-    for (int i = 0; i < prevSize; i++) {
-        QLayoutItem *item;
-        while ((item = layout_->takeAt(0)) != nullptr) {
-            delete item->widget();
-            delete item->layout();
-            delete item;
-        }
+
+   // int prevSize = wordSetContentRep_->getWordSetSize(curOpenWordSetId_);
+   //std::cout << "SIZE = " << wordLabels_.size() << std::endl;
+    for (int i = 0; i < layout_->count(); i++)
+    {
+        layout_->itemAt(i)->widget()->deleteLater();
     }
     wordBtnsDeleteFromDictionary_.clear();
     wordBtnsDeleteFromWordSet_.clear();
@@ -58,6 +44,10 @@ void DictionaryWindow::showWordSet(int wordSetId) {
     wordBtnsDeleteFromDictionary_.resize(curSize);
     wordBtnsDeleteFromWordSet_.resize(curSize);
     std::vector<int> wordIds = wordSetContentRep_->getWordSetContent(wordSetId);
+
+    box_ = new QWidget ;
+    layout_ = new QGridLayout;
+    box_->setLayout(layout_);
 
     for (int i = 0; i < curSize; i++) {
         Word curWord = wordRep_->getWordById(wordIds[i]);
@@ -90,6 +80,18 @@ void DictionaryWindow::showWordSet(int wordSetId) {
     }
 
     scrollArea->setWidget(box_);
+
+    // Styles
+    auto screen_width =
+            QApplication::desktop()->screenGeometry().width() - 1000;
+    auto screen_height =
+            QApplication::desktop()->screenGeometry().height() - 500;
+    this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
+    box_->setFixedWidth(screen_width - 20);
+    scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
+    // Styles
+
+
 }
 
 void DictionaryWindow::addWordSetIconToMenu(int wordSetId,
@@ -130,7 +132,7 @@ std::vector<WordSet> DictionaryWindow::getWordSets() {
 
 void DictionaryWindow::dictSyncButtonConnect() {
     serverSync_ = new QPushButton(this);
-    serverSync_->setGeometry(750, 850, 300, 100);
+    serverSync_->setGeometry(950, 1200, 300, 100);
     serverSync_->setText("Синхронизация");
     serverSync_->show();
     QObject::connect(serverSync_, &QPushButton::clicked, this, [=]() {

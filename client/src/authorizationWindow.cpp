@@ -19,9 +19,9 @@ void AuthorizationWindow::updateWindow() {
         authBtn_ = new QPushButton(tr("Вход"));
         nameField_ = new QLineEdit;
         passwordField_ = new QLineEdit;
-        layout_->addWidget(nameField_);
-        layout_->addWidget(passwordField_);
-        layout_->addWidget(authBtn_);
+        layout_->insertWidget(0, nameField_);
+        layout_->insertWidget(1, passwordField_);
+        layout_->insertWidget(2, authBtn_);
 
         QObject::connect(authBtn_, &QPushButton::clicked, this, [=]() {
             auto username = nameField_->text().toStdString();

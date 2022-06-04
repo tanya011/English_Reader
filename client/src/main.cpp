@@ -75,7 +75,14 @@ int main(int argc, char *argv[]) {
 
             // Note 3: We can change parent of widget, as they all inherit QWidget,
             // and it's parent is QWidget
+            QPalette pal = a.palette();
+            pal.setColor(QPalette::Window, Qt::white);
+            a.setPalette(pal);
+
+            a.setStyleSheet("QWidget{font-size:30px;}");
+
             connectingWindow.show();
+
             return a.exec();
         } catch (ServerProblemsExceptionAbort &e) {
             return 0;
