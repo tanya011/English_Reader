@@ -1,0 +1,4 @@
+/snap/clion/193/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/193/bin/ninja/linux/ninja -DCMAKE_CXX_COMPILER=g++-10 -G Ninja -S /home/ekaterina/project-yafr/English_Reader/server -B /home/ekaterina/project-yafr/English_Reader/server/cmake-build-debug
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/ekaterina/project-yafr/English_Reader/server/cmake-build-debug

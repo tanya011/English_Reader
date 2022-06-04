@@ -14,25 +14,25 @@
 
 struct DBManager {  // throws sql::SQLException&
 private:
-    sql::Driver *driver;// don't need delete
-    std::unique_ptr<sql::Connection> con;  // not thread safe
-    const std::string dbName = "yafr";
+    sql::Driver *driver_;// don't need delete
+    std::unique_ptr<sql::Connection> con_;  // not thread safe
+    const std::string dbName_;
 
 public:
-    DBManager()  // TODO: no connection options
-        : driver(get_driver_instance()),
-          con(driver->connect("tcp://127.0.0.1:3306", "root", "password")) {
-        std::unique_ptr<sql::Statement> stmt(con->createStatement());
-        stmt->execute("CREATE DATABASE IF NOT EXISTS " + dbName);
-        con->setSchema(dbName);
+    DBManager(std::string dbName, std::string dbAddress, std::string dBUser, std::string dbPassword)
+        : dbName_(dbName), driver_(get_driver_instance()),
+          con_(driver_->connect(dbAddress, dBUser, dbPassword)) {
+        std::unique_ptr<sql::Statement> stmt(con_->createStatement());
+        stmt->execute("CREATE DATABASE IF NOT EXISTS " + dbName_);
+        con_->setSchema(dbName_);
     }
 
     sql::Connection &getConnection() {
-        return *con;
+        return *con_;
     }
 
     bool reconnect() {
-        return con->reconnect();
+        return con_->reconnect();
     }
 };
 

@@ -1,0 +1,3 @@
+/home/ekaterina/project-yafr/English_Reader/server/cmake-build-debug/CMakeFiles/YAFR.dir
+/home/ekaterina/project-yafr/English_Reader/server/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/ekaterina/project-yafr/English_Reader/server/cmake-build-debug/CMakeFiles/rebuild_cache.dir
