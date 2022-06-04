@@ -341,10 +341,10 @@ void User::sendWordSetRepHistoryChange(HistoryChangeWordSetRep change) {
                               {"name", change.wordSetName}};
     auto res = client_.Post("/wordSetRepChange", params);
 
-    if (!res) {
+    /*if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
-    }
+    }*/
 
     if (res->status != 200)
         throw std::runtime_error("Can't change wordSetRep, error code: " +
@@ -360,10 +360,10 @@ void User::sendWordSetContentRepHistoryChange(
                               {"wordId", std::to_string(change.wordId)}};
     auto res = client_.Post("/wordSetContentRepChange", params);
 
-    if (!res) {
+    /*if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
-    }
+    }*/
 
     if (res->status != 200)
         throw std::runtime_error(
@@ -401,10 +401,6 @@ void User::updateDictionaryChanges() {
     std::deque<HistoryChangeWordSetRep> wordSetRepHistory = wordSetRep_->getHistoryChanges();
     std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory = wordSetContentRep_->getHistoryChanges();
 
-    wordRep_->clearHistory();
-    wordSetRep_->clearHistory();
-    wordSetContentRep_->clearHistory();
-
     while (!wordRepHistory.empty()){
         sendWordRepHistoryChange(wordRepHistory.back());
         wordRepHistory.pop_back();
@@ -417,4 +413,8 @@ void User::updateDictionaryChanges() {
         sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
         wordSetContentRepHistory.pop_back();
     }
+
+    wordRep_->clearHistory();
+    wordSetRep_->clearHistory();
+    wordSetContentRep_->clearHistory();
 }
