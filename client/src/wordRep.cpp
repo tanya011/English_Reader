@@ -22,23 +22,26 @@ int WordRep::addWord(const std::string &original,
                      const std::string &translation,
                      const std::string &context) {
     try {
-        std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-                "SELECT id FROM " + tableName + " WHERE original='" + original +
-                "' AND translation='" + translation + "'"));
+        std::unique_ptr<sql::PreparedStatement> prst1(
+                manager.getConnection().prepareStatement("SELECT id FROM " + tableName + " WHERE original=?" +
+                                                         " AND translation=?"));
+        prst1->setString(1, original);
+        prst1->setString(2, translation);
+        std::unique_ptr<sql::ResultSet> reqRes(prst1->executeQuery());
         if (reqRes->next()) {
             return static_cast<int>(reqRes->getInt("id"));
         } else {
-            std::unique_ptr<sql::PreparedStatement> prst(
+            std::unique_ptr<sql::PreparedStatement> prst2(
                     manager.getConnection().prepareStatement(
                             "INSERT INTO " + tableName +
                             " (id, original, translation, context) VALUES "
                             "(?,?,?,?)"));
-            prst->setInt(1, freeId);
-            prst->setString(2, original);
-            prst->setString(3, translation);
-            prst->setString(4, context);
+            prst2->setInt(1, freeId);
+            prst2->setString(2, original);
+            prst2->setString(3, translation);
+            prst2->setString(4, context);
 
-            prst->execute();
+            prst2->execute();
             historyChanges_.push_front({"wordAdded", freeId, original, translation, context});
             emit wordCreated(1, freeId);
             return freeId++;
@@ -50,23 +53,26 @@ int WordRep::addWord(const std::string &original,
 
 int WordRep::addWord(Word &word) {
     try {
-        std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-                "SELECT id FROM " + tableName + " WHERE id=" + std::to_string(word.getId()) + " AND original='" + word.getOriginal() +
-                "' AND translation='" + word.getTranslation() + "'"));
+        std::unique_ptr<sql::PreparedStatement> prst1(manager.getConnection().prepareStatement( "SELECT id FROM " + tableName + " WHERE id=?" + " AND original=?" +
+                                                                                                " AND translation=?"));
+        prst1->setInt(1, word.getId());
+        prst1->setString(2, word.getOriginal());
+        prst1->setString(3, word.getTranslation());
+        std::unique_ptr<sql::ResultSet> reqRes(prst1->executeQuery());
         if (reqRes->next()) {
             return static_cast<int>(reqRes->getInt("id"));
         } else {
-            std::unique_ptr<sql::PreparedStatement> prst(
+            std::unique_ptr<sql::PreparedStatement> prst2(
                     manager.getConnection().prepareStatement(
                             "INSERT INTO " + tableName +
                             " (id, original, translation, context) VALUES "
                             "(?,?,?,?)"));
-            prst->setInt(1, word.getId());
-            prst->setString(2, word.getOriginal());
-            prst->setString(3, word.getTranslation());
-            prst->setString(4, word.getContext());
+            prst2->setInt(1, word.getId());
+            prst2->setString(2, word.getOriginal());
+            prst2->setString(3, word.getTranslation());
+            prst2->setString(4, word.getContext());
 
-            prst->execute();
+            prst2->execute();
             freeId = std::max(freeId, word.getId());
             emit wordCreated(1, word.getId());
             return word.getId();

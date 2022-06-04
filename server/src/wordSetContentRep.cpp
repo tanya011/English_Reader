@@ -29,6 +29,7 @@ void WordSetContentRepServ::deleteWordFromSetTable(
         int WordSetId,
         int WordId) {
     std::unique_lock l(*mutex_);
+
     stmt->execute("DELETE FROM " + tableName +
                   " WHERE userid=" + std::to_string(userId) + " AND wordSetId=" + std::to_string(WordSetId) +
                   " AND " + "wordId=" + std::to_string(WordId));
