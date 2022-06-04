@@ -85,9 +85,7 @@ void LibraryWindow::updateWindow() {
         QObject::connect(addBtns_[i], &QPushButton::clicked, this,
                          [=]() { connectWithCollection(books_[i].getId()); });
     }
-    /*} catch (std::exception &e) {
-        std::cout << e.what() << '\n';
-    }*/
+
 }
 
 
@@ -96,7 +94,6 @@ void LibraryWindow::connectWithCollection(int bookId) {
         try {
             if (parent_->user->addBookToCollection(bookId)) {
                 parent_->updateCollection();
-                //parent_->user->sync_collect();
             }
             break;
         } catch (ServerProblemsExceptionReconnect &){
