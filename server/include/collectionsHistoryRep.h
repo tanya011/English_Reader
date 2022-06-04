@@ -1,17 +1,9 @@
 #ifndef YAFR_COLLECTIONSHISTORYREP_H
 #define YAFR_COLLECTIONSHISTORYREP_H
 
-#include <mutex>
 #include "dbManager.h"
 #include "actCollectionsHistory.h"
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <mysql_connection.h>
 #include <mutex>
-
 
 struct CollectionsHistoryRep {
 private:

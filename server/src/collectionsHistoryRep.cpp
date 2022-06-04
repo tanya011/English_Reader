@@ -1,4 +1,8 @@
 #include <include/collectionsHistoryRep.h>
+#include <cppconn/exception.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
 
 CollectionsHistoryRep::CollectionsHistoryRep(DBManager &m, std::mutex *mutex)
 : manager_(m), mutex_(mutex) {
