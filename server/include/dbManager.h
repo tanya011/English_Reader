@@ -1,6 +1,6 @@
 #ifndef YAFT_DB_MANAGER_H
 #define YAFT_DB_MANAGER_H
-
+#include "../include/config.h"
 
 // DB includes
 #include <cppconn/driver.h>
@@ -14,19 +14,19 @@
 
 struct DBManager {  // throws sql::SQLException&
 private:
-    sql::Driver *driver_;// don't need delete
-    std::unique_ptr<sql::Connection> con_;  // not thread safe
-    const std::string dbName_;
+    sql::Driver *driver_;   // don't need delete
+    sql::Connection *con_;  // not thread safe
+    std::string dbName_;
 
 public:
-
-    DBManager(std::string dbName, std::string dbAddress, std::string dBUser, std::string dbPassword)
-        : dbName_(dbName), driver_(get_driver_instance()),
-          con_(driver_->connect(dbAddress, dBUser, dbPassword)) {
+    DBManager() : driver_(get_driver_instance()) {
+        Config config(CONFIG_PATH);
+        dbName_ = config.get("DB_NAME");
+        con_ = driver_->connect(config.get("DB_ADDRESS"), config.get("DB_USER"),
+                                config.get("DB_PASSWORD"));
         std::unique_ptr<sql::Statement> stmt(con_->createStatement());
         stmt->execute("CREATE DATABASE IF NOT EXISTS " + dbName_);
         con_->setSchema(dbName_);
-
     }
 
     sql::Connection &getConnection() {
@@ -36,7 +36,9 @@ public:
     bool reconnect() {
         return con_->reconnect();
     }
+    ~DBManager() {
+        delete con_;
+    }
 };
-
 
 #endif

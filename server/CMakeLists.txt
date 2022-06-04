@@ -49,3 +49,5 @@ target_link_libraries(YAFR PRIVATE OpenSSL::Crypto)
 
 target_link_libraries(YAFR PRIVATE cryptopp)
 
+add_compile_definitions(CONFIG_PATH="../../config.json")
+

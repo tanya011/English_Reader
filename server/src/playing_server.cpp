@@ -11,6 +11,7 @@
 #include "include/wordRep.h"
 #include "include/wordSetRep.h"
 #include "include/wordSetContentRep.h"
+#include "../include/config.h"
 
 
 std::string SHA256(std::string password, std::string salt = "") {
@@ -36,47 +37,36 @@ std::string SHA256(std::string password, std::string salt = "") {
 }
 
 int main() {
-    std::ifstream configFile("/home/ekaterina/project-yafr/English_Reader/server/config.json");
-    std::stringstream buf;
-    buf<<configFile.rdbuf();
-    nlohmann::json config = nlohmann::json::parse(buf.str());
 
-    DBManager dbManagerUserRep(config["DB_NAME"], config["DB_ADDRESS"],
-                               config["DB_USER"], config["DB_PASSWORD"]);
+
+    DBManager dbManagerUserRep;
     std::mutex mutexUserRep;
     UserRep userRep(dbManagerUserRep, &mutexUserRep);
 
-    DBManager dbManagerBookRep(config["DB_NAME"], config["DB_ADDRESS"],
-                               config["DB_USER"], config["DB_PASSWORD"]);
+    DBManager dbManagerBookRep;
     std::mutex mutexBookRep;
     BookRep bookRep(dbManagerBookRep, &mutexUserRep);
 
-    DBManager dbManagerCollectionsRep(config["DB_NAME"], config["DB_ADDRESS"],
-                                      config["DB_USER"], config["DB_PASSWORD"]);
+    DBManager dbManagerCollectionsRep;
     std::mutex mutexCollectionsRep;
     CollectionsRep collectionsRep(dbManagerCollectionsRep,
                                   &mutexCollectionsRep);
 
-    DBManager dbManagerCollectionsHistoryRepRep(
-        config["DB_NAME"], config["DB_ADDRESS"], config["DB_USER"],
-        config["DB_PASSWORD"]);
+    DBManager dbManagerCollectionsHistoryRepRep;
     std::mutex mutexCollectionsHistoryRep;
     CollectionsHistoryRep collectionsHistoryRep(
         dbManagerCollectionsHistoryRepRep, &mutexCollectionsHistoryRep);
 
 
-    DBManager dbManagerWordRep(config["DB_NAME"], config["DB_ADDRESS"],
-                               config["DB_USER"], config["DB_PASSWORD"]);
+    DBManager dbManagerWordRep;
     std::mutex mutexWordRep;
     WordRepServ wordRep(dbManagerWordRep, &mutexWordRep);
 
-    DBManager dbManagerWordSetRep(config["DB_NAME"], config["DB_ADDRESS"],
-                                  config["DB_USER"], config["DB_PASSWORD"]);
+    DBManager dbManagerWordSetRep;
     std::mutex mutexWordSetRep;
     WordSetRepServ wordSetRep(dbManagerWordSetRep, &mutexWordSetRep);
 
-    DBManager dbManagerWordSetContentRep(config["DB_NAME"], config["DB_ADDRESS"],
-                                         config["DB_USER"], config["DB_PASSWORD"]);
+    DBManager dbManagerWordSetContentRep;
     std::mutex mutexWordSetContentRep;
     WordSetContentRepServ wordSetContentRep(dbManagerWordSetContentRep, &mutexWordSetContentRep);
 

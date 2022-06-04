@@ -106,3 +106,5 @@ target_link_libraries(YAFR PRIVATE nlohmann_json::nlohmann_json)
 if (QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(YAFR)
 endif ()
+
+add_compile_definitions(CONFIG_PATH="../../config.json")
