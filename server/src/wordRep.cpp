@@ -19,9 +19,15 @@ void WordRepServ::addWord(int userId,
                           const std::string &translation,
                           const std::string &context) {
     std::unique_lock l(*mutex_);
-    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-            "SELECT * FROM " + tableName + " WHERE userId=" + std::to_string(userId) + " AND id=" + std::to_string(id) + " AND original='" + original +
-            "' AND translation='" + translation + "'"));
+    std::unique_ptr<sql::PreparedStatement> prst1(
+            manager_.getConnection().prepareStatement("SELECT * FROM " + tableName + " WHERE userId=?" + " AND id=?"  + " AND original=?" +
+                                                      " AND translation=?"));
+    prst1->setInt(1, userId);
+    prst1->setInt(2,id);
+    prst1->setString(3, original);
+    prst1->setString(4, translation);
+
+    std::unique_ptr<sql::ResultSet> reqRes(prst1->executeQuery());
     if (reqRes->next()) {
         return;
     }

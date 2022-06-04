@@ -37,7 +37,7 @@ private:
     DBManager &manager;
     std::unique_ptr<sql::Statement> stmt;
     std::string tableName = "wordSets";
-    int freeId = 1;
+    int freeId = 2;   // 1 reserved for allWords wordset
 
     std::deque<HistoryChangeWordSetRep> historyChanges_;
 
