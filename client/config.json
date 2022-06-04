@@ -1,0 +1,8 @@
+{
+  "DB_ADDRESS": "tcp://127.0.0.1:3306",
+  "DB_NAME": "yafr",
+  "DB_USER": "root",
+  "DB_PASSWORD": "root",
+  "SERVER_ADDRESS": "localhost:8080"
+
+}

@@ -1,6 +1,8 @@
 #ifndef YAFR_USER_H
 #define YAFR_USER_H
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+
 #include <queue>
 #include "../include/actCollectionsHistory.h"
 #include "../include/book.h"
@@ -31,7 +33,7 @@ private:
     WordSetRep *wordSetRep_;
     WordSetContentRep *wordSetContentRep_;
 
-    httplib::SSLClient client_{"localhost:8080"};
+    httplib::SSLClient client_;
     bool isAuthorized_ = false;
     std::string token_;
     std::vector<action> actionsToDBCollections;

@@ -1,13 +1,15 @@
-#define CPPHTTPLIB_OPENSSL_SUPPORT
 
 #include "include/user.h"
 #include <nlohmann/json.hpp>
+#include "../include/config.h"
 #include "include/actCollectionsHistory.h"
 #include "include/serverProblemsWindow.h"
 
 namespace userRepLocal {
 void newValue(int value);
 }
+
+Config config(CONFIG_PATH);
 
 User::User(WordRep *wordRep,
            WordSetRep *wordSetRep,
@@ -16,7 +18,8 @@ User::User(WordRep *wordRep,
     : bookRep_(bookRep),
       wordRep_(wordRep),
       wordSetRep_(wordSetRep),
-      wordSetContentRep_(wordSetContentRep) {
+      wordSetContentRep_(wordSetContentRep),
+      client_(config.get("SERVER_ADDRESS")) {
 }
 
 void User::init(const std::string &username, const std::string &password) {
@@ -399,23 +402,26 @@ void User::clearTablesDict() {
 }
 
 void User::updateDictionaryChanges() {
-    std::deque<HistoryChangeWordRep> wordRepHistory = wordRep_->getHistoryChanges();
-    std::deque<HistoryChangeWordSetRep> wordSetRepHistory = wordSetRep_->getHistoryChanges();
-    std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory = wordSetContentRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordRep> wordRepHistory =
+        wordRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordSetRep> wordSetRepHistory =
+        wordSetRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory =
+        wordSetContentRep_->getHistoryChanges();
 
     wordRep_->clearHistory();
     wordSetRep_->clearHistory();
     wordSetContentRep_->clearHistory();
 
-    while (!wordRepHistory.empty()){
+    while (!wordRepHistory.empty()) {
         sendWordRepHistoryChange(wordRepHistory.back());
         wordRepHistory.pop_back();
     }
-    while (!wordSetRepHistory.empty()){
+    while (!wordSetRepHistory.empty()) {
         sendWordSetRepHistoryChange(wordSetRepHistory.back());
         wordSetRepHistory.pop_back();
     }
-    while (!wordSetContentRepHistory.empty()){
+    while (!wordSetContentRepHistory.empty()) {
         sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
         wordSetContentRepHistory.pop_back();
     }

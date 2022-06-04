@@ -5,6 +5,7 @@
 #include <nlohmann/json.hpp>
 #include "../include/config.h"
 #include "../include/httplib.h"
+#include "../include/config.h"
 #include "include/bookRep.h"
 #include "include/collectionsHistoryRep.h"
 #include "include/collectionsRep.h"
@@ -39,6 +40,8 @@ std::string SHA256(std::string password, std::string salt = "") {
     std::cout << "HASH: " << tmp.str() << std::endl;
     return tmp.str();
 }
+
+Config config(CONFIG_PATH);
 
 int main() {
     DBManager dbManagerUserRep;
@@ -91,7 +94,8 @@ int main() {
         });
         t.detach();
     */
-    httplib::SSLServer svr;
+    httplib::SSLServer svr(config.get("PATH_TO_CERT").c_str(), config.get("PATH_TO_KEY").c_str());
+
     svr.Post("/init-user",
              [&](const httplib::Request &req, httplib::Response &res) {
                  std::cout << "/init-user" << std::endl;
