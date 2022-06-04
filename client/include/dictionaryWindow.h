@@ -15,6 +15,7 @@
 #include "wordSetContentRep.h"
 #include "wordSetRep.h"
 #include "../include/wordset.h"
+#include <QScrollArea>
 
 class DictionaryWindow : public QWidget {
 Q_OBJECT
@@ -28,6 +29,8 @@ Q_OBJECT
     QPushButton *serverSync_;
 
     QGridLayout *layout_ = new QGridLayout;
+
+    QScrollArea *scrollArea =  new QScrollArea(this);
 
     int curOpenWordSetId_ = 1;
 
