@@ -1,5 +1,3 @@
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-
 #include "include/user.h"
 #include <nlohmann/json.hpp>
 #include "include/actCollectionsHistory.h"

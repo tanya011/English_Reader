@@ -1,5 +1,3 @@
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-
 #include <openssl/sha.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -91,7 +89,7 @@ int main() {
         });
         t.detach();
     */
-    httplib::SSLServer svr;
+    httplib::Server svr;
     svr.Post("/init-user",
              [&](const httplib::Request &req, httplib::Response &res) {
                  std::cout << "/init-user" << std::endl;
