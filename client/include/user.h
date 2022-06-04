@@ -2,23 +2,23 @@
 #define YAFR_USER_H
 
 #include <queue>
+#include "../include/actCollectionsHistory.h"
 #include "../include/book.h"
 #include "../include/httplib.h"
-#include "../include/actCollectionsHistory.h"
-#include "bookRep.h"
 #include "../include/word.h"
 #include "../include/wordset.h"
+#include "bookRep.h"
 #include "wordRep.h"
-#include "wordSetRep.h"
 #include "wordSetContentRep.h"
+#include "wordSetRep.h"
 
-namespace userRepLocal{
-    int getValue();
-    void newValue(int newValue);
-}
+namespace userRepLocal {
+int getValue();
+void newValue(int newValue);
+}  // namespace userRepLocal
 
 struct action {
-    int numberOfAction; //1 = add, 0 = delete;
+    int numberOfAction;  // 1 = add, 0 = delete;
     int userId;
     int bookId;
 };
@@ -31,16 +31,18 @@ private:
     WordSetRep *wordSetRep_;
     WordSetContentRep *wordSetContentRep_;
 
-    httplib::Client client_{"localhost:8080"};
+    httplib::SSLClient client_{"localhost:8080"};
     bool isAuthorized_ = false;
     std::string token_;
     std::vector<action> actionsToDBCollections;
 
-
 public:
     std::queue<ActCollectionsHistory> Queue;
 
-    User(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep, BookRep *bookRep);
+    User(WordRep *wordRep,
+         WordSetRep *wordSetRep,
+         WordSetContentRep *wordSetContentRep,
+         BookRep *bookRep);
 
     void init(const std::string &username, const std::string &password);
 
@@ -52,7 +54,7 @@ public:
 
     std::vector<WordSet> getWordSets();
 
-    std::vector<std::pair<int,int>> getSetContents();
+    std::vector<std::pair<int, int>> getSetContents();
 
     void downloadDictDataFromServer();
 
@@ -60,7 +62,8 @@ public:
 
     void sendWordSetRepHistoryChange(HistoryChangeWordSetRep change);
 
-    void sendWordSetContentRepHistoryChange(HistoryChangeWordSetContentRep change);
+    void sendWordSetContentRepHistoryChange(
+        HistoryChangeWordSetContentRep change);
 
     void updateDictionaryChanges();
 
