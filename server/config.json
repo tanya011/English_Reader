@@ -2,7 +2,7 @@
   "DB_ADDRESS": "tcp://127.0.0.1:3306",
   "DB_NAME": "yafr",
   "DB_USER": "root",
-  "DB_PASSWORD": "root",
-  "PATH_TO_CERT": "/home/ekaterina/keys/localhost/cert.pem",
-  "PATH_TO_KEY": "/home/ekaterina/keys/localhost/key.pem"
+  "DB_PASSWORD": "password",
+  "PATH_TO_CERT": "/home/tatyana/Programming/Проект Весна 2022/keys/localhost/cert.pem",
+  "PATH_TO_KEY": "/home/tatyana/Programming/Проект Весна 2022/keys/localhost/key.pem"
 }
