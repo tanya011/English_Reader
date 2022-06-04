@@ -44,6 +44,7 @@ void ReadNowWindow::makeConnectWithDict() {
                     selectedText_.toStdString(), translatedText_.toStdString(),
                     authorName_.toStdString() + " " + title_.toStdString());
         }
+
     });
 }
 
