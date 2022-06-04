@@ -34,10 +34,9 @@ Q_OBJECT
     std::map<int, QAction *>
             wordSetIconForMenu_;  // Helps to add name of wordSet in wordSet menu
 
-
-    QAction* allWords_ = new QAction("Все группы", this);
-
     QMenu *wordSets_ = new QMenu("Выбор группы", wordSetsToolsBar_);
+
+    QAction* allWords_ = new QAction("Все группы", wordSets_);
 
     std::vector<QPushButton *> wordBtnsDeleteFromDictionary_;
     std::vector<QPushButton *> wordBtnsDeleteFromWordSet_;
@@ -66,6 +65,8 @@ public:
     void updateDictionaryChanges();
 
     void makeIcons();
+
+    void removeIcons();
 
 public slots:
     void addWordSetIconToMenu(int wordSetId, const std::string &title);

@@ -62,6 +62,8 @@ public:
 
     void sendWordSetContentRepHistoryChange(HistoryChangeWordSetContentRep change);
 
+    void updateDictionaryChanges();
+
     void clearTablesDict();
 
     int addBookToLocalCollection(int bookId);

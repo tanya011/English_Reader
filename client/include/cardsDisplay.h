@@ -9,7 +9,7 @@
 
 class CardsDisplay : public QWidget {
 private:
-    std::vector<Word *> words;
+    std::vector<Word> words;
     int curWord = 0;
     bool translationShowed = false;
 

@@ -47,7 +47,7 @@ void CardsDisplay::displayWords(std::vector<WordSet> wordSets) {
             curWord--;
             curWord %= words.size();
             card->setText(
-                QString::fromStdString(words[curWord]->getOriginal()));
+                QString::fromStdString(words[curWord].getOriginal()));
 
             btnShowTranslation->setText("Translate");
         });
@@ -57,7 +57,7 @@ void CardsDisplay::displayWords(std::vector<WordSet> wordSets) {
             curWord++;
             curWord %= words.size();
             card->setText(
-                QString::fromStdString(words[curWord]->getOriginal()));
+                QString::fromStdString(words[curWord].getOriginal()));
             btnShowTranslation->setText("Translate");
         });
     QObject::connect(
@@ -66,18 +66,18 @@ void CardsDisplay::displayWords(std::vector<WordSet> wordSets) {
             if (!translationShowed) {
                 btnShowTranslation->setText("Hide translation");
                 card->setText(QString::fromStdString(
-                    words[curWord]->getOriginal() + "\n--------------\n" +
-                    words[curWord]->getTranslation()));
+                    words[curWord].getOriginal() + "\n--------------\n" +
+                    words[curWord].getTranslation()));
             } else {
                 btnShowTranslation->setText("Translate");
                 card->setText(
-                    QString::fromStdString(words[curWord]->getOriginal()));
+                    QString::fromStdString(words[curWord].getOriginal()));
             }
             translationShowed = !translationShowed;
         });
 
     if (!words.empty()) {
-        card->setText(QString::fromStdString(words[curWord]->getOriginal()));
+        card->setText(QString::fromStdString(words[curWord].getOriginal()));
     } else {
         card->setText("No groups selected");
         btnNext->setEnabled(false);

@@ -59,6 +59,8 @@ public:
 
     Word getWordById(int wordId);
 
+    std::vector<Word> getWords();
+
     std::deque<HistoryChangeWordRep> getHistoryChanges();
 
 signals:

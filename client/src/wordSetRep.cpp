@@ -35,7 +35,6 @@ int WordSetRep::addWordSet(const std::string &wordSetName) {
 
             prst->execute();
             historyChanges_.push_front({"wordSetAdded", freeId, wordSetName});
-            emit wordSetWasCreated(freeId, wordSetName);
             return freeId++;
         }
     } catch (sql::SQLException &e) {
@@ -60,7 +59,6 @@ int WordSetRep::addWordSet(WordSet &wordSet) {
             prst->setString(2, wordSet.getTitle());
 
             prst->execute();
-            emit wordSetWasCreated(wordSet.getId(), wordSet.getTitle());
             freeId = std::max(freeId, wordSet.getId());
             return freeId++;
         }
