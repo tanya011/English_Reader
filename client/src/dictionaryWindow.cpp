@@ -1,5 +1,51 @@
 #include "include/dictionaryWindow.h"
 #include "include/serverProblemsException.h"
+#include <QApplication>
+#include <QDesktopWidget>
+
+DictionaryWindow::DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep ,  ConnectingWindow *parent)
+        : QWidget(parent), wordRep_(wordRep), wordSetRep_(wordSetRep), wordSetContentRep_(wordSetContentRep), parent_(parent) {
+
+    box_ = new QWidget;
+    layout_ = new QGridLayout;
+    box_->setLayout(layout_);
+
+
+    //scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+    //scrollArea->setWidgetResizable( true );
+    //scrollArea->setGeometry( 10, 50, 2000, 1000 );
+
+    //QWidget *widget = new QWidget();
+    //scrollArea->setWidget( widget );
+
+    //QVBoxLayout *layout = new QVBoxLayout();
+    //widget->setLayout( layout_ );
+
+    wordSetsToolsBar_->addMenu(wordSets_);
+    wordSets_->addAction(allWords_);
+
+    QObject::connect(allWords_, &QAction::triggered, this,
+                     [=]() { showWordSet(1); });
+    wordSetIconForMenu_[1] = allWords_;
+
+    QObject::connect(wordRep_, &WordRep::wordCreated,
+                     wordSetContentRep_, &WordSetContentRep::addWordToSetTable);
+
+    //wordsPlacement_->setGeometry({0, 10, 1850, 4000});
+    //wordsPlacement_->setLayout(layout_);
+
+    // Styles
+    auto screen_width =
+            QApplication::desktop()->screenGeometry().width() - 1000;
+    auto screen_height =
+            QApplication::desktop()->screenGeometry().height() - 200;
+    this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
+    box_->setFixedWidth(screen_width - 20);
+    scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
+    // Styles
+
+    dictSyncButtonConnect();
+}
 
 void DictionaryWindow::showWordSet(int wordSetId) {
     int prevSize = wordSetContentRep_->getWordSetSize(curOpenWordSetId_);
@@ -7,11 +53,14 @@ void DictionaryWindow::showWordSet(int wordSetId) {
         QLayoutItem *item;
         while ((item = layout_->takeAt(0)) != nullptr) {
             delete item->widget();
+            delete item->layout();
             delete item;
         }
-        wordBtnsDeleteFromDictionary_.clear();
-        wordBtnsDeleteFromWordSet_.clear();
     }
+    wordBtnsDeleteFromDictionary_.clear();
+    wordBtnsDeleteFromWordSet_.clear();
+
+
     curOpenWordSetId_ = wordSetId;
     int curSize = wordSetContentRep_->getWordSetSize(wordSetId);
     wordBtnsDeleteFromDictionary_.resize(curSize);
@@ -19,6 +68,8 @@ void DictionaryWindow::showWordSet(int wordSetId) {
     int index = 0;
     int height = 0;
     std::vector<int> wordIds = wordSetContentRep_->getWordSetContent(wordSetId);
+
+
     for (int i = 0; i < curSize; i++) {
         Word curWord = wordRep_->getWordById(wordIds[i]);
         int id = curWord.getId();
@@ -49,6 +100,9 @@ void DictionaryWindow::showWordSet(int wordSetId) {
         layout_->addWidget(wordBtnsDeleteFromWordSet_[index], index, 2);
         index++;
     }
+
+    scrollArea->setWidget(box_);
+
     //wordsPlacement_->setGeometry({0, 10, 1850, 70 + height});
 }
 
@@ -67,35 +121,7 @@ void DictionaryWindow::deleteWordSetIconFromMenu(int wordSetId) {
     wordSetIconForMenu_.erase(wordSetId);
 }
 
-DictionaryWindow::DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, WordSetContentRep *wordSetContentRep ,  ConnectingWindow *parent)
-        : QWidget(parent), wordRep_(wordRep), wordSetRep_(wordSetRep), wordSetContentRep_(wordSetContentRep), parent_(parent) {
 
-    scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
-    scrollArea->setWidgetResizable( true );
-    scrollArea->setGeometry( 10, 50, 2000, 1000 );
-
-    QWidget *widget = new QWidget();
-    scrollArea->setWidget( widget );
-
-    QVBoxLayout *layout = new QVBoxLayout();
-    widget->setLayout( layout_ );
-
-    wordSetsToolsBar_->addMenu(wordSets_);
-
-    wordSets_->addAction(allWords_);
-
-    QObject::connect(allWords_, &QAction::triggered, this,
-                     [=]() { showWordSet(1); });
-    wordSetIconForMenu_[1] = allWords_;
-
-    QObject::connect(wordRep_, &WordRep::wordCreated,
-                     wordSetContentRep_, &WordSetContentRep::addWordToSetTable);
-
-    //wordsPlacement_->setGeometry({0, 10, 1850, 4000});
-    //wordsPlacement_->setLayout(layout_);
-
-    dictSyncButtonConnect();
-}
 std::vector<WordSet> DictionaryWindow::getWordSets() {
     std::vector<WordSet> wordSets;
     WordSet allWordSets(1, "Все группы");

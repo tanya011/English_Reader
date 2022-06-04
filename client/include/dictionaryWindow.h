@@ -24,12 +24,12 @@ Q_OBJECT
 
     QMenuBar *wordSetsToolsBar_ = new QMenuBar(this);
 
-    QGroupBox *wordsPlacement_ = new QGroupBox(this);
+    //QGroupBox *wordsPlacement_ = new QGroupBox(this);
 
     QPushButton *serverSync_;
 
-    QGridLayout *layout_ = new QGridLayout;
-
+    QGridLayout *layout_ = new QGridLayout();
+    QWidget *box_;
     QScrollArea *scrollArea =  new QScrollArea(this);
 
     int curOpenWordSetId_ = 1;
