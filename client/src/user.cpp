@@ -44,7 +44,7 @@ void User::init(const std::string &username, const std::string &password) {
     std::string filename = "numCollection.txt";
     std::string folderName = "yafr_files/files";
     std::filesystem::create_directories(folderName);
-    std::filesystem::path appFolder = std::filesystem::absolute("./yafr_files");
+    std::filesystem::path appFolder = std::filesystem::absolute(APP_FOLDER);
     auto folder = appFolder / "files" / filename;
     std::ofstream file(folder, std::ios::out);
     if (!file.good())

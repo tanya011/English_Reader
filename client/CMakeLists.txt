@@ -108,5 +108,5 @@ if (QT_VERSION_MAJOR EQUAL 6)
 endif ()
 
 add_compile_definitions(CONFIG_PATH="../../config.json")
-add_compile_definitions(PROJECT_PATH="yafr_files")
+add_compile_definitions(APP_FOLDER="yafr_files")
 add_compile_definitions(NUM_COLL="yafr_files/files/numCollection.txt")

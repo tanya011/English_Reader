@@ -6,10 +6,9 @@ namespace userRepLocal {
 
     int getValue(){
         int buff;
-        //TODO not absolute path
         std::ifstream file(NUM_COLL);
         if(!file.good()){
-            throw "error";
+            throw std::runtime_error("Cant open sync file for Collection");
         }
         file >> buff;
         std::cout << "VALUE =" << buff << std::endl;
@@ -17,7 +16,6 @@ namespace userRepLocal {
     }
 
     void newValue(int newValue) {
-        //TODO not absolute path
         std::ofstream file(NUM_COLL, std::ios_base::out | std::ios_base::trunc);
         file << newValue;
     }
