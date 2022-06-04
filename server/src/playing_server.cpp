@@ -1,5 +1,4 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
-
 #include <openssl/sha.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -79,12 +78,12 @@ int main() {
 
     int id1 = bookRep.addBook(
             "The Beatles", "Paul Shipton",
-            "/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/books/Beatles.txt");
+            "/home/murlokich/FrankReader/server/books/Beatles.txt");
     int id2 = bookRep.addBook("Hatiko", "Nicole Irving",
-                              "/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/books/book_Hachiko.txt");
+                              "/home/murlokich/FrankReader/server/books/book_Hachiko.txt");
     int id3 = bookRep.addBook("Harry Potter and the Philosopher's Stone",
                               "Joanne Katheline Rowling",
-                              "/home/tatyana/Programming/Проект Весна 2022/English_Reader/client/src/books/Harry_Potter1.txt");
+                              "/home/murlokich/FrankReader/server/books/Harry_Potter1.txt");
 #endif
     /*
         std::thread t([&]() {
@@ -94,7 +93,9 @@ int main() {
         });
         t.detach();
     */
+
     httplib::SSLServer svr(config.get("PATH_TO_CERT").c_str(), config.get("PATH_TO_KEY").c_str());
+
 
     svr.Post("/init-user",
              [&](const httplib::Request &req, httplib::Response &res) {

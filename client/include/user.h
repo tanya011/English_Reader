@@ -33,7 +33,10 @@ private:
     WordSetRep *wordSetRep_;
     WordSetContentRep *wordSetContentRep_;
 
+
     httplib::SSLClient client_;
+
+
     bool isAuthorized_ = false;
     std::string token_;
     std::vector<action> actionsToDBCollections;
