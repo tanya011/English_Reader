@@ -44,6 +44,7 @@ bool User::isAuthorized() const {
 
 
 void User::exit() {
+    updateDictionaryChanges();
     token_ = "";
     isAuthorized_ = false;
     bookRep_->clear();
@@ -314,4 +315,27 @@ void User::clearTablesDict() {
     wordRep_->clear();
     wordSetRep_->clear();
     wordSetContentRep_->clear();
+}
+
+void User::updateDictionaryChanges() {
+    std::deque<HistoryChangeWordRep> wordRepHistory = wordRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordSetRep> wordSetRepHistory = wordSetRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory = wordSetContentRep_->getHistoryChanges();
+
+    wordRep_->clearHistory();
+    wordSetRep_->clearHistory();
+    wordSetContentRep_->clearHistory();
+
+    while (!wordRepHistory.empty()){
+        sendWordRepHistoryChange(wordRepHistory.back());
+        wordRepHistory.pop_back();
+    }
+    while (!wordSetRepHistory.empty()){
+        sendWordSetRepHistoryChange(wordSetRepHistory.back());
+        wordSetRepHistory.pop_back();
+    }
+    while (!wordSetContentRepHistory.empty()){
+        sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
+        wordSetContentRepHistory.pop_back();
+    }
 }

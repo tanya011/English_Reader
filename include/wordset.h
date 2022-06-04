@@ -8,7 +8,7 @@ class WordSet {
     int id_{};
 
     std::string title_;
-    std::map<int, Word *> words_;
+    std::map<int, Word> words_;
 
 public:
     explicit WordSet(int id, std::string title)
@@ -25,7 +25,7 @@ public:
         return id_;
     }
 
-    std::map<int, Word *> getWords(){
+    std::map<int, Word> getWords() const{
         return words_;
     }
 
@@ -34,7 +34,7 @@ public:
     }
 
     void addWord(Word &word){
-        words_[word.getId()] = &word;
+        words_[word.getId()] = word;
     }
 
     void deleteWordById(int wordId){

@@ -124,6 +124,20 @@ void WordRep::clearHistory(){
     historyChanges_.clear();
 }
 
+std::vector<Word> WordRep::getWords() {
+    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
+            "SELECT * FROM " + tableName));
+    std::vector<Word> words;
+    while (reqRes->next()){
+        words.emplace_back(
+                static_cast<int>(reqRes->getInt("id")),
+                static_cast<std::string>(reqRes->getString("original")),
+                static_cast<std::string>(reqRes->getString("translation")),
+                static_cast<std::string>(reqRes->getString("context")));
+    }
+    return words;
+}
+
 WordRepException::WordRepException(const std::string &message)
         : std::runtime_error(message) {
 }

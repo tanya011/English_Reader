@@ -77,26 +77,29 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep, WordSetRep *wordSetRep, Wor
                      [=]() { showWordSet(1); });
     wordSetIconForMenu_[1] = allWords_;
 
-    //makeIcons();  function if we work without network, it draws wordSet icons;
-
-    QObject::connect(wordSetRep_, &WordSetRep::wordSetWasCreated, this,
-                     &DictionaryWindow::addWordSetIconToMenu);
-    QObject::connect(wordSetRep_, &WordSetRep::wordSetWasDeleted, this,
-                     &DictionaryWindow::deleteWordSetIconFromMenu);
-
     QObject::connect(wordRep_, &WordRep::wordCreated,
                      wordSetContentRep_, &WordSetContentRep::addWordToSetTable);
 
     wordsPlacement_->setGeometry({0, 10, 1850, 4000});
     wordsPlacement_->setLayout(layout_);
 
-    //wordSetRep_.makeWordSetAllWords();
-
     dictSyncButtonConnect();
 }
 std::vector<WordSet> DictionaryWindow::getWordSets() {
     std::vector<WordSet> wordSets;
-    for (const auto &g : wordSetRep_->getWordSets()) {
+    WordSet allWordSets(1, "Все группы");
+    std::vector<Word> allWords = wordRep_->getWords();
+    for (auto &word: allWords){
+        allWordSets.addWord(word);
+    }
+    wordSets.push_back(allWordSets);
+
+    for (auto &g : wordSetRep_->getWordSets()) {
+        std::vector<int> content = wordSetContentRep_->getWordSetContent(g.getId());
+        for (auto i : content){
+            Word word(wordRep_->getWordById(i));
+            g.addWord(word);
+        }
         wordSets.push_back(g);
     }
     return wordSets;
@@ -128,7 +131,7 @@ void DictionaryWindow::executeRequestFromReadNow(const std::string& original, co
 
 void DictionaryWindow::makeIcons(){
     std::vector<WordSet> wordSets = wordSetRep_->getWordSets();
-    auto * allWordSets = new QAction("Все группы", this);
+    auto * allWordSets = new QAction("Все группы", wordSets_);
     wordSets_->addAction(allWordSets);
     QObject::connect(allWordSets, &QAction::triggered, this, [=](){
         showWordSet(1);
@@ -137,7 +140,7 @@ void DictionaryWindow::makeIcons(){
         if (wordSet.getId() == 1){
             continue;
         }
-        auto * action = new QAction(wordSet.getTitle().c_str(), this);
+        auto * action = new QAction(wordSet.getTitle().c_str(), wordSets_);
         wordSets_->addAction(action);
         QObject::connect(action, &QAction::triggered, this, [=](){
             showWordSet(wordSet.getId());
@@ -166,4 +169,8 @@ void DictionaryWindow::updateDictionaryChanges() {
         parent_->user->sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
         wordSetContentRepHistory.pop_back();
     }
+}
+
+void DictionaryWindow::removeIcons() {
+    wordSets_->clear();
 }
