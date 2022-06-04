@@ -18,31 +18,31 @@
 class LearnWindow : public QWidget {
 public:
     explicit LearnWindow(ConnectingWindow *parent = nullptr);
+
+    // через эту функцию передаются WordSet'ы пользователя, сохраняем в WordSets_
     void setWordSets(std::vector<WordSet> ws);
-    ConnectingWindow *parent;
 
-
+    ConnectingWindow *parent_;
 
 private slots:
-    void button_clicked();
+    void button_clicked(); // нажимаем на кнопку Начать
 
 private:
-    int screen_width;
-    int screen_height;
+    int screen_width_;
+    int screen_height_;
 
-    struct WordSetsInCheckBox {
-        QCheckBox *checkBox;
-        WordSet wordSet;
+    struct WordSetsInCheckBox_ {
+        QCheckBox *checkBox_{};
+        WordSet wordSet_;
     };
-    std::vector<WordSetsInCheckBox> m_checkBoxVector;
-    std::vector<WordSet> checkedWordSets;
-    std::vector<WordSet> allWordSets;
 
-    void printHeading();
+    std::vector<WordSetsInCheckBox_> m_checkBoxes_; // checkBox + wordSet
+    std::vector<WordSet> checkedWordSets_; // выбранные
+    std::vector<WordSet> WordSets_; // WordSet`ы пользователя
 
-    void printBox();
-
-    void printButton();
+    void printHeading(); // Заголовок: "Выберите группы"
+    void printBox(); // отрисовка checkBox`ов с названиями WordSet`ов
+    void printButton(); // Кнопка : "Начать"
 };
 
 #endif  // YAFR_LEARNWINDOW_H
