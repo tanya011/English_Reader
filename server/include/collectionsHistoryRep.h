@@ -4,6 +4,13 @@
 #include <mutex>
 #include "dbManager.h"
 #include "actCollectionsHistory.h"
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <mysql_connection.h>
+#include <mutex>
 
 
 struct CollectionsHistoryRep {
@@ -12,82 +19,10 @@ private:
     std::string tableName_ = "collectionsHistory";
     std::mutex *mutex_;  // Need to be locked before every work with DB
 public:
-    CollectionsHistoryRep(DBManager &m, std::mutex *mutex)
-            : manager_(m), mutex_(mutex) {
-        std::unique_lock l(*mutex_);
-        std::unique_ptr<sql::Statement> stmt(
-                manager_.getConnection().createStatement());
-        stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName_ +
-                      "("
-                      "userId INT,"
-                      "ActionNum INT,"
-                      "actionType TINYTEXT,"
-                      "bookId INT"
-                      ")");
-    }
-
-    std::vector<ActCollectionsHistory> giveHistoryById(int userId, int startAt) {
-        std::unique_lock l(*mutex_);
-
-        std::vector<ActCollectionsHistory> actions;
-
-        std::unique_ptr<sql::Statement> stmt(
-                manager_.getConnection().createStatement());
-
-        std::unique_ptr<sql::ResultSet> lastActionN = std::unique_ptr<sql::ResultSet>(
-                stmt->executeQuery("SELECT * FROM " + tableName_ +
-                                   " WHERE userId="+std::to_string(userId) + " AND ActionNum>=" + std::to_string(startAt)));
-
-        while (lastActionN->next()){
-            actions.push_back({lastActionN->getString("actionType"), lastActionN->getInt("bookId")});
-        }
-
-        return actions;
-    }
-
-    int lastAction(int userId){
-        std::unique_lock l(*mutex_);
-        std::unique_ptr<sql::Statement> stmt(
-                manager_.getConnection().createStatement());
-
-        std::unique_ptr<sql::ResultSet> lastActionN = std::unique_ptr<sql::ResultSet>(
-                stmt->executeQuery(R"(SELECT MAX(ActionNum) AS "ActionNum" FROM )" + tableName_ +
-                                   " WHERE userId="+std::to_string(userId)));
-
-        int action = 0;
-        while (lastActionN->next()){
-            action = lastActionN->getInt("ActionNum");
-        }
-        return action;
-    }
-
-    void addInHistory(int userId, ActCollectionsHistory action) {
-        std::unique_lock l(*mutex_);
-        std::unique_ptr<sql::Statement> stmt(
-                manager_.getConnection().createStatement());
-
-        std::unique_ptr<sql::ResultSet> lastActionN = std::unique_ptr<sql::ResultSet>(
-                stmt->executeQuery(R"(SELECT MAX(ActionNum) AS "ActionNum" FROM )" + tableName_ +
-                " WHERE userId="+std::to_string(userId)));
-
-        int newAction = 1;
-        while (lastActionN->next()){
-            newAction = lastActionN->getInt("ActionNum") + 1;
-        }
-
-        std::unique_ptr<sql::PreparedStatement> prst(
-                manager_.getConnection().prepareStatement(
-                        "INSERT INTO " + tableName_ +
-                        " (userId, ActionNum, actionType, bookId) VALUES "
-                        "(?,?,?,?)"));
-        prst->setInt(1, userId);
-        prst->setInt(2, newAction);
-        prst->setString(3, action.type);
-        prst->setInt(4, action.bookId);
-        prst->execute();
-    }
-
-
+    CollectionsHistoryRep(DBManager &m, std::mutex *mutex);
+    std::vector<ActCollectionsHistory> giveHistoryById(int userId, int startAt);
+    int lastAction(int userId);
+    void addInHistory(int userId, ActCollectionsHistory action);
 };
 
 #endif //YAFR_COLLECTIONSHISTORYREP_H

@@ -30,7 +30,7 @@ set(PROJECT_SOURCES
         src/wordSetRep.cpp
         src/wordSetContentRep.cpp
         include/collectionsHistoryRep.h
-        include/actCollectionsHistory.h)
+        include/actCollectionsHistory.h src/collectionsHistoryRep.cpp)
 
 add_executable(YAFR
         ${PROJECT_SOURCES}
