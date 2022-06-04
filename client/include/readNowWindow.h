@@ -1,7 +1,6 @@
 #ifndef READNOW_H
 #define READNOW_H
 
-#include <QMainWindow>
 #include <QToolBar>
 #include "connectingWindow.h"
 #include "dictionaryWindow.h"

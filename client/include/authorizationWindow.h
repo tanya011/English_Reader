@@ -1,7 +1,6 @@
 #ifndef AUTHORIZATION_H
 #define AUTHORIZATION_H
 
-
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QPushButton>

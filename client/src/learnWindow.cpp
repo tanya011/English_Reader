@@ -1,6 +1,16 @@
 #include "include/learnWindow.h"
 
 #include <utility>
+#include <QApplication>
+#include <QBoxLayout>
+#include <QCheckBox>
+#include <QDesktopWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QScrollArea>
+#include <iostream>
+#include <vector>
+#include "../include/cardsDisplay.h"
 
 LearnWindow::LearnWindow(ConnectingWindow *parent)
         : parent_(parent), QWidget(parent) {

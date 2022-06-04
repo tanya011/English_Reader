@@ -1,17 +1,8 @@
 #ifndef YAFR_LEARNWINDOW_H
 #define YAFR_LEARNWINDOW_H
 
-#include <QApplication>
-#include <QBoxLayout>
 #include <QCheckBox>
-#include <QDesktopWidget>
-#include <QLabel>
-#include <QMainWindow>
 #include <QPushButton>
-#include <QScrollArea>
-#include <iostream>
-#include <vector>
-#include "cardsDisplay.h"
 #include "connectingWindow.h"
 #include "../include/wordset.h"
 
