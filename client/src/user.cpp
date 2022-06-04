@@ -1,11 +1,15 @@
+
 #include "include/user.h"
 #include <nlohmann/json.hpp>
+#include "../include/config.h"
 #include "include/actCollectionsHistory.h"
 #include "include/serverProblemsWindow.h"
 
 namespace userRepLocal {
 void newValue(int value);
 }
+
+Config config(CONFIG_PATH);
 
 User::User(WordRep *wordRep,
            WordSetRep *wordSetRep,
@@ -14,7 +18,8 @@ User::User(WordRep *wordRep,
     : bookRep_(bookRep),
       wordRep_(wordRep),
       wordSetRep_(wordSetRep),
-      wordSetContentRep_(wordSetContentRep) {
+      wordSetContentRep_(wordSetContentRep),
+      client_(config.get("SERVER_ADDRESS")) {
 }
 
 void User::init(const std::string &username, const std::string &password) {
@@ -341,10 +346,10 @@ void User::sendWordSetRepHistoryChange(HistoryChangeWordSetRep change) {
                               {"name", change.wordSetName}};
     auto res = client_.Post("/wordSetRepChange", params);
 
-    if (!res) {
+    /*if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
-    }
+    }*/
 
     if (res->status != 200)
         throw std::runtime_error("Can't change wordSetRep, error code: " +
@@ -360,10 +365,10 @@ void User::sendWordSetContentRepHistoryChange(
                               {"wordId", std::to_string(change.wordId)}};
     auto res = client_.Post("/wordSetContentRepChange", params);
 
-    if (!res) {
+    /*if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
-    }
+    }*/
 
     if (res->status != 200)
         throw std::runtime_error(
@@ -397,24 +402,29 @@ void User::clearTablesDict() {
 }
 
 void User::updateDictionaryChanges() {
-    std::deque<HistoryChangeWordRep> wordRepHistory = wordRep_->getHistoryChanges();
-    std::deque<HistoryChangeWordSetRep> wordSetRepHistory = wordSetRep_->getHistoryChanges();
-    std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory = wordSetContentRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordRep> wordRepHistory =
+        wordRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordSetRep> wordSetRepHistory =
+        wordSetRep_->getHistoryChanges();
+    std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory =
+        wordSetContentRep_->getHistoryChanges();
+
+
+    while (!wordRepHistory.empty()){
+
+        sendWordRepHistoryChange(wordRepHistory.back());
+        wordRepHistory.pop_back();
+    }
+    while (!wordSetRepHistory.empty()) {
+        sendWordSetRepHistoryChange(wordSetRepHistory.back());
+        wordSetRepHistory.pop_back();
+    }
+    while (!wordSetContentRepHistory.empty()) {
+        sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
+        wordSetContentRepHistory.pop_back();
+    }
 
     wordRep_->clearHistory();
     wordSetRep_->clearHistory();
     wordSetContentRep_->clearHistory();
-
-    while (!wordRepHistory.empty()){
-        sendWordRepHistoryChange(wordRepHistory.back());
-        wordRepHistory.pop_back();
-    }
-    while (!wordSetRepHistory.empty()){
-        sendWordSetRepHistoryChange(wordSetRepHistory.back());
-        wordSetRepHistory.pop_back();
-    }
-    while (!wordSetContentRepHistory.empty()){
-        sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
-        wordSetContentRepHistory.pop_back();
-    }
 }

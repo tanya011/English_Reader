@@ -112,13 +112,13 @@ void DictionaryWindow::dictSyncButtonConnect() {
     serverSync_->setText("Синхронизация");
     serverSync_->show();
     QObject::connect(serverSync_, &QPushButton::clicked, this, [=](){
-        while (true) {
+        while(true) {
             try {
                 updateDictionaryChanges();
                 break;
-            } catch (ServerProblemsExceptionReconnect &) {
+            } catch (ServerProblemsExceptionReconnect &){
                 continue;
-            } catch (ServerProblemsExceptionNotSaveDict &) {
+            } catch (ServerProblemsExceptionNotSaveDict &){
                 break;
             }
         }
@@ -181,6 +181,7 @@ void DictionaryWindow::updateDictionaryChanges() {
     wordRep_->clearHistory();
     wordSetRep_->clearHistory();
     wordSetContentRep_->clearHistory();
+
 }
 
 void DictionaryWindow::removeIcons() {

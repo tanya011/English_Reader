@@ -46,8 +46,10 @@ target_link_libraries(YAFR PRIVATE Threads::Threads)
 target_link_libraries(YAFR PRIVATE nlohmann_json::nlohmann_json)
 
 target_link_libraries(YAFR PRIVATE OpenSSL::Crypto)
+target_link_libraries(YAFR PRIVATE OpenSSL::SSL)
 
 target_link_libraries(YAFR PRIVATE cryptopp)
 
-add_compile_definitions(CONFIG_PATH="../../config.json")
+add_compile_definitions(CONFIG_PATH="../config.json")
+
 

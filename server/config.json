@@ -1,0 +1,9 @@
+{
+  "DB_ADDRESS": "tcp://127.0.0.1:3306",
+  "DB_NAME": "yafr",
+  "DB_USER": "root",
+  "DB_PASSWORD": "root",
+  "PATH_TO_CERT": "/home/ekaterina/keys/localhost/cert.pem",
+  "PATH_TO_KEY": "/home/ekaterina/keys/localhost/key.pem"
+
+}
