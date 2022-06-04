@@ -64,7 +64,7 @@ set(PROJECT_SOURCES
         include/actCollectionsHistory.h
         include/serverProblemsWindow.h
         include/serverProblemsException.h
-        )
+        src/serverProblemsWindow.cpp)
 
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
