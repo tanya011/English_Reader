@@ -1,12 +1,10 @@
 #include "include/bookRep.h"
 #include <filesystem>
-#include <fstream>
 #include <sstream>
-#include <utility>
 
-BookRep::BookRep(DBManager &m, std::filesystem::path appFolder)
-    : manager_(m), appFolder_(std::move(appFolder)) {
-    create_directories(appFolder_ / "books");
+BookRep::BookRep(DBManager &m)
+    : manager_(m), pathToBooks_(APP_FOLDER "/" + tableName_) {
+    std::filesystem::create_directories(pathToBooks_);
     std::unique_ptr<sql::Statement> stmt(
         manager_.getConnection().createStatement());
     stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName_ +
@@ -24,9 +22,10 @@ void BookRep::addBook(int id,
                       const std::string &filename) {
     std::ifstream file(filename);
     if (!file.good())
-        throw std::runtime_error("Bad file");
-    std::filesystem::path pathToBook = filename;
-    pathToBook = std::filesystem::absolute(pathToBook);
+        throw std::runtime_error("File of book is bad");
+
+    std::filesystem::path pathToBook = std::filesystem::absolute(filename);
+
     std::unique_ptr<sql::PreparedStatement> prst(
         manager_.getConnection().prepareStatement(
             "INSERT INTO " + tableName_ +
@@ -45,16 +44,18 @@ void BookRep::addAndSaveBook(int id,
                              const std::string &text) {
     std::string filename =
         std::to_string(id) + "|" + bookName + "|" + author + ".txt";
-    std::cout << "new_file_name : " << filename << std::endl;
-    auto folder = appFolder_ / "books" / filename;
+    std::filesystem::path folder(pathToBooks_ / filename);
+    std::cout << "Saving book to: " + folder.string() << std::endl;
+
     std::ofstream file(folder, std::ios::out);
     if (!file.good())
-        throw std::runtime_error("Problems with app directory");
+        throw std::runtime_error("Can't open/create file to save book");
     file << text;
+
     this->addBook(id, bookName, author, folder);
 }
 
-void BookRep::deleteBookById(int id) {  // true if everything is ok
+void BookRep::deleteBookById(int id) {
     std::unique_ptr<sql::Statement> stmt(
         manager_.getConnection().createStatement());
     stmt->execute("DELETE FROM " + tableName_ +
@@ -72,7 +73,7 @@ Book BookRep::getBookById(int id) {
                     static_cast<std::string>(reqRes->getString("author")),
                     static_cast<std::string>(reqRes->getString("filename"))};
     } else {
-        throw bookNotFoundException();
+        throw std::runtime_error("Book is not found");
     }
 }
 
@@ -82,8 +83,8 @@ std::vector<Book> BookRep::getAllBooks() {
     std::unique_ptr<sql::ResultSet> reqRes(
         stmt->executeQuery("SELECT id, name, author, filename  FROM " +
                            tableName_ + " ORDER BY name"));
-    std::vector<Book> books;
 
+    std::vector<Book> books;
     while (reqRes->next()) {
         books.emplace_back(
             static_cast<int>(reqRes->getInt("id")),
@@ -93,18 +94,14 @@ std::vector<Book> BookRep::getAllBooks() {
     }
     return books;
 }
+
 void BookRep::clear() {
-    std::filesystem::remove_all(appFolder_ / "books");
-    create_directories(appFolder_ / "books");
+    std::filesystem::remove_all(pathToBooks_);
+    std::filesystem::create_directories(pathToBooks_);
+
     std::unique_ptr<sql::Statement> stmt(
         manager_.getConnection().createStatement());
     stmt->execute("DELETE FROM " + tableName_);
-    std::cout << "Books deleted" << std::endl;
-}
 
-BookRepException::BookRepException(const std::string &message)
-    : std::runtime_error(message) {
-}
-bookNotFoundException::bookNotFoundException()
-    : BookRepException("Book is not found") {
+    std::cout << "All books deleted" << std::endl;
 }
