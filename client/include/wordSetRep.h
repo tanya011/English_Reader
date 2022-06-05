@@ -18,11 +18,6 @@ struct WordSetRepException : std::runtime_error {
             const std::string &message = "BookRep exception");
 };
 
-struct WordSetNotFoundException : WordSetRepException {
-    WordSetNotFoundException();
-};
-
-
 struct HistoryChangeWordSetRep{
     std::string operation;
     int wordSetId;
@@ -34,10 +29,10 @@ struct WordSetRep : public QObject {
 Q_OBJECT
 
 private:
-    DBManager &manager;
-    std::unique_ptr<sql::Statement> stmt;
-    std::string tableName = "wordSets";
-    int freeId = 2;   // 1 reserved for allWords wordset
+    DBManager &manager_;
+    std::unique_ptr<sql::Statement> stmt_;
+    std::string tableName_ = "wordSets";
+    int freeId_ = 2;   // 1 reserved for allWords wordset
 
     std::deque<HistoryChangeWordSetRep> historyChanges_;
 
@@ -48,8 +43,6 @@ public:
 
     int addWordSet(WordSet &wordSet);
 
-    bool deleteWordSetById(int id);
-
     void makeWordSetAllWords();
 
     [[nodiscard]] std::vector<WordSet> getWordSets();
@@ -59,10 +52,6 @@ public:
     void clear();
 
     void clearHistory();
-
-signals:
-    void wordSetWasCreated(int wordsetId, std::string title);
-    void wordSetWasDeleted(int wordSetId);
 };
 
 #endif  // WORDSETREP_H

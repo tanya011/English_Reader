@@ -2,8 +2,6 @@
 #define DICTIONARY_WINDOW_H
 
 #include <QGridLayout>
-#include <QGroupBox>
-#include <QInputDialog>
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
@@ -11,7 +9,7 @@
 #include <QScrollArea>
 #include <QTextEdit>
 #include <QWidget>
-#include <fstream>
+
 #include "../include/wordset.h"
 #include "connectingWindow.h"
 #include "wordRep.h"
@@ -21,28 +19,23 @@
 class DictionaryWindow : public QWidget {
     Q_OBJECT
 
-    std::vector<std::pair<QLabel *, QLabel *>> wordLabels_;
 
     ConnectingWindow *parent_;
 
-    QMenuBar *wordSetsToolsBar_ = new QMenuBar(this);
+    std::vector<std::pair<QLabel *, QLabel *>> wordLabels_;
 
-    // QGroupBox *wordsPlacement_ = new QGroupBox(this);
 
-    QPushButton *serverSync_;
-
-    QGridLayout *layout_ = new QGridLayout();
+    QMenuBar *toolBar_;
+    QGridLayout *layout_;
     QWidget *box_;
-    QScrollArea *scrollArea = new QScrollArea(this);
+    QScrollArea *scrollArea;
 
-    int curOpenWordSetId_ = 1;
 
     std::map<int, QAction *>
-        wordSetIconForMenu_;  // Helps to add name of wordSet in wordSet menu
+        wordSetIconForMenu_;
 
-    QMenu *wordSets_ = new QMenu("Выбор группы", wordSetsToolsBar_);
-
-    QAction *allWords_ = new QAction("Все группы", wordSets_);
+    QMenu *wordSets_;
+    QAction *allWords_;
 
     std::vector<QPushButton *> wordBtnsDeleteFromDictionary_;
     std::vector<QPushButton *> wordBtnsDeleteFromWordSet_;
@@ -59,11 +52,11 @@ public:
 
     void showWordSet(int wordSetId);
 
+    void makeWordSetIcons();
+
+    void removeWordSetIcons();
+
     std::vector<WordSet> getWordSets();
-
-    void dictSyncButtonConnect();
-
-    void clearTables();
 
     void executeRequestFromReadNow(const std::string &original,
                                    const std::string &translation,
@@ -71,15 +64,6 @@ public:
                                    const std::string &context = "");
 
     void updateDictionaryChanges();
-
-    void makeIcons();
-
-    void removeIcons();
-
-public slots:
-    void addWordSetIconToMenu(int wordSetId, const std::string &title);
-
-    void deleteWordSetIconFromMenu(int wordSetId);
 };
 
 #endif  // DICTIONARY_WINDOW_H

@@ -1,9 +1,8 @@
 #include "include/wordRep.h"
-#include <qdebug.h>
 
 WordRep::WordRep(DBManager &m)
-        : manager(m), stmt(manager.getConnection().createStatement()) {
-    stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName +
+        : manager_(m), stmt_(manager_.getConnection().createStatement()) {
+    stmt_->execute("CREATE TABLE IF NOT EXISTS " + tableName_ +
                   "("
                   "id INT NOT NULL UNIQUE,"
                   "original TINYTEXT,"
@@ -12,9 +11,9 @@ WordRep::WordRep(DBManager &m)
                   ")");
 
     std::unique_ptr<sql::ResultSet> maxId(
-            stmt->executeQuery("SELECT MAX(id) FROM " + tableName));
+            stmt_->executeQuery("SELECT MAX(id) FROM " + tableName_));
     if (maxId->next()) {
-        freeId = maxId->getInt(1) + 1;
+        freeId_ = maxId->getInt(1) + 1;
     }
 }
 
@@ -23,8 +22,8 @@ int WordRep::addWord(const std::string &original,
                      const std::string &context) {
     try {
         std::unique_ptr<sql::PreparedStatement> prst1(
-                manager.getConnection().prepareStatement("SELECT id FROM " + tableName + " WHERE original=?" +
-                                                         " AND translation=?"));
+                manager_.getConnection().prepareStatement("SELECT id FROM " + tableName_ + " WHERE original=?" +
+                                                          " AND translation=?"));
         prst1->setString(1, original);
         prst1->setString(2, translation);
         std::unique_ptr<sql::ResultSet> reqRes(prst1->executeQuery());
@@ -32,19 +31,19 @@ int WordRep::addWord(const std::string &original,
             return static_cast<int>(reqRes->getInt("id"));
         } else {
             std::unique_ptr<sql::PreparedStatement> prst2(
-                    manager.getConnection().prepareStatement(
-                            "INSERT INTO " + tableName +
+                    manager_.getConnection().prepareStatement(
+                            "INSERT INTO " + tableName_ +
                             " (id, original, translation, context) VALUES "
                             "(?,?,?,?)"));
-            freeId++;
-            prst2->setInt(1, freeId);
+            freeId_++;
+            prst2->setInt(1, freeId_);
             prst2->setString(2, original);
             prst2->setString(3, translation);
             prst2->setString(4, context);
             prst2->execute();
-            historyChanges_.push_front({"wordAdded", freeId, original, translation, context});
-            emit wordCreated(1, freeId);
-            return freeId;
+            historyChanges_.push_front({"wordAdded", freeId_, original, translation, context});
+            emit wordAdded(1, freeId_);
+            return freeId_;
         }
     } catch (sql::SQLException &e) {
         return -1;
@@ -53,7 +52,7 @@ int WordRep::addWord(const std::string &original,
 
 int WordRep::addWord(Word &word) {
     try {
-        std::unique_ptr<sql::PreparedStatement> prst1(manager.getConnection().prepareStatement( "SELECT id FROM " + tableName + " WHERE id=?" + " AND original=?" +
+        std::unique_ptr<sql::PreparedStatement> prst1(manager_.getConnection().prepareStatement("SELECT id FROM " + tableName_ + " WHERE id=?" + " AND original=?" +
                                                                                                 " AND translation=?"));
         prst1->setInt(1, word.getId());
         prst1->setString(2, word.getOriginal());
@@ -63,8 +62,8 @@ int WordRep::addWord(Word &word) {
             return static_cast<int>(reqRes->getInt("id"));
         } else {
             std::unique_ptr<sql::PreparedStatement> prst2(
-                    manager.getConnection().prepareStatement(
-                            "INSERT INTO " + tableName +
+                    manager_.getConnection().prepareStatement(
+                            "INSERT INTO " + tableName_ +
                             " (id, original, translation, context) VALUES "
                             "(?,?,?,?)"));
             prst2->setInt(1, word.getId());
@@ -73,8 +72,8 @@ int WordRep::addWord(Word &word) {
             prst2->setString(4, word.getContext());
 
             prst2->execute();
-            freeId = std::max(freeId, word.getId());
-            emit wordCreated(1, word.getId());
+            freeId_ = std::max(freeId_, word.getId());
+            emit wordAdded(1, word.getId());
             return word.getId();
         }
     } catch (sql::SQLException &e) {
@@ -83,33 +82,26 @@ int WordRep::addWord(Word &word) {
 }
 
 void WordRep::deleteWordById(int id) {
-    stmt->execute("DELETE FROM " + tableName +
-                  " WHERE id=" + std::to_string(id));
+    stmt_->execute("DELETE FROM " + tableName_ +
+                   " WHERE id=" + std::to_string(id));
     historyChanges_.push_front({"wordDeleted", id});
 }
 
-std::vector<Word> WordRep::downloadWords() {
-    std::unique_ptr<sql::ResultSet> reqRes(
-            stmt->executeQuery("SELECT id, original, translation, context  FROM " +
-                               tableName + " ORDER BY original"));
-    std::vector<Word> words;
-    while (reqRes->next()) {
-        words.emplace_back(
-                static_cast<int>(reqRes->getInt("id")),
-                static_cast<std::string>(reqRes->getString("original")),
-                static_cast<std::string>(reqRes->getString("translation")),
-                static_cast<std::string>(reqRes->getString("context")));
-    }
-    return words;
+void WordRep::clear(){
+    stmt_->execute("TRUNCATE " + tableName_);
 }
 
-void WordRep::clear(){
-    stmt->execute("TRUNCATE " + tableName);
+void WordRep::clearHistory(){
+    historyChanges_.clear();
+}
+
+std::deque<HistoryChangeWordRep> WordRep::getHistoryChanges() {
+    return historyChanges_;
 }
 
 Word WordRep::getWordById(int wordId) {
     std::unique_ptr<sql::ResultSet> reqRes(
-            stmt->executeQuery("SELECT * FROM " + tableName + " WHERE id=" + std::to_string(wordId)));
+            stmt_->executeQuery("SELECT * FROM " + tableName_ + " WHERE id=" + std::to_string(wordId)));
     if (reqRes->next()) {
         Word word = Word(static_cast<int>(reqRes->getInt("id")),
                          static_cast<std::string>(reqRes->getString("original")),
@@ -118,21 +110,13 @@ Word WordRep::getWordById(int wordId) {
         return word;
     }
     else{
-        throw WordRepException("trying to get word, which doesnt exists");
+        throw WordNotFoundException();
     }
 }
 
-std::deque<HistoryChangeWordRep> WordRep::getHistoryChanges() {
-    return historyChanges_;
-}
-
-void WordRep::clearHistory(){
-    historyChanges_.clear();
-}
-
 std::vector<Word> WordRep::getWords() {
-    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-            "SELECT * FROM " + tableName));
+    std::unique_ptr<sql::ResultSet> reqRes(stmt_->executeQuery(
+            "SELECT * FROM " + tableName_));
     std::vector<Word> words;
     while (reqRes->next()){
         words.emplace_back(

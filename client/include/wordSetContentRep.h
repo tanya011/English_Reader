@@ -28,16 +28,22 @@ struct WordSetContentRep : public QObject {
 Q_OBJECT
 
 private:
-    DBManager &manager;
-    std::unique_ptr<sql::Statement> stmt;
-    std::string tableName = "wordSetContent";
+    DBManager &manager_;
+    std::unique_ptr<sql::Statement> stmt_;
+    std::string tableName_ = "wordSetContent";
 
     std::deque<HistoryChangeWordSetContentRep> historyChanges_;
+
+public slots:
+    void addWordToSetTable(int wordSetId, int WordId);
+
+    void deleteWordFromSet(int wordSetId, int WordId);
+
 
 public:
     explicit WordSetContentRep(DBManager &m);
 
-    std::vector<std::pair<int, int>> downloadWordSetsContentData();
+    void deleteWordFromAllSets(int wordId);
 
     void clear();
 
@@ -47,17 +53,9 @@ public:
 
     int getWordSetSize(int wordSetId);
 
-    void deleteWordFromAllSets(int wordId);
-
     void saveHistoryAddWordToSet(int wordSetId, int wordId);
 
     std::deque<HistoryChangeWordSetContentRep> getHistoryChanges();
-
-public slots:
-    void addWordToSetTable(int wordSetId, int WordId);
-
-    bool deleteWordFromSet(int wordSetId, int WordId);
-
 };
 
 #endif  // WORDSETCONTENTREP_H

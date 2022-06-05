@@ -18,8 +18,8 @@ struct WordRepServ{
 
 private:
     DBManager &manager_;
-    std::unique_ptr<sql::Statement> stmt;
-    std::string tableName = "wordsServer";
+    std::unique_ptr<sql::Statement> stmt_;
+    std::string tableName_ = "wordsServer";
     std::mutex* mutex_;
 
 public:
@@ -35,8 +35,6 @@ public:
                         int id);
 
     std::vector<Word> getUserWords(int userId);
-
-
 };
 
 #endif  // WORDREP_H
