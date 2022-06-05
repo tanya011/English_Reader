@@ -26,7 +26,6 @@ User::User(WordRep *wordRep,
 }
 
 User::~User() {
-    timer_.stop();
 }
 
 void User::init(const std::string &username, const std::string &password) {

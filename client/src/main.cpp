@@ -72,7 +72,6 @@ int main(int argc, char *argv[]) {
             a.setStyleSheet("QWidget{font-size:30px;}");
 
             connectingWindow.show();
-            user.startRequestThread();
 
             return a.exec();
         } catch (ServerProblemsExceptionAbort &e) {

@@ -17,7 +17,7 @@
 #include "wordSetRep.h"
 
 class DictionaryWindow : public QWidget {
-    Q_OBJECT
+Q_OBJECT
 
 
     ConnectingWindow *parent_;
@@ -26,13 +26,14 @@ class DictionaryWindow : public QWidget {
 
 
     QMenuBar *toolBar_;
+    QPushButton *serverSync_;
     QGridLayout *layout_;
     QWidget *box_;
     QScrollArea *scrollArea;
 
 
     std::map<int, QAction *>
-        wordSetIconForMenu_;
+            wordSetIconForMenu_;
 
     QMenu *wordSets_;
     QAction *allWords_;
@@ -55,6 +56,8 @@ public:
     void makeWordSetIcons();
 
     void removeWordSetIcons();
+
+    void dictSyncButtonConnect();
 
     std::vector<WordSet> getWordSets();
 
