@@ -1,14 +1,13 @@
 #include "include/libraryWindow.h"
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QScrollArea>
 #include <QString>
 #include <exception>
 #include "include/readNowWindow.h"
 #include "include/serverProblemsException.h"
-#include "include/serverProblemsWindow.h"
 
 LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
+
     box = new QWidget;
     layout = new QGridLayout;
     box->setLayout(layout);
@@ -16,7 +15,7 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
     if (parent_->user->isAuthorized())
         updateWindow();
 
-    QPushButton *button = new QPushButton;
+    auto *button = new QPushButton;
     button->setParent(this);
     button->setGeometry(30, 1370, 300, 70);
     button->setText("Test Update");
@@ -28,7 +27,7 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
         QApplication::desktop()->screenGeometry().width() - 1000;
     auto screen_height =
         QApplication::desktop()->screenGeometry().height() - 200;
-    this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
+    this->setStyleSheet("QLabel{margin: 10px;}");
     box->setFixedWidth(screen_width - 20);
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
     // Styles
@@ -57,6 +56,7 @@ void LibraryWindow::updateWindow() {
             delete item;
         }
     }
+
     titleLabels_.clear();
     addBtns_.clear();
 

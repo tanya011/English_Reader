@@ -3,13 +3,12 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QGridLayout>
 #include <QScrollArea>
-#include "include/connectingWindow.h"
 #include "../include/book.h"
-
+#include "include/connectingWindow.h"
 
 class LibraryWindow : public QWidget {
 private:
@@ -17,20 +16,15 @@ private:
     std::vector<QLabel *> titleLabels_;
     std::vector<QPushButton *> addBtns_;
     ConnectingWindow *parent_;
-
     QWidget *box;
     QGridLayout *layout = new QGridLayout();
     QScrollArea *scrollArea = new QScrollArea(this);
 
-
     void connectWithCollection(int bookId);
 
 public:
-    LibraryWindow(ConnectingWindow *parent);
-
-public:
+    explicit LibraryWindow(ConnectingWindow *parent);
     void updateWindow();
-
 };
 
 #endif  // LIBRARY_WINDOW_H
