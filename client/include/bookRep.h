@@ -1,14 +1,7 @@
 #ifndef YAFR_BOOKREP_H
 #define YAFR_BOOKREP_H
 
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <mysql_connection.h>
 #include <filesystem>
-#include <mutex>
 #include "../include/book.h"
 #include "dbManager.h"
 

@@ -1,5 +1,8 @@
 #include "include/bookRep.h"
-#include <filesystem>
+#include <cppconn/exception.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
 #include <sstream>
 
 BookRep::BookRep(DBManager &m)

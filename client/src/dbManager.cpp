@@ -3,6 +3,8 @@
 #include <cppconn/statement.h>
 #include "../include/config.h"
 
+inline Config config(CONFIG_PATH);
+
 DBManager::DBManager()
     : driver_(get_driver_instance()),
       dbName_(config.get("DB_NAME")),

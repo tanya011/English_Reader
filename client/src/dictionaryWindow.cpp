@@ -32,7 +32,7 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep,
     auto screen_height =
         QApplication::desktop()->screenGeometry().height() - 200;
     this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
-    box_->setFixedWidth(screen_width - 20);
+    //box_->setFixedWidth(screen_width - 20);
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
     // Styles
 
@@ -40,8 +40,10 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep,
 }
 
 void DictionaryWindow::showWordSet(int wordSetId) {
-    int prevSize = wordSetContentRep_->getWordSetSize(curOpenWordSetId_);
-    for (int i = 0; i < prevSize; i++) {
+    for (int i = 0; i < wordLabels_.size(); i++) {
+        for(int j=0; j<4; j++){
+            delete layout_->itemAtPosition(i, j)->widget();
+        }
         QLayoutItem *item;
         while ((item = layout_->takeAt(0)) != nullptr) {
             delete item->widget();
