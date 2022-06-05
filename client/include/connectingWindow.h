@@ -3,15 +3,14 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-#include "user.h"
 #include "../include/wordset.h"
+#include "user.h"
 
 class ConnectingWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    User *user;  // Maybe it's bad, that its public, but at the same time it
-                 // doesn't even belong to this window
+    User *user;
     QStackedWidget allWindows;
     struct WindowIndexes {
         int library = -1, readNow = -1, dictionary = -1, auth = -1, learn = -1,
@@ -28,20 +27,14 @@ public:
     void showCards();
     void showAuth();
     void showLibrary();
-    void showServerProblems();
 
-    void authAddExit(){
-
-    }
-
-    void updateLibrary();
+    void updateLibrary() const;
     void updateReadNow(const std::string &title,
                        const std::string &author,
-                       const std::string &text);
-    void updateDictionary();
+                       const std::string &text) const;
+    void updateDictionary() const;
     void updateCards();
-    void updateCollection();
-    void makeConnectWithDict();
+    void updateCollection() const;
 
 private:
     QAction *collectionAction_;
@@ -51,7 +44,7 @@ private:
     QAction *cardsAction_;
     QAction *libraryAction_;
 
-    std::vector<WordSet> getWordSets();
+    std::vector<WordSet> getWordSets() const;
 
     void addMenu();
 };

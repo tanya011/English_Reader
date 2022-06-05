@@ -5,8 +5,8 @@
 #include <QString>
 #include <exception>
 #include "include/readNowWindow.h"
-#include "include/serverProblemsWindow.h"
 #include "include/serverProblemsException.h"
+#include "include/serverProblemsWindow.h"
 
 LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
     box = new QWidget;
@@ -21,19 +21,17 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
     button->setGeometry(30, 1370, 300, 70);
     button->setText("Test Update");
     button->show();
-    connect(button, &QPushButton::clicked, this,
-            &LibraryWindow::updateWindow);
+    connect(button, &QPushButton::clicked, this, &LibraryWindow::updateWindow);
 
     // Styles
     auto screen_width =
-            QApplication::desktop()->screenGeometry().width() - 1000;
+        QApplication::desktop()->screenGeometry().width() - 1000;
     auto screen_height =
-            QApplication::desktop()->screenGeometry().height() - 200;
+        QApplication::desktop()->screenGeometry().height() - 200;
     this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
     box->setFixedWidth(screen_width - 20);
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
     // Styles
-
 }
 
 void LibraryWindow::updateWindow() {
@@ -51,7 +49,6 @@ void LibraryWindow::updateWindow() {
         }
     }
 
-
     for (int i = 0; i < old_books.size(); i++) {
         QLayoutItem *item;
         while ((item = layout->takeAt(0)) != nullptr) {
@@ -67,9 +64,9 @@ void LibraryWindow::updateWindow() {
     addBtns_ = std::vector<QPushButton *>(books_.size());
 
     for (int i = 0; i < books_.size(); i++) {
-        titleLabels_[i] = new QLabel(
-                QString("Name: %1,   Author: %2")
-                        .arg(books_[i].getName().c_str(), books_[i].getAuthor().c_str()));
+        titleLabels_[i] = new QLabel(QString("Name: %1,   Author: %2")
+                                         .arg(books_[i].getName().c_str(),
+                                              books_[i].getAuthor().c_str()));
         layout->addWidget(titleLabels_[i], i, 0);
 
         addBtns_[i] = new QPushButton(tr("Add"));
@@ -85,22 +82,20 @@ void LibraryWindow::updateWindow() {
         QObject::connect(addBtns_[i], &QPushButton::clicked, this,
                          [=]() { connectWithCollection(books_[i].getId()); });
     }
-
 }
-
 
 void LibraryWindow::connectWithCollection(int bookId) {
     while (true) {
         try {
-            if (parent_->user->addBookToCollection(bookId)) {
-                parent_->updateCollection();
-            }
+            parent_->user->addBookToCollection(bookId);
+            parent_->updateCollection();
             break;
-        } catch (ServerProblemsExceptionReconnect &){
+        } catch (ServerProblemsExceptionReconnect &) {
             continue;
-        } catch (ServerProblemsExceptionNotAddInCollection &){
+        } catch (ServerProblemsExceptionNotAddInCollection &) {
             break;
+        } catch (std::exception &e) {
+            std::cout << e.what() << std::endl;
         }
-
     }
 }
