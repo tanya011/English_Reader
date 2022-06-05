@@ -10,10 +10,10 @@
 #include "../include/word.h"
 #include "../include/wordset.h"
 #include "bookRep.h"
+#include "include/periodic_function.h"
 #include "wordRep.h"
 #include "wordSetContentRep.h"
 #include "wordSetRep.h"
-#include "include/periodic_function.h"
 
 namespace userRepLocal {
 int getValue();
@@ -26,7 +26,6 @@ struct action {
     int bookId;
 };
 
-// Here http used, so we can't send password to server safely
 struct User {
 private:
     BookRep *bookRep_;
@@ -34,18 +33,16 @@ private:
     WordSetRep *wordSetRep_;
     WordSetContentRep *wordSetContentRep_;
 
-
     httplib::SSLClient client_;
-
-
     bool isAuthorized_ = false;
     std::string token_;
+
     std::vector<action> actionsToDBCollections;
 
     CallBackTimer timer_;
 
 public:
-    std::queue<ActCollectionsHistory> Queue;
+    std::queue<ActCollectionsHistory> historyQueue_;
 
     User(WordRep *wordRep,
          WordSetRep *wordSetRep,
@@ -58,9 +55,25 @@ public:
 
     void startRequestThread();
 
+    bool isAuthorized() const;
+
+    void exit();
+
     std::vector<Book> getCollectionBooks();
 
     std::vector<Book> getLibraryBooks();
+
+    int getLastCollectionAction();
+
+    void addBookToCollection(int bookId);
+
+    void deleteCollectionBook(int bookId);
+
+    void newActionInCollection(const std::string &action, int bookId);
+
+    std::vector<ActCollectionsHistory> getNewActions(int startAt);
+
+    void syncCollection();
 
     std::vector<Word> getWords();
 
@@ -80,30 +93,6 @@ public:
     void updateDictionaryChanges();
 
     void clearTablesDict();
-
-    int addBookToLocalCollection(int bookId);
-
-    int getLastCollectionAction();
-
-    int addBookToCollection(int bookId);
-
-    std::vector<Book> updateLibrary();
-
-    void deleteCollectionBook(int bookId);
-
-    bool isAuthorized() const;
-
-    void exit();
-
-    void newActionInCollection(std::string action, int bookId);
-
-    std::vector<ActCollectionsHistory> getNewActions(int startAt);
-
-    // TODO: sync_dict();
-
-    void syncCollection();
-
-    // TODO: sync_lib();
 };
 
 #endif  // YAFR_USER_H

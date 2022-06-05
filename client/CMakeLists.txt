@@ -49,6 +49,8 @@ set(PROJECT_SOURCES
         src/wordSetContentRep.cpp
         src/userRepLocal.cpp
         src/serverProblemsWindow.cpp
+        src/dbManager.cpp
+
 
         include/bookRep.h
         include/dbManager.h

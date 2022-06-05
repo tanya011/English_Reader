@@ -7,12 +7,11 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep,
                                    WordSetRep *wordSetRep,
                                    WordSetContentRep *wordSetContentRep,
                                    ConnectingWindow *parent)
-        : QWidget(parent),
-          wordRep_(wordRep),
-          wordSetRep_(wordSetRep),
-          wordSetContentRep_(wordSetContentRep),
-          parent_(parent) {
-
+    : QWidget(parent),
+      wordRep_(wordRep),
+      wordSetRep_(wordSetRep),
+      wordSetContentRep_(wordSetContentRep),
+      parent_(parent) {
     toolBar_ = new QMenuBar(this);
     layout_ = new QGridLayout();
     scrollArea = new QScrollArea(this);
@@ -31,8 +30,7 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep,
 }
 
 void DictionaryWindow::showWordSet(int wordSetId) {
-    for (int i = 0; i < layout_->count(); i++)
-    {
+    for (int i = 0; i < layout_->count(); i++) {
         layout_->itemAt(i)->widget()->deleteLater();
     }
     wordBtnsDeleteFromDictionary_.clear();
@@ -44,7 +42,7 @@ void DictionaryWindow::showWordSet(int wordSetId) {
     wordBtnsDeleteFromWordSet_.resize(curSize);
     std::vector<int> wordIds = wordSetContentRep_->getWordSetContent(wordSetId);
 
-    box_ = new QWidget ;
+    box_ = new QWidget;
     layout_ = new QGridLayout;
     box_->setLayout(layout_);
 
@@ -56,19 +54,19 @@ void DictionaryWindow::showWordSet(int wordSetId) {
         wordLabels_.emplace_back(word, translation);
 
         wordBtnsDeleteFromDictionary_[i] =
-                new QPushButton("Удалить из словаря");
+            new QPushButton("Удалить из словаря");
         wordBtnsDeleteFromWordSet_[i] = new QPushButton("Удалить из группы");
         QObject::connect(wordBtnsDeleteFromDictionary_[i],
                          &QPushButton::clicked, this, [=]() {
-                    wordSetContentRep_->deleteWordFromAllSets(id);
-                    wordRep_->deleteWordById(id);
-                    showWordSet(wordSetId);
-                });
+                             wordSetContentRep_->deleteWordFromAllSets(id);
+                             wordRep_->deleteWordById(id);
+                             showWordSet(wordSetId);
+                         });
         QObject::connect(
-                wordBtnsDeleteFromWordSet_[i], &QPushButton::clicked, this, [=]() {
-                    wordSetContentRep_->deleteWordFromSet(wordSetId, id);
-                    showWordSet(wordSetId);
-                });
+            wordBtnsDeleteFromWordSet_[i], &QPushButton::clicked, this, [=]() {
+                wordSetContentRep_->deleteWordFromSet(wordSetId, id);
+                showWordSet(wordSetId);
+            });
     }
 
     for (int i = 0; i < wordLabels_.size(); i++) {
@@ -82,9 +80,9 @@ void DictionaryWindow::showWordSet(int wordSetId) {
 
     // Styles
     auto screen_width =
-            QApplication::desktop()->screenGeometry().width() - 1000;
+        QApplication::desktop()->screenGeometry().width() - 1000;
     auto screen_height =
-            QApplication::desktop()->screenGeometry().height() - 400;
+        QApplication::desktop()->screenGeometry().height() - 400;
     this->setStyleSheet("QLabel{font-size: 12pt; margin: 10px;}");
     box_->setFixedWidth(screen_width - 20);
     scrollArea->setGeometry(450, 50, screen_width, screen_height);
@@ -108,7 +106,6 @@ void DictionaryWindow::makeWordSetIcons() {
     }
 }
 
-
 std::vector<WordSet> DictionaryWindow::getWordSets() {
     std::vector<WordSet> wordSets;
     WordSet allWordSets(1, "Все группы");
@@ -120,7 +117,7 @@ std::vector<WordSet> DictionaryWindow::getWordSets() {
 
     for (auto &wordSet : wordSetRep_->getWordSets()) {
         std::vector<int> content =
-                wordSetContentRep_->getWordSetContent(wordSet.getId());
+            wordSetContentRep_->getWordSetContent(wordSet.getId());
         for (auto i : content) {
             Word word(wordRep_->getWordById(i));
             wordSet.addWord(word);
@@ -135,10 +132,10 @@ void DictionaryWindow::removeWordSetIcons() {
 }
 
 void DictionaryWindow::executeRequestFromReadNow(
-        const std::string &original,
-        const std::string &translation,
-        const std::string &wordSetTitle,
-        const std::string &context) {
+    const std::string &original,
+    const std::string &translation,
+    const std::string &wordSetTitle,
+    const std::string &context) {
     int wordId = wordRep_->addWord(original, translation, context);
     int wordSetId = wordSetRep_->addWordSet(wordSetTitle);
     wordSetContentRep_->addWordToSetTable(wordSetId, wordId);
@@ -147,11 +144,11 @@ void DictionaryWindow::executeRequestFromReadNow(
 
 void DictionaryWindow::updateDictionaryChanges() {
     std::deque<HistoryChangeWordRep> wordRepHistory =
-            wordRep_->getHistoryChanges();
+        wordRep_->getHistoryChanges();
     std::deque<HistoryChangeWordSetRep> wordSetRepHistory =
-            wordSetRep_->getHistoryChanges();
+        wordSetRep_->getHistoryChanges();
     std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory =
-            wordSetContentRep_->getHistoryChanges();
+        wordSetContentRep_->getHistoryChanges();
 
     while (!wordRepHistory.empty()) {
         parent_->user->sendWordRepHistoryChange(wordRepHistory.back());
@@ -163,7 +160,7 @@ void DictionaryWindow::updateDictionaryChanges() {
     }
     while (!wordSetContentRepHistory.empty()) {
         parent_->user->sendWordSetContentRepHistoryChange(
-                wordSetContentRepHistory.back());
+            wordSetContentRepHistory.back());
         wordSetContentRepHistory.pop_back();
     }
 

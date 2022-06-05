@@ -1,15 +1,15 @@
-
 #include "include/user.h"
 #include <nlohmann/json.hpp>
+#include "../include/config.h"
 #include "include/actCollectionsHistory.h"
-#include "include/serverProblemsWindow.h"
 #include "include/serverProblemsException.h"
+#include "include/serverProblemsWindow.h"
+
+inline Config config(CONFIG_PATH);
 
 namespace userRepLocal {
-    void newValue(int value);
+void newValue(int value);
 }
-
-Config config(CONFIG_PATH);
 
 User::User(WordRep *wordRep,
            WordSetRep *wordSetRep,
@@ -20,17 +20,17 @@ User::User(WordRep *wordRep,
       wordRep_(wordRep),
       wordSetRep_(wordSetRep),
       wordSetContentRep_(wordSetContentRep),
-      client_(config.get("SERVER_ADDRESS"), std::stoi(config.get("SERVER_PORT"))) {
+      client_(config.get("SERVER_ADDRESS"),
+              std::stoi(config.get("SERVER_PORT"))) {
     client_.enable_server_certificate_verification(false);
 }
 
-User::~User(){
+User::~User() {
     timer_.stop();
 }
 
 void User::init(const std::string &username, const std::string &password) {
-    httplib::Params params{{"name",     username},
-                           {"password", password}};
+    httplib::Params params{{"name", username}, {"password", password}};
     auto res = client_.Post("/init-user", params);
 
     if (!res) {
@@ -38,11 +38,12 @@ void User::init(const std::string &username, const std::string &password) {
         serverProblemsWindow.show();
     }
 
-    if (res->status != 200) {  // TODO: Check if smth went wrong
-        throw std::runtime_error("Can not init");
-    }
+    if (res->status != 200)
+        throw std::runtime_error("Can't /init, error code: " +
+                                 std::to_string(res->status));
+
     token_ = res->body;
-    std::cout << "MY TOKEN: " << token_ << std::endl;
+    std::cout << "Got token: " << token_ << std::endl;
     isAuthorized_ = true;
 
     downloadDictDataFromServer();
@@ -50,17 +51,14 @@ void User::init(const std::string &username, const std::string &password) {
     // личная коллекция книг, получаем последний номер в истории данного
     // пользователя
     int lastCollectionAction = getLastCollectionAction();
-    std::cout << "lastcoll = " << lastCollectionAction << std::endl;
+    std::cout << "Last Collection action number: " << lastCollectionAction
+              << std::endl;
 
     // создаем файл "numColl", в котором будет храниться этот номер
-    std::string filename = "numCollection.txt";
-    std::string folderName = "yafr_files/files";
-    std::filesystem::create_directories(folderName);
-    std::filesystem::path appFolder = std::filesystem::absolute(APP_FOLDER);
-    auto folder = appFolder / "files" / filename;
-    std::ofstream file(folder, std::ios::out);
+    std::filesystem::create_directories(NUM_COLL);
+    std::ofstream file(NUM_COLL, std::ios::out);
     if (!file.good())
-        throw std::runtime_error("Problems with app directory");
+        throw std::runtime_error("Problems with numCollection.txt file");
     file << lastCollectionAction;
 
     getCollectionBooks();
@@ -76,37 +74,36 @@ void User::exit() {
     isAuthorized_ = false;
     bookRep_->clear();
     clearTablesDict();
-
-    // TODO: drop tables with words
 }
 
 std::vector<Book> User::getCollectionBooks() {
-    std::cout << "Getting Collection Books..." << std::endl;
+    std::cout << "Getting collection books..." << std::endl;
 
     httplib::Params param;
     param.emplace("token", token_);
-
     auto res = client_.Post("/collection", param);
+
     if (res->status != 200) {
         ServerProblemsWindow serverProblemsWindow;
         serverProblemsWindow.show();
-
-        throw std::runtime_error("Can't load collection, error code: " +
+        throw std::runtime_error("Can't load /collection, error code: " +
                                  std::to_string(res->status));
     }
+
     nlohmann::json params = nlohmann::json::parse(res->body);
     std::vector<Book> books;
-    for (auto &book: params) {
+    for (auto &book : params) {
         bookRep_->addAndSaveBook(book["id"], book["name"], book["author"],
                                  book["text"]);
     }
-    std::cout << "Got " << params.size() << " books from collection"
+    std::cout << "Got " << params.size() << " books from /collection"
               << std::endl;
+
     return books;
 }
 
 std::vector<Book> User::getLibraryBooks() {
-    std::cout << "Getting Library Books..." << std::endl;
+    std::cout << "Getting library books..." << std::endl;
 
     auto res = client_.Post("/library");
 
@@ -116,34 +113,35 @@ std::vector<Book> User::getLibraryBooks() {
     }
 
     if (res->status != 200) {
-        throw std::runtime_error("Can't load library, error code: " +
+        throw std::runtime_error("Can't load /library, error code: " +
                                  std::to_string(res->status));
     }
 
     nlohmann::json params = nlohmann::json::parse(res->body);
     std::vector<Book> books;
-    for (auto &p: params) {
+    for (auto &p : params) {
         books.emplace_back(p["id"], p["name"], p["author"]);
     }
-    std::cout << "Got " << params.size() << " books from library" << std::endl;
+    std::cout << "Got " << params.size() << " books from /library" << std::endl;
     return books;
 }
 
-int User::addBookToCollection(int bookId) {
-    std::unique_ptr<sql::Statement> stmt(
-            bookRep_->manager_.getConnection().createStatement());
-    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-            "SELECT * FROM collection WHERE id=" + std::to_string(bookId)));
+void User::addBookToCollection(int bookId) {
+    std::cout << "Synchronizing collection..." << std::endl;
+    syncCollection();
 
-    if (reqRes->next()) {
-        return 0;
+    try {
+        std::cout << "Checking if book already exists" << std::endl;
+        bookRep_->getBookById(bookId);
+        return;
+    } catch (std::exception &e) {
     }
 
-    std::cout << "Adding book to collection" << std::endl;
+    std::cout << "Sending /add-book request..." << std::endl;
+
     httplib::Params params;
     params.emplace("token", token_);
     params.emplace("bookId", std::to_string(bookId));
-
     auto res = client_.Post("/add-book", params);
 
     if (!res) {
@@ -159,15 +157,15 @@ int User::addBookToCollection(int bookId) {
     bookRep_->addAndSaveBook(book["id"], book["name"], book["author"],
                              book["text"]);
 
-    syncCollection();
     newActionInCollection("add", bookId);
     userRepLocal::newValue(userRepLocal::getValue() + 1);
-    return 1;
 }
 
 void User::deleteCollectionBook(int bookId) {
-    std::cout << "Deleting book from server" << std::endl;
+    std::cout << "Synchronizing collection..." << std::endl;
+    syncCollection();
 
+    std::cout << "Deleting book from server..." << std::endl;
     httplib::Params params;
     params.emplace("token", token_);
     params.emplace("bookId", std::to_string(bookId));
@@ -179,40 +177,39 @@ void User::deleteCollectionBook(int bookId) {
         deleteInCollection.show();
     }
 
-    if (res->status != 200) {
-        throw std::runtime_error("Can't add book, error code: " +
+    if (res->status != 200)
+        throw std::runtime_error("Can't delete book, error code: " +
                                  std::to_string(res->status));
-    } else {
-        syncCollection();
-        newActionInCollection("delete", bookId);
-        userRepLocal::newValue(userRepLocal::getValue() + 1);
-    }
+    bookRep_->deleteBookById(bookId);
+    newActionInCollection("delete", bookId);
+    userRepLocal::newValue(userRepLocal::getValue() + 1);
 }
 
-void User::newActionInCollection(std::string action, int bookId) {
-    std::cout << "Deleting book from server" << std::endl;
+void User::newActionInCollection(const std::string &action, int bookId) {
     httplib::Params params;
     params.emplace("token", token_);
     params.emplace("action", action);
     params.emplace("bookId", std::to_string(bookId));
     auto res = client_.Post("/new-collections-action", params);
-    if (res->status != 200) {
+    if (res->status != 200)
         throw std::runtime_error("Can't add action, error code: " +
                                  std::to_string(res->status));
-    }
 }
 
 int User::getLastCollectionAction() {
-    std::cout << "Getting last collection action" << std::endl;
+    std::cout << "Getting last collection action..." << std::endl;
     httplib::Params params;
     params.emplace("token", token_);
     auto res = client_.Post("/get-last-collection-action", params);
     nlohmann::json param = nlohmann::json::parse(res->body);
+    if (res->status != 200)
+        throw std::runtime_error("Can't get last action, error code: " +
+                                 std::to_string(res->status));
     return param["lastAct"];
 }
 
 std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
-    std::cout << "Try to get new actions from server" << std::endl;
+    std::cout << "Try to get new actions from server..." << std::endl;
 
     httplib::Params params;
     params.emplace("token", token_);
@@ -226,7 +223,7 @@ std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
     nlohmann::json param = nlohmann::json::parse(res->body);
 
     std::vector<ActCollectionsHistory> books;
-    for (auto &p: param) {
+    for (auto &p : param) {
         books.push_back({p["type"], p["bookId"]});
     }
     return books;
@@ -234,20 +231,19 @@ std::vector<ActCollectionsHistory> User::getNewActions(int startAt) {
 
 void User::syncCollection() {
     std::vector<ActCollectionsHistory> vec =
-            this->getNewActions(userRepLocal::getValue() + 1);
-    for (auto action: vec) {
-        std::cout << " action = " << action.type << std::endl;
-        if (action.type == "delete") {
-            bookRep_->deleteBookById(action.bookId);
-        } else {
-            this->addBookToCollection(action.bookId);
-        }
+        this->getNewActions(userRepLocal::getValue() + 1);
+    for (const auto &action : vec) {
+        std::cout << "Working with action: " << action.type << std::endl;
+        if (action.type == "delete")
+            deleteCollectionBook(action.bookId);
+        else
+            addBookToCollection(action.bookId);
     }
     userRepLocal::newValue(userRepLocal::getValue() + vec.size());
 }
 
 std::vector<Word> User::getWords() {
-    std::cout << "Getting words..." << std::endl;
+    std::cout << "Getting words from dictionary..." << std::endl;
     httplib::Headers headers = {{"token", token_}};
     auto res = client_.Get("/getWords", headers);
 
@@ -258,19 +254,20 @@ std::vector<Word> User::getWords() {
 
     if (res->status != 200)
         throw std::runtime_error(
-                "Can't load words from dictionary, error code: " +
-                std::to_string(res->status));
+            "Can't load words from dictionary, error code: " +
+            std::to_string(res->status));
+
     nlohmann::json wordsTmp = nlohmann::json::parse(res->body);
     std::vector<Word> words;
-    for (auto &word: wordsTmp) {
+    for (auto &word : wordsTmp)
         words.emplace_back(word["id"], word["original"], word["translation"],
                            word["context"]);
-    }
+
     return words;
 }
 
 std::vector<WordSet> User::getWordSets() {
-    std::cout << "Getting wordsets..." << std::endl;
+    std::cout << "Getting word sets from dictionary..." << std::endl;
     httplib::Headers headers;
     headers.emplace("token", token_);
     auto res = client_.Get("/getWordSets", headers);
@@ -282,18 +279,19 @@ std::vector<WordSet> User::getWordSets() {
 
     if (res->status != 200)
         throw std::runtime_error(
-                "Can't load wordsets from dictionary, error code: " +
-                std::to_string(res->status));
+            "Can't load word sets from dictionary, error code: " +
+            std::to_string(res->status));
+
     nlohmann::json wordSetsTmp = nlohmann::json::parse(res->body);
     std::vector<WordSet> wordSets;
-    for (auto &wordSet: wordSetsTmp) {
+    for (auto &wordSet : wordSetsTmp) {
         wordSets.emplace_back(wordSet["id"], wordSet["name"]);
     }
     return wordSets;
 }
 
 std::vector<std::pair<int, int>> User::getSetContents() {
-    std::cout << "Getting wordset's content..." << std::endl;
+    std::cout << "Getting word set's content..." << std::endl;
     httplib::Headers headers;
     headers.emplace("token", token_);
     auto res = client_.Get("/getSetsContents", headers);
@@ -305,18 +303,15 @@ std::vector<std::pair<int, int>> User::getSetContents() {
 
     if (res->status != 200)
         throw std::runtime_error(
-                "Can't load wordset's content from dictionary, error code : " +
-                std::to_string(res->status));
+            "Can't load word set's content from dictionary, error code : " +
+            std::to_string(res->status));
+
     nlohmann::json contentTmp = nlohmann::json::parse(res->body);
-    std::cout << "getSetContents got content size : " << contentTmp.size()
-              << "\n";
     std::vector<std::pair<int, int>> wordSetsContents;
-    for (auto &word_wordset: contentTmp) {
+    for (auto &word_wordset : contentTmp) {
         wordSetsContents.emplace_back(word_wordset["wordSetId"],
                                       word_wordset["wordId"]);
     }
-    std::cout << "still getSetContents, parsed json size : "
-              << wordSetsContents.size() << "\n";
     return wordSetsContents;
 }
 
@@ -324,16 +319,16 @@ void User::sendWordRepHistoryChange(HistoryChangeWordRep change) {
     std::cout << "Sending wordRep's history change..." << std::endl;
     httplib::Params params;
     if (change.operation == "wordDeleted") {
-        params = {{"token",     token_},
+        params = {{"token", token_},
                   {"operation", change.operation},
-                  {"id",        std::to_string(change.wordId)}};
+                  {"id", std::to_string(change.wordId)}};
     } else {
-        params = {{"token",       token_},
-                  {"operation",   change.operation},
-                  {"id",          std::to_string(change.wordId)},
-                  {"original",    change.original},
+        params = {{"token", token_},
+                  {"operation", change.operation},
+                  {"id", std::to_string(change.wordId)},
+                  {"original", change.original},
                   {"translation", change.translation},
-                  {"context",     change.context}};
+                  {"context", change.context}};
     }
     auto res = client_.Post("/wordRepChange", params);
 
@@ -343,21 +338,21 @@ void User::sendWordRepHistoryChange(HistoryChangeWordRep change) {
     }
 
     if (res->status != 200)
-        throw std::runtime_error("Can't change wordRep, error code: " +
+        throw std::runtime_error("Can't change word repo, error code: " +
                                  std::to_string(res->status));
 }
 
 void User::sendWordSetRepHistoryChange(HistoryChangeWordSetRep change) {
     std::cout << "Sending wordSetRep's history change..." << std::endl;
     httplib::Params params = {{"token", token_},
-                              {"id",    std::to_string(change.wordSetId)},
-                              {"name",  change.wordSetName}};
+                              {"id", std::to_string(change.wordSetId)},
+                              {"name", change.wordSetName}};
     auto res = client_.Post("/wordSetRepChange", params);
 
-    /*if (!res) {
+    if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
-    }*/
+    }
 
     if (res->status != 200)
         throw std::runtime_error("Can't change wordSetRep, error code: " +
@@ -365,23 +360,23 @@ void User::sendWordSetRepHistoryChange(HistoryChangeWordSetRep change) {
 }
 
 void User::sendWordSetContentRepHistoryChange(
-        HistoryChangeWordSetContentRep change) {
+    HistoryChangeWordSetContentRep change) {
     std::cout << "Sending wordSetContentRep's history change..." << std::endl;
-    httplib::Params params = {{"token",     token_},
+    httplib::Params params = {{"token", token_},
                               {"operation", change.operation},
                               {"wordSetId", std::to_string(change.wordSetId)},
-                              {"wordId",    std::to_string(change.wordId)}};
+                              {"wordId", std::to_string(change.wordId)}};
     auto res = client_.Post("/wordSetContentRepChange", params);
 
-    /*if (!res) {
+    if (!res) {
         ServerProblemsWindowSaveDict saveDict;
         saveDict.show();
-    }*/
+    }
 
     if (res->status != 200)
         throw std::runtime_error(
-                "Can't change wordSetContentRep, error code: " +
-                std::to_string(res->status));
+            "Can't change wordSetContentRep, error code: " +
+            std::to_string(res->status));
 }
 
 void User::downloadDictDataFromServer() {
@@ -389,18 +384,16 @@ void User::downloadDictDataFromServer() {
     std::vector<WordSet> wordSets = getWordSets();
     std::vector<std::pair<int, int>> content = getSetContents();
     clearTablesDict();
-    for (auto &word: words) {
+    for (auto &word : words)
         wordRep_->addWord(word);
-    }
-    for (auto &wordSet: wordSets) {
-        if (wordSet.getId() != 1) {
+
+    for (auto &wordSet : wordSets)
+        if (wordSet.getId() != 1)
             wordSetRep_->addWordSet(wordSet);
-        }
-    }
-    for (auto &wordSet_word: content) {
+
+    for (auto &wordSet_word : content)
         wordSetContentRep_->addWordToSetTable(wordSet_word.first,
                                               wordSet_word.second);
-    }
 }
 
 void User::clearTablesDict() {
@@ -410,20 +403,17 @@ void User::clearTablesDict() {
 }
 
 void User::updateDictionaryChanges() {
-
     while (true) {
         try {
-
             std::deque<HistoryChangeWordRep> wordRepHistory =
-                    wordRep_->getHistoryChanges();
+                wordRep_->getHistoryChanges();
             std::deque<HistoryChangeWordSetRep> wordSetRepHistory =
-                    wordSetRep_->getHistoryChanges();
-            std::deque<HistoryChangeWordSetContentRep> wordSetContentRepHistory =
+                wordSetRep_->getHistoryChanges();
+            std::deque<HistoryChangeWordSetContentRep>
+                wordSetContentRepHistory =
                     wordSetContentRep_->getHistoryChanges();
 
-
             while (!wordRepHistory.empty()) {
-
                 sendWordRepHistoryChange(wordRepHistory.back());
                 wordRepHistory.pop_back();
             }
@@ -432,7 +422,8 @@ void User::updateDictionaryChanges() {
                 wordSetRepHistory.pop_back();
             }
             while (!wordSetContentRepHistory.empty()) {
-                sendWordSetContentRepHistoryChange(wordSetContentRepHistory.back());
+                sendWordSetContentRepHistoryChange(
+                    wordSetContentRepHistory.back());
                 wordSetContentRepHistory.pop_back();
             }
 
@@ -440,18 +431,18 @@ void User::updateDictionaryChanges() {
             wordSetRep_->clearHistory();
             wordSetContentRep_->clearHistory();
             break;
+
         } catch (ServerProblemsExceptionReconnect &) {
             continue;
         } catch (ServerProblemsExceptionNotSaveDict &) {
             break;
         }
-
     }
 }
 
 void User::startRequestThread() {
-    timer_.start(100000, [&](){
-        if (isAuthorized()){
+    timer_.start(100000, [&]() {
+        if (isAuthorized()) {
             updateDictionaryChanges();
             std::cout << "send request" << std::endl;
         }

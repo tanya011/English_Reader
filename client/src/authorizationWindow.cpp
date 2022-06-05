@@ -33,6 +33,7 @@ void AuthorizationWindow::updateWindow() {
         layout_->insertWidget(3, passwordField_);
         layout_->insertWidget(4, authBtn_);
 
+
         QObject::connect(authBtn_, &QPushButton::clicked, this, [=]() {
             auto username = nameField_->text().toStdString();
             auto password = passwordField_->text().toStdString();
