@@ -1,5 +1,8 @@
 #include "include/authorizationWindow.h"
 #include "include/serverProblemsException.h"
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QLabel>
 
 AuthorizationWindow::AuthorizationWindow(ConnectingWindow *parent)
     : QWidget(parent),
@@ -8,6 +11,7 @@ AuthorizationWindow::AuthorizationWindow(ConnectingWindow *parent)
       layout_(new QVBoxLayout) {
     box_->setLayout(layout_);
     box_->setParent(this);
+    box_->setGeometry(50, 20, 500, 300);
     updateWindow();
 }
 void AuthorizationWindow::updateWindow() {
@@ -19,18 +23,22 @@ void AuthorizationWindow::updateWindow() {
         authBtn_ = new QPushButton(tr("Вход"));
         nameField_ = new QLineEdit;
         passwordField_ = new QLineEdit;
-        layout_->insertWidget(0, nameField_);
-        layout_->insertWidget(1, passwordField_);
-        layout_->insertWidget(2, authBtn_);
+        login = new QLabel;
+        password = new QLabel;
+        login->setText("Login:");
+        password->setText("Password:");
+        layout_->insertWidget(0, login);
+        layout_->insertWidget(1, nameField_);
+        layout_->insertWidget(2, password);
+        layout_->insertWidget(3, passwordField_);
+        layout_->insertWidget(4, authBtn_);
 
         QObject::connect(authBtn_, &QPushButton::clicked, this, [=]() {
             auto username = nameField_->text().toStdString();
             auto password = passwordField_->text().toStdString();
             while (true) {
                 try {
-                    std::cout << "==========================HERE" << std::endl;
                     parent_->user->init(username, password);
-                    std::cout << "===========================AND HERE" << std::endl;
                     break;
                 } catch (ServerProblemsExceptionAbort &e) {
                     exit(0);
@@ -46,10 +54,14 @@ void AuthorizationWindow::updateWindow() {
         });
     } else {
         if (nameField_ != nullptr) {
+            layout_->removeWidget(login);
             layout_->removeWidget(nameField_);
+            layout_->removeWidget(password);
             layout_->removeWidget(passwordField_);
             layout_->removeWidget(authBtn_);
+            delete login;
             delete authBtn_;
+            delete password;
             delete nameField_;
             delete passwordField_;
         }
