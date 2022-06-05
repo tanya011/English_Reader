@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(YAFR VERSION 0.1 LANGUAGES CXX)
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
@@ -65,6 +66,7 @@ set(PROJECT_SOURCES
         include/actCollectionsHistory.h
         include/serverProblemsWindow.h
         include/serverProblemsException.h
+        include/periodic_function.h
         )
 
 

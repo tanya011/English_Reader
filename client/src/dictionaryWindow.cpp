@@ -28,8 +28,6 @@ DictionaryWindow::DictionaryWindow(WordRep *wordRep,
 
     QObject::connect(wordRep_, &WordRep::wordAdded, wordSetContentRep_,
                      &WordSetContentRep::addWordToSetTable);
-
-    dictSyncButtonConnect();
 }
 
 void DictionaryWindow::showWordSet(int wordSetId) {
@@ -91,25 +89,6 @@ void DictionaryWindow::showWordSet(int wordSetId) {
     box_->setFixedWidth(screen_width - 20);
     scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
     // Styles
-}
-
-void DictionaryWindow::dictSyncButtonConnect() {
-    serverSync_ = new QPushButton(this);
-    serverSync_->setGeometry(950, 1200, 300, 100);
-    serverSync_->setText("Синхронизация");
-    serverSync_->show();
-    QObject::connect(serverSync_, &QPushButton::clicked, this, [=]() {
-        while (true) {
-            try {
-                updateDictionaryChanges();
-                break;
-            } catch (ServerProblemsExceptionReconnect &) {
-                continue;
-            } catch (ServerProblemsExceptionNotSaveDict &) {
-                break;
-            }
-        }
-    });
 }
 
 void DictionaryWindow::makeWordSetIcons() {

@@ -26,7 +26,6 @@ class DictionaryWindow : public QWidget {
 
 
     QMenuBar *toolBar_;
-    QPushButton *serverSync_;
     QGridLayout *layout_;
     QWidget *box_;
     QScrollArea *scrollArea;
@@ -56,8 +55,6 @@ public:
     void makeWordSetIcons();
 
     void removeWordSetIcons();
-
-    void dictSyncButtonConnect();
 
     std::vector<WordSet> getWordSets();
 
