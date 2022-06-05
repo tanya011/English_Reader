@@ -53,11 +53,7 @@ void User::init(const std::string &username, const std::string &password) {
     std::cout << "Last Collection action number: " << lastCollectionAction
               << std::endl;
 
-    // создаем файл "numColl", в котором будет храниться этот номер
-    std::filesystem::create_directories(NUM_COLL);
     std::ofstream file(NUM_COLL, std::ios::out);
-    if (!file.good())
-        throw std::runtime_error("Problems with numCollection.txt file");
     file << lastCollectionAction;
 
     getCollectionBooks();

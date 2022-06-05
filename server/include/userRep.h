@@ -22,7 +22,8 @@ public:
                  const std::string &hash,
                  const std::string &token);
 
-    std::string getUserToken(const std::string &name);
+    std::string getUserToken(const std::string &name,
+                             const std::string &passwordHash);
 
     std::string getUserName(const std::string &token);
 

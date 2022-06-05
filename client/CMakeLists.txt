@@ -101,4 +101,4 @@ target_link_libraries(YAFR PRIVATE cryptopp)
 
 add_compile_definitions(CONFIG_PATH="../config.json")
 add_compile_definitions(APP_FOLDER="yafr_files")
-add_compile_definitions(NUM_COLL="yafr_files/files/numCollection.txt")
+add_compile_definitions(NUM_COLL="yafr_files/numCollection.txt")

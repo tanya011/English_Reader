@@ -2,7 +2,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QString>
 #include <exception>
 #include "include/readNowWindow.h"

@@ -85,7 +85,8 @@ void DictionaryWindow::showWordSet(int wordSetId) {
         QApplication::desktop()->screenGeometry().width() - 1000;
     auto screen_height =
             QApplication::desktop()->screenGeometry().height() - 500;
-    this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
+    this->setStyleSheet("QLabel{margin: 10px;}");
+    this->setStyleSheet("QPushButton{font-size: 20pt;}");
     box_->setFixedWidth(screen_width - 20);
     scrollArea->setGeometry(450, 50, screen_width, screen_height);
     // Styles

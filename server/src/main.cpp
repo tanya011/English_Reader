@@ -65,11 +65,11 @@ int main() {
                          token = SHA256(name);
                          userRep.addUser(name, hash, token);
                      } else {
-                         token = userRep.getUserToken(name);
+                         token = userRep.getUserToken(name, hash);
                      }
+                     std::cerr << "User token is: " + token << std::endl;
                      res.set_content(token, "text/plain");
-                     std::cout << "Got request: " << name << ", " << password
-                               << std::endl;
+                     std::cout << "Got request: " << name << std::endl;
                  } else {
                      throw std::runtime_error("Wrong /init-user request");
                  }
@@ -182,10 +182,11 @@ int main() {
 
     svr.Post("/new-actions", [&](const httplib::Request &req,
                                  httplib::Response &res) {
-        std::cout << "/new-actions" << std::endl;
+        std::cerr << "/new-actions" << std::endl;
         if (req.has_param("token") && req.has_param("startAt")) {
             auto token = req.get_param_value("token");
             int userId = userRep.getUserId(token);
+            std::cerr << "Token: " << token << std::endl;
             int startAt = std::stoi(req.get_param_value("startAt"));
 
             std::vector<ActCollectionsHistory> books(

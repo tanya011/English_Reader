@@ -1,16 +1,18 @@
 #include "include/wordRep.h"
 
 WordRepServ::WordRepServ(DBManager &m, std::mutex *mutex)
-        : manager_(m), mutex_(mutex), stmt_(manager_.getConnection().createStatement()) {
+    : manager_(m),
+      mutex_(mutex),
+      stmt_(manager_.getConnection().createStatement()) {
     std::unique_lock l(*mutex_);
     stmt_->execute("CREATE TABLE IF NOT EXISTS " + tableName_ +
-                  "("
-                  "userid INT,"
-                  "id INT NOT NULL,"
-                  "original TINYTEXT,"
-                  "translation TINYTEXT,"
-                  "context TINYTEXT"
-                  ")");
+                   "("
+                   "userid INT,"
+                   "id INT NOT NULL,"
+                   "original TINYTEXT,"
+                   "translation TINYTEXT,"
+                   "context TINYTEXT"
+                   ")");
 }
 
 void WordRepServ::addWord(int userId,
@@ -20,10 +22,11 @@ void WordRepServ::addWord(int userId,
                           const std::string &context) {
     std::unique_lock l(*mutex_);
     std::unique_ptr<sql::PreparedStatement> prst1(
-            manager_.getConnection().prepareStatement("SELECT * FROM " + tableName_ + " WHERE userId=?" + " AND id=?" + " AND original=?" +
-                                                      " AND translation=?"));
+        manager_.getConnection().prepareStatement(
+            "SELECT * FROM " + tableName_ +
+            " WHERE userId=? AND id=? AND original=? AND translation=?"));
     prst1->setInt(1, userId);
-    prst1->setInt(2,id);
+    prst1->setInt(2, id);
     prst1->setString(3, original);
     prst1->setString(4, translation);
 
@@ -32,10 +35,10 @@ void WordRepServ::addWord(int userId,
         return;
     }
     std::unique_ptr<sql::PreparedStatement> prst(
-            manager_.getConnection().prepareStatement(
-                    "INSERT INTO " + tableName_ +
-                    " (userid, id, original, translation, context) VALUES "
-                    "(?,?,?,?,?)"));
+        manager_.getConnection().prepareStatement(
+            "INSERT INTO " + tableName_ +
+            " (userid, id, original, translation, context) VALUES "
+            "(?,?,?,?,?)"));
     prst->setInt(1, userId);
     prst->setInt(2, id);
     prst->setString(3, original);
@@ -47,21 +50,22 @@ void WordRepServ::addWord(int userId,
 
 void WordRepServ::deleteWordById(int userId, int id) {
     std::unique_lock l(*mutex_);
-    stmt_->execute("DELETE FROM " + tableName_ +
-                   " WHERE userid=" + std::to_string(userId) + " AND id=" + std::to_string(id));
+    stmt_->execute("DELETE FROM " + tableName_ + " WHERE userid=" +
+                   std::to_string(userId) + " AND id=" + std::to_string(id));
 }
 
 std::vector<Word> WordRepServ::getUserWords(int userId) {
     std::unique_lock l(*mutex_);
-    std::unique_ptr<sql::ResultSet> reqRes(stmt_->executeQuery(
-            "SELECT * FROM " + tableName_ + " WHERE userId=" + std::to_string(userId)));
+    std::unique_ptr<sql::ResultSet> reqRes(
+        stmt_->executeQuery("SELECT * FROM " + tableName_ +
+                            " WHERE userId=" + std::to_string(userId)));
     std::vector<Word> words;
-    while (reqRes->next()){
+    while (reqRes->next()) {
         words.emplace_back(
-                static_cast<int>(reqRes->getInt("id")),
-                static_cast<std::string>(reqRes->getString("original")),
-                static_cast<std::string>(reqRes->getString("translation")),
-                static_cast<std::string>(reqRes->getString("context")));
+            static_cast<int>(reqRes->getInt("id")),
+            static_cast<std::string>(reqRes->getString("original")),
+            static_cast<std::string>(reqRes->getString("translation")),
+            static_cast<std::string>(reqRes->getString("context")));
     }
     return words;
 }

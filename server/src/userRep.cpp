@@ -38,12 +38,15 @@ void UserRep::addUser(const std::string &name,
     freeId++;
 }
 
-std::string UserRep::getUserToken(const std::string &name) {
+std::string UserRep::getUserToken(const std::string &name,
+                                  const std::string &passwordHash) {
     std::unique_lock l(*mutex_);
-    std::unique_ptr<sql::Statement> stmt(
-        manager.getConnection().createStatement());
-    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-        "SELECT * FROM " + tableName + " WHERE name='" + name + "'"));
+    std::unique_ptr<sql::PreparedStatement> prst(
+        manager.getConnection().prepareStatement(
+            "SELECT * FROM " + tableName + " WHERE name=? AND passwordHash=?"));
+    prst->setString(1, name);
+    prst->setString(2, passwordHash);
+    std::unique_ptr<sql::ResultSet> reqRes(prst->executeQuery());
     if (reqRes->next()) {
         return static_cast<std::string>(reqRes->getString("token"));
     } else {
