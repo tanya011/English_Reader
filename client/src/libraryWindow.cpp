@@ -1,4 +1,6 @@
 #include "include/libraryWindow.h"
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QString>
@@ -7,10 +9,9 @@
 #include "include/serverProblemsException.h"
 
 LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
-
-    box = new QWidget;
-    layout = new QGridLayout;
-    box->setLayout(layout);
+    box_ = new QWidget;
+    layout_ = new QGridLayout;
+    box_->setLayout(layout_);
 
     if (parent_->user->isAuthorized())
         updateWindow();
@@ -28,8 +29,8 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
     auto screen_height =
         QApplication::desktop()->screenGeometry().height() - 200;
     this->setStyleSheet("QLabel{margin: 10px;}");
-    box->setFixedWidth(screen_width - 20);
-    scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
+    box_->setFixedWidth(screen_width - 20);
+    scrollArea_->setGeometry(400, 5, screen_width, screen_height - 3);
     // Styles
 }
 
@@ -50,7 +51,7 @@ void LibraryWindow::updateWindow() {
 
     for (int i = 0; i < old_books.size(); i++) {
         QLayoutItem *item;
-        while ((item = layout->takeAt(0)) != nullptr) {
+        while ((item = layout_->takeAt(0)) != nullptr) {
             delete item->widget();
             delete item->layout();
             delete item;
@@ -67,16 +68,16 @@ void LibraryWindow::updateWindow() {
         titleLabels_[i] = new QLabel(QString("Name: %1,   Author: %2")
                                          .arg(books_[i].getName().c_str(),
                                               books_[i].getAuthor().c_str()));
-        layout->addWidget(titleLabels_[i], i, 0);
+        layout_->addWidget(titleLabels_[i], i, 0);
 
         addBtns_[i] = new QPushButton(tr("Add"));
-        layout->addWidget(addBtns_[i], i, 1);
+        layout_->addWidget(addBtns_[i], i, 1);
 
         addBtns_[i]->setFixedWidth(100);
         addBtns_[i]->setFixedHeight(50);
     }
 
-    scrollArea->setWidget(box);
+    scrollArea_->setWidget(box_);
 
     for (int i = 0; i < books_.size(); i++) {
         QObject::connect(addBtns_[i], &QPushButton::clicked, this,

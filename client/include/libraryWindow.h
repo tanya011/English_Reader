@@ -1,8 +1,6 @@
 #ifndef LIBRARY_WINDOW_H
 #define LIBRARY_WINDOW_H
 
-#include <QApplication>
-#include <QDesktopWidget>
 #include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -16,9 +14,9 @@ private:
     std::vector<QLabel *> titleLabels_;
     std::vector<QPushButton *> addBtns_;
     ConnectingWindow *parent_;
-    QWidget *box;
-    QGridLayout *layout = new QGridLayout();
-    QScrollArea *scrollArea = new QScrollArea(this);
+    QWidget *box_;
+    QGridLayout *layout_ = new QGridLayout();
+    QScrollArea *scrollArea_ = new QScrollArea(this);
 
     void connectWithCollection(int bookId);
 
