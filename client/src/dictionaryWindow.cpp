@@ -81,16 +81,15 @@ void DictionaryWindow::showWordSet(int wordSetId) {
 
     scrollArea->setWidget(box_);
 
-    // Styles
-    auto screen_width =
-            QApplication::desktop()->screenGeometry().width() - 1000;
-    auto screen_height =
-            QApplication::desktop()->screenGeometry().height() - 500;
-    this->setStyleSheet("QLabel{font-size: 10pt; margin: 10px;}");
-    box_->setFixedWidth(screen_width - 20);
-    scrollArea->setGeometry(400, 5, screen_width, screen_height - 3);
-    // Styles
-
+        // Styles
+        auto screen_width =
+                QApplication::desktop()->screenGeometry().width() - 1000;
+        auto screen_height =
+                QApplication::desktop()->screenGeometry().height() - 400;
+        this->setStyleSheet("QLabel{font-size: 12pt; margin: 10px;}");
+        box_->setFixedWidth(screen_width - 20);
+        scrollArea->setGeometry(450, 50, screen_width, screen_height);
+        // Styles
 
 }
 
@@ -132,7 +131,7 @@ std::vector<WordSet> DictionaryWindow::getWordSets() {
 
 void DictionaryWindow::dictSyncButtonConnect() {
     serverSync_ = new QPushButton(this);
-    serverSync_->setGeometry(950, 1200, 300, 100);
+    serverSync_->setGeometry(1000, 1320, 400, 100);
     serverSync_->setText("Синхронизация");
     serverSync_->show();
     QObject::connect(serverSync_, &QPushButton::clicked, this, [=]() {
