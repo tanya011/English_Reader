@@ -36,15 +36,15 @@ int WordRep::addWord(const std::string &original,
                             "INSERT INTO " + tableName +
                             " (id, original, translation, context) VALUES "
                             "(?,?,?,?)"));
+            freeId++;
             prst2->setInt(1, freeId);
             prst2->setString(2, original);
             prst2->setString(3, translation);
             prst2->setString(4, context);
-
             prst2->execute();
             historyChanges_.push_front({"wordAdded", freeId, original, translation, context});
             emit wordCreated(1, freeId);
-            return freeId++;
+            return freeId;
         }
     } catch (sql::SQLException &e) {
         return -1;
