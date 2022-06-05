@@ -13,6 +13,7 @@
 #include "wordRep.h"
 #include "wordSetContentRep.h"
 #include "wordSetRep.h"
+#include "include/periodic_function.h"
 
 namespace userRepLocal {
 int getValue();
@@ -41,6 +42,8 @@ private:
     std::string token_;
     std::vector<action> actionsToDBCollections;
 
+    CallBackTimer timer_;
+
 public:
     std::queue<ActCollectionsHistory> Queue;
 
@@ -49,7 +52,11 @@ public:
          WordSetContentRep *wordSetContentRep,
          BookRep *bookRep);
 
+    ~User();
+
     void init(const std::string &username, const std::string &password);
+
+    void startRequestThread();
 
     std::vector<Book> getCollectionBooks();
 

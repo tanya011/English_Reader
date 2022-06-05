@@ -22,7 +22,10 @@ User::User(WordRep *wordRep,
       wordSetContentRep_(wordSetContentRep),
       client_(config.get("SERVER_ADDRESS"), std::stoi(config.get("SERVER_PORT"))) {
     client_.enable_server_certificate_verification(false);
+}
 
+User::~User(){
+    timer_.stop();
 }
 
 void User::init(const std::string &username, const std::string &password) {
@@ -444,4 +447,13 @@ void User::updateDictionaryChanges() {
         }
 
     }
+}
+
+void User::startRequestThread() {
+    timer_.start(100000, [&](){
+        if (isAuthorized()){
+            updateDictionaryChanges();
+            std::cout << "send request" << std::endl;
+        }
+    });
 }

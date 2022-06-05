@@ -9,7 +9,6 @@
 #include "include/libraryWindow.h"
 #include "include/readNowWindow.h"
 #include "include/serverProblemsException.h"
-#include "include/periodic_function.h"
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
@@ -19,7 +18,6 @@ int main(int argc, char *argv[]) {
     std::filesystem::path appFolder = std::filesystem::absolute("./yafr_files");
 
 
-    CallBackTimer timer;
     DBManager dbManager1;
     DBManager dbManager2;
     DBManager dbManager3;
@@ -85,14 +83,7 @@ int main(int argc, char *argv[]) {
             a.setStyleSheet("QWidget{font-size:30px;}");
 
             connectingWindow.show();
-
-            timer.start(100000, [&](){
-               if (user.isAuthorized()){
-                   user.updateDictionaryChanges();
-                   std::cout << "send request" << std::endl;
-               }
-            });
-
+            user.startRequestThread();
             return a.exec();
         } catch (ServerProblemsExceptionAbort &e) {
             return 0;
