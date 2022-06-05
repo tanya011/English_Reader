@@ -23,7 +23,7 @@ int WordRep::addWord(const std::string &original,
     try {
         std::unique_ptr<sql::PreparedStatement> prst1(
                 manager_.getConnection().prepareStatement("SELECT id FROM " + tableName_ + " WHERE original=?" +
-                                                         " AND translation=?"));
+                                                          " AND translation=?"));
         prst1->setString(1, original);
         prst1->setString(2, translation);
         std::unique_ptr<sql::ResultSet> reqRes(prst1->executeQuery());
@@ -52,7 +52,7 @@ int WordRep::addWord(const std::string &original,
 
 int WordRep::addWord(Word &word) {
     try {
-        std::unique_ptr<sql::PreparedStatement> prst1(manager_.getConnection().prepareStatement( "SELECT id FROM " + tableName_ + " WHERE id=?" + " AND original=?" +
+        std::unique_ptr<sql::PreparedStatement> prst1(manager_.getConnection().prepareStatement("SELECT id FROM " + tableName_ + " WHERE id=?" + " AND original=?" +
                                                                                                 " AND translation=?"));
         prst1->setInt(1, word.getId());
         prst1->setString(2, word.getOriginal());
@@ -83,7 +83,7 @@ int WordRep::addWord(Word &word) {
 
 void WordRep::deleteWordById(int id) {
     stmt_->execute("DELETE FROM " + tableName_ +
-                  " WHERE id=" + std::to_string(id));
+                   " WHERE id=" + std::to_string(id));
     historyChanges_.push_front({"wordDeleted", id});
 }
 

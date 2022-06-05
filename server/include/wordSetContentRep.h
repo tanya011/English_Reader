@@ -15,9 +15,9 @@
 struct WordSetContentRepServ {
 
 private:
-    DBManager &manager;
-    std::unique_ptr<sql::Statement> stmt;
-    std::string tableName = "wordSetContentServer";
+    DBManager &manager_;
+    std::unique_ptr<sql::Statement> stmt_;
+    std::string tableName_ = "wordSetContentServer";
     std::mutex* mutex_;
 
 public:

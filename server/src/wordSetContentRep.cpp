@@ -1,9 +1,9 @@
 #include "include/wordSetContentRep.h"
 
 WordSetContentRepServ::WordSetContentRepServ(DBManager &m, std::mutex *mutex)
-        : manager(m), mutex_(mutex), stmt(manager.getConnection().createStatement()) {
+        : manager_(m), mutex_(mutex), stmt_(manager_.getConnection().createStatement()) {
     std::unique_lock l(*mutex_);
-    stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName +
+    stmt_->execute("CREATE TABLE IF NOT EXISTS " + tableName_ +
                   "("
                   "userid INT,"
                   "wordSetId INT NOT NULL,"
@@ -15,7 +15,7 @@ void WordSetContentRepServ::addWordToSetTable(int userId, int wordSetId,
                                               int wordId) {
     std::unique_lock l(*mutex_);
     std::unique_ptr<sql::PreparedStatement> prst(
-            manager.getConnection().prepareStatement("INSERT INTO " + tableName +
+            manager_.getConnection().prepareStatement("INSERT INTO " + tableName_ +
                                                      " (userid, wordSetId, wordId) VALUES "
                                                      "(?,?,?)"));
     prst->setInt(1, userId);
@@ -30,15 +30,15 @@ void WordSetContentRepServ::deleteWordFromSetTable(
         int WordId) {
     std::unique_lock l(*mutex_);
 
-    stmt->execute("DELETE FROM " + tableName +
-                  " WHERE userid=" + std::to_string(userId) + " AND wordSetId=" + std::to_string(WordSetId) +
-                  " AND " + "wordId=" + std::to_string(WordId));
+    stmt_->execute("DELETE FROM " + tableName_ +
+                   " WHERE userid=" + std::to_string(userId) + " AND wordSetId=" + std::to_string(WordSetId) +
+                   " AND " + "wordId=" + std::to_string(WordId));
 }
 
 std::vector<std::pair<int,int>> WordSetContentRepServ::getUserWordSetsContents(int userId) {
     std::unique_lock l(*mutex_);
-    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-            "SELECT * FROM " + tableName + " WHERE userId=" + std::to_string(userId) + " AND NOT wordSetId=1"));
+    std::unique_ptr<sql::ResultSet> reqRes(stmt_->executeQuery(
+            "SELECT * FROM " + tableName_ + " WHERE userId=" + std::to_string(userId) + " AND NOT wordSetId=1"));
     std::vector<std::pair<int,int>> wordset_word;
     while (reqRes->next()){
         wordset_word.emplace_back(
@@ -51,6 +51,6 @@ std::vector<std::pair<int,int>> WordSetContentRepServ::getUserWordSetsContents(i
 
 void WordSetContentRepServ::deleteWordFromAllSets(int userId, int wordId) {
     std::unique_lock l(*mutex_);
-    stmt->execute("DELETE FROM " + tableName +
-                  " WHERE userId=" + std::to_string(userId) + " AND wordId=" + std::to_string(wordId));
+    stmt_->execute("DELETE FROM " + tableName_ +
+                   " WHERE userId=" + std::to_string(userId) + " AND wordId=" + std::to_string(wordId));
 }

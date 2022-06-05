@@ -1,26 +1,25 @@
 #include "include/wordSetRep.h"
-#include <qdebug.h>
 
 WordSetRep::WordSetRep(DBManager &m)
-        : manager(m), stmt(manager.getConnection().createStatement()) {
-    stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName +
+        : manager_(m), stmt_(manager_.getConnection().createStatement()) {
+    stmt_->execute("CREATE TABLE IF NOT EXISTS " + tableName_ +
                   "("
                   "id INT NOT NULL UNIQUE,"
                   "name TINYTEXT"
                   ")");
 
     std::unique_ptr<sql::ResultSet> maxId(
-            stmt->executeQuery("SELECT MAX(id) FROM " + tableName));
+            stmt_->executeQuery("SELECT MAX(id) FROM " + tableName_));
     makeWordSetAllWords();
     if (maxId->next()) {
-        freeId = std::max(maxId->getInt(1) + 1, 2);
+        freeId_ = std::max(maxId->getInt(1) + 1, 2);
     }
 }
 
 int WordSetRep::addWordSet(const std::string &wordSetName) {
     try {
         std::unique_ptr<sql::PreparedStatement> prst1(
-                manager.getConnection().prepareStatement("SELECT id FROM " + tableName + " WHERE name=?"));
+                manager_.getConnection().prepareStatement("SELECT id FROM " + tableName_ + " WHERE name=?"));
         prst1->setString(1, wordSetName);
 
         std::unique_ptr<sql::ResultSet> reqRes(prst1->executeQuery());
@@ -29,16 +28,16 @@ int WordSetRep::addWordSet(const std::string &wordSetName) {
             return static_cast<int>(reqRes->getInt("id"));
         } else {
             std::unique_ptr<sql::PreparedStatement> prst2(
-                    manager.getConnection().prepareStatement("INSERT INTO " +
-                                                             tableName +
+                    manager_.getConnection().prepareStatement("INSERT INTO " +
+                                                              tableName_ +
                                                              " (id, name) VALUES "
                                                              "(?,?)"));
-            prst2->setInt(1, freeId);
+            prst2->setInt(1, freeId_);
             prst2->setString(2, wordSetName);
 
             prst2->execute();
-            historyChanges_.push_front({"wordSetAdded", freeId, wordSetName});
-            return freeId++;
+            historyChanges_.push_front({"wordSetAdded", freeId_, wordSetName});
+            return freeId_++;
         }
     } catch (sql::SQLException &e) {
         std::cout << e.what();
@@ -49,7 +48,7 @@ int WordSetRep::addWordSet(const std::string &wordSetName) {
 int WordSetRep::addWordSet(WordSet &wordSet) {
     try {
         std::unique_ptr<sql::PreparedStatement> prst1(
-                manager.getConnection().prepareStatement("SELECT id FROM " + tableName + " WHERE id=?" + " AND name=?"));
+                manager_.getConnection().prepareStatement("SELECT id FROM " + tableName_ + " WHERE id=?" + " AND name=?"));
         prst1->setInt(1, wordSet.getId());
         prst1->setString(2, wordSet.getTitle());
         std::unique_ptr<sql::ResultSet> reqRes(prst1->executeQuery());
@@ -57,16 +56,16 @@ int WordSetRep::addWordSet(WordSet &wordSet) {
             return static_cast<int>(reqRes->getInt("id"));
         } else {
             std::unique_ptr<sql::PreparedStatement> prst2(
-                    manager.getConnection().prepareStatement("INSERT INTO " +
-                                                             tableName +
+                    manager_.getConnection().prepareStatement("INSERT INTO " +
+                                                              tableName_ +
                                                              " (id, name) VALUES "
                                                              "(?,?)"));
             prst2->setInt(1, wordSet.getId());
             prst2->setString(2, wordSet.getTitle());
 
             prst2->execute();
-            freeId = std::max(freeId, wordSet.getId());
-            return freeId++;
+            freeId_ = std::max(freeId_, wordSet.getId());
+            return freeId_++;
         }
     } catch (sql::SQLException &e) {
         return -1;
@@ -74,33 +73,29 @@ int WordSetRep::addWordSet(WordSet &wordSet) {
 }
 
 void WordSetRep::makeWordSetAllWords() {
-    stmt->execute("INSERT INTO " + tableName +
+    stmt_->execute("INSERT INTO " + tableName_ +
                   "(id, name) SELECT 1, 'Все группы' FROM dual WHERE NOT "
                   "EXISTS (SELECT 1 FROM " +
-                  tableName + ")");
-    freeId++;
+                   tableName_ + ")");
+    freeId_++;
 }
 
-bool WordSetRep::deleteWordSetById(int id) {
-    try {
-        stmt->execute("DELETE FROM " + tableName +
-                      " WHERE id=" + std::to_string(id));
-        return true;
-    } catch (sql::SQLException &e) {
-        return false;
-    }
+void WordSetRep::clear(){
+    stmt_->execute("TRUNCATE " + tableName_);
 }
 
-WordSetRepException::WordSetRepException(const std::string &message)
-        : std::runtime_error(message) {
+void WordSetRep::clearHistory(){
+    historyChanges_.clear();
 }
-WordSetNotFoundException::WordSetNotFoundException()
-        : WordSetRepException("Word set is not found") {
+
+std::deque<HistoryChangeWordSetRep> WordSetRep::getHistoryChanges() {
+    return historyChanges_;
 }
+
 
 std::vector<WordSet> WordSetRep::getWordSets() {
     std::unique_ptr<sql::ResultSet> reqRes(
-            stmt->executeQuery("SELECT id, name FROM " + tableName));
+            stmt_->executeQuery("SELECT id, name FROM " + tableName_));
     std::vector<WordSet> wordSets;
     while (reqRes->next()) {
         wordSets.emplace_back(
@@ -110,14 +105,7 @@ std::vector<WordSet> WordSetRep::getWordSets() {
     return wordSets;
 }
 
-void WordSetRep::clear(){
-    stmt->execute("TRUNCATE " + tableName);
-}
 
-void WordSetRep::clearHistory(){
-    historyChanges_.clear();
-}
-
-std::deque<HistoryChangeWordSetRep> WordSetRep::getHistoryChanges() {
-    return historyChanges_;
+WordSetRepException::WordSetRepException(const std::string &message)
+        : std::runtime_error(message) {
 }

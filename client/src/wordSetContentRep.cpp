@@ -1,8 +1,8 @@
 #include "include/wordSetContentRep.h"
 
 WordSetContentRep::WordSetContentRep(DBManager &m)
-        : manager(m), stmt(manager.getConnection().createStatement()) {
-    stmt->execute("CREATE TABLE IF NOT EXISTS " + tableName +
+        : manager_(m), stmt_(manager_.getConnection().createStatement()) {
+    stmt_->execute("CREATE TABLE IF NOT EXISTS " + tableName_ +
                   "("
                   "wordSetId INT NOT NULL,"
                   "wordId INT NOT NULL"
@@ -12,7 +12,7 @@ WordSetContentRep::WordSetContentRep(DBManager &m)
 void WordSetContentRep::addWordToSetTable(const int wordSetId,
                                           const int wordId) {
     std::unique_ptr<sql::PreparedStatement> prst(
-            manager.getConnection().prepareStatement("INSERT INTO " + tableName +
+            manager_.getConnection().prepareStatement("INSERT INTO " + tableName_ +
                                                      " (wordSetId, wordId) VALUES "
                                                      "(?,?)"));
     prst->setInt(1, wordSetId);
@@ -20,41 +20,37 @@ void WordSetContentRep::addWordToSetTable(const int wordSetId,
     prst->execute();
 }
 
-bool WordSetContentRep::deleteWordFromSet(
+void WordSetContentRep::deleteWordFromSet(
         int wordSetId,
-        int wordId) {  // true if everything is ok
+        int wordId) {
     try {
-        stmt->execute("DELETE FROM " + tableName +
-                      " WHERE wordSetId=" + std::to_string(wordSetId) +
-                      " AND " + "wordId=" + std::to_string(wordId));
+        stmt_->execute("DELETE FROM " + tableName_ +
+                       " WHERE wordSetId=" + std::to_string(wordSetId) +
+                       " AND " + "wordId=" + std::to_string(wordId));
         historyChanges_.push_front({"wordDeleted", wordSetId, wordId});
-        return true;
     } catch (sql::SQLException &e) {
-        // std::cout << e.what();
-        return false;
+        std::cout << e.what();
     }
 }
 
-std::vector<std::pair<int, int>>
-WordSetContentRep::downloadWordSetsContentData() {
-    std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(
-            "SELECT wordSetId, wordId FROM " + tableName + " ORDER BY wordSetId"));
-    std::vector<std::pair<int, int>> data;
-    while (reqRes->next()) {
-        data.emplace_back(static_cast<int>(reqRes->getInt("wordSetId")),
-                          static_cast<int>(reqRes->getInt("wordId")));
-    }
-    return data;
+void WordSetContentRep::deleteWordFromAllSets(int wordId) {
+    stmt_->execute("DELETE FROM " + tableName_ +
+                   " WHERE wordId=" + std::to_string(wordId));
+    historyChanges_.push_front({"wordDeletedFromDictionary", -1, wordId});
 }
 
 void WordSetContentRep::clear(){
-    stmt->execute("TRUNCATE " + tableName);
+    stmt_->execute("TRUNCATE " + tableName_);
+}
+
+void WordSetContentRep::clearHistory(){
+    historyChanges_.clear();
 }
 
 std::vector<int> WordSetContentRep::getWordSetContent(int wordSetId) {
     std::unique_ptr<sql::ResultSet> reqRes(
-            stmt->executeQuery("SELECT wordId FROM " +
-                               tableName + " WHERE wordSetId=" + std::to_string(wordSetId)));
+            stmt_->executeQuery("SELECT wordId FROM " +
+                                tableName_ + " WHERE wordSetId=" + std::to_string(wordSetId)));
     std::vector<int> words;
     while (reqRes->next()) {
         words.push_back(
@@ -65,8 +61,8 @@ std::vector<int> WordSetContentRep::getWordSetContent(int wordSetId) {
 
 int WordSetContentRep::getWordSetSize(int wordSetId) {
     std::unique_ptr<sql::ResultSet> reqRes(
-            stmt->executeQuery("SELECT COUNT(*) FROM " +
-                               tableName + " WHERE wordSetId=" + std::to_string(wordSetId)));
+            stmt_->executeQuery("SELECT COUNT(*) FROM " +
+                                tableName_ + " WHERE wordSetId=" + std::to_string(wordSetId)));
     if (reqRes->next()) {
         int size = reqRes->getInt("COUNT(*)");
         return size;
@@ -74,12 +70,6 @@ int WordSetContentRep::getWordSetSize(int wordSetId) {
     else{
         throw WordSetContentRepException("count * bug");
     }
-}
-
-void WordSetContentRep::deleteWordFromAllSets(int wordId) {
-    stmt->execute("DELETE FROM " + tableName +
-                  " WHERE wordId=" + std::to_string(wordId));
-    historyChanges_.push_front({"wordDeletedFromDictionary", -1, wordId});
 }
 
 void WordSetContentRep::saveHistoryAddWordToSet(int wordSetId, int wordId){
@@ -90,9 +80,7 @@ std::deque<HistoryChangeWordSetContentRep> WordSetContentRep::getHistoryChanges(
     return historyChanges_;
 }
 
-void WordSetContentRep::clearHistory(){
-    historyChanges_.clear();
-}
+
 
 WordSetContentRepException::WordSetContentRepException(const std::string &message)
         : std::runtime_error(message) {

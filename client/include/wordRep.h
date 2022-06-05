@@ -34,16 +34,15 @@ struct WordRep : public QObject {
 Q_OBJECT
 
 private:
-    DBManager &manager;
-    std::unique_ptr<sql::Statement> stmt;
-    std::string tableName = "words";
-    int freeId = 1;
+    DBManager &manager_;
+    std::unique_ptr<sql::Statement> stmt_;
+    std::string tableName_ = "words";
+    int freeId_ = 1;
 
     std::deque<HistoryChangeWordRep> historyChanges_;
 
 public:
     explicit WordRep(DBManager &m);
-    [[nodiscard]] std::vector<Word> downloadWords();
 
     int addWord(const std::string &original,
                 const std::string &translation,
@@ -64,7 +63,7 @@ public:
     std::deque<HistoryChangeWordRep> getHistoryChanges();
 
 signals:
-    void wordCreated(int wordSetId, int wordId);
+    void wordAdded(int wordSetId, int wordId);
 };
 
 #endif  // WORDREP_H

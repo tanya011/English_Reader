@@ -15,17 +15,15 @@
 struct WordSetRepServ{
 
 private:
-    DBManager &manager;
-    std::unique_ptr<sql::Statement> stmt;
-    std::string tableName = "wordSetsServer";
+    DBManager &manager_;
+    std::unique_ptr<sql::Statement> stmt_;
+    std::string tableName_ = "wordSetsServer";
     std::mutex* mutex_;
 
 public:
     explicit WordSetRepServ(DBManager &m, std::mutex *mutex);
 
     void addWordSet(int userId, int id, const std::string &wordSetName);
-
-    void deleteWordSetById(int userId, int id);
 
     std::vector<WordSet> getUserWordSets(int userId);
 };
