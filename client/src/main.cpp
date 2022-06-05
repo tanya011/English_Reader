@@ -17,22 +17,16 @@ int main(int argc, char *argv[]) {
     std::filesystem::create_directories(folderName);
     std::filesystem::path appFolder = std::filesystem::absolute("./yafr_files");
 
-
-    DBManager dbManager1;
-    DBManager dbManager2;
-    DBManager dbManager3;
-    DBManager dbManager4;
-    BookRep bookRep(dbManager1);
-    WordRep wordRep(dbManager2);
-    WordSetRep wordSetRep(dbManager3);
-    WordSetContentRep wordSetContentRep(dbManager4);
+    DBManager dbManager;
+    BookRep bookRep(dbManager);
+    WordRep wordRep(dbManager);
+    WordSetRep wordSetRep(dbManager);
+    WordSetContentRep wordSetContentRep(dbManager);
     User user(&wordRep, &wordSetRep, &wordSetContentRep, &bookRep);
 
     ConnectingWindow connectingWindow;
     connectingWindow.setUser(&user);
 
-    // The order of things below is important. readNowWindow tries to connect to
-    // dictionaryWindow, so it must be initialized by that time
     while (true) {
         try {
             auto authorizationWindow =
@@ -65,9 +59,9 @@ int main(int argc, char *argv[]) {
             connectingWindow.allWindows.setCurrentIndex(
                 connectingWindow.windowIndexes.auth);
 
-            QPalette pal = a.palette();
+            QPalette pal = QApplication::palette();
             pal.setColor(QPalette::Window, Qt::white);
-            a.setPalette(pal);
+            QApplication::setPalette(pal);
 
             a.setStyleSheet("QWidget{font-size:30px;}");
 

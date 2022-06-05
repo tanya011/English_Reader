@@ -1,9 +1,9 @@
 #include "include/cardsDisplay.h"
-#include <QGroupBox>
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <utility>
 
 CardsDisplay::CardsDisplay(ConnectingWindow *parent) : QWidget(parent) {
 }
@@ -46,8 +46,7 @@ void CardsDisplay::displayWords(std::vector<WordSet> wordSets) {
         btnPrev, &QPushButton::clicked, this, [&, card, btnShowTranslation]() {
             curWord--;
             curWord %= words.size();
-            card->setText(
-                QString::fromStdString(words[curWord].getOriginal()));
+            card->setText(QString::fromStdString(words[curWord].getOriginal()));
 
             btnShowTranslation->setText("Translate");
         });
@@ -56,10 +55,10 @@ void CardsDisplay::displayWords(std::vector<WordSet> wordSets) {
         btnNext, &QPushButton::clicked, this, [&, card, btnShowTranslation]() {
             curWord++;
             curWord %= words.size();
-            card->setText(
-                QString::fromStdString(words[curWord].getOriginal()));
+            card->setText(QString::fromStdString(words[curWord].getOriginal()));
             btnShowTranslation->setText("Translate");
         });
+
     QObject::connect(
         btnShowTranslation, &QPushButton::clicked, this,
         [&, card, btnShowTranslation]() {

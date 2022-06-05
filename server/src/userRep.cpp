@@ -1,4 +1,6 @@
 #include "include/userRep.h"
+#include <cppconn/prepared_statement.h>
+#include <cppconn/resultset.h>
 
 UserRep::UserRep(DBManager &m, std::mutex *mutex) : manager(m), mutex_(mutex) {
     std::unique_lock l(*mutex_);
@@ -83,7 +85,7 @@ int UserRep::getUserId(const std::string &token) {
     std::unique_lock l(*mutex_);
     std::unique_ptr<sql::Statement> stmt(
         manager.getConnection().createStatement());
-    auto req = "SELECT id FROM " + tableName + " WHERE token='" + token+"'";
+    auto req = "SELECT id FROM " + tableName + " WHERE token='" + token + "'";
     std::cout << req << std::endl;
     std::unique_ptr<sql::ResultSet> reqRes(stmt->executeQuery(req));
     if (reqRes->next()) {

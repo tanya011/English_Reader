@@ -1,13 +1,6 @@
 #ifndef YAFR_BOOKREP_H
 #define YAFR_BOOKREP_H
 
-// DB includes
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <mysql_connection.h>
 #include <mutex>
 #include "../include/book.h"
 #include "dbManager.h"
@@ -20,13 +13,12 @@ struct bookNotFoundException : BookRepException {
     bookNotFoundException();
 };
 
-struct BookRep {  // throws sql::SQLException& and BookRepException(see above)
-    // TODO: The possibility of interrupting the connection is not handled
+struct BookRep {
 private:
     DBManager &manager_;
     std::string tableName_ = "library";
     int freeId_ = 0;
-    std::mutex *mutex_;  // Need to be locked before every work with DB
+    std::mutex *mutex_;
 
 public:
     explicit BookRep(DBManager &m, std::mutex *mutex);

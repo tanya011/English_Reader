@@ -22,7 +22,7 @@ include_directories(${MYSQL_CONCPP_DIR}/include)
 link_directories(${MYSQL_CONCPP_DIR}/lib64)
 
 set(PROJECT_SOURCES
-        src/playing_server.cpp
+        src/main.cpp
         src/userRep.cpp
         src/bookRep.cpp
         src/collectionsRep.cpp

@@ -16,10 +16,9 @@ LibraryWindow::LibraryWindow(ConnectingWindow *parent) : parent_(parent) {
     if (parent_->user->isAuthorized())
         updateWindow();
 
-    auto *button = new QPushButton;
+    auto *button = new QPushButton(tr("Update"));
     button->setParent(this);
     button->setGeometry(30, 1370, 300, 70);
-    button->setText("Test Update");
     button->show();
     connect(button, &QPushButton::clicked, this, &LibraryWindow::updateWindow);
 

@@ -1,8 +1,6 @@
 #ifndef YAFR_CARDSDISPLAY_H
 #define YAFR_CARDSDISPLAY_H
 
-#include <QApplication>
-#include <QDesktopWidget>
 #include <QWidget>
 #include "connectingWindow.h"
 #include "../include/wordset.h"

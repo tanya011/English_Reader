@@ -14,7 +14,7 @@ CollectionWindow::CollectionWindow(ConnectingWindow *parent, BookRep *bookRep)
     updateWindow(false);
     auto *syncBtn = new QPushButton(tr("Синхронизация"));
     syncBtn->setParent(this);
-    syncBtn->setGeometry(30, 1370, 70, 70);
+    syncBtn->setGeometry(30, 1370, 300, 70);
     syncBtn->show();
     QObject::connect(syncBtn, &QPushButton::clicked, this,
                      [=]() { synchronizationCollection(); });

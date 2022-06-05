@@ -1,8 +1,8 @@
 #include "include/authorizationWindow.h"
-#include "include/serverProblemsException.h"
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QLabel>
+#include "include/serverProblemsException.h"
 
 AuthorizationWindow::AuthorizationWindow(ConnectingWindow *parent)
     : QWidget(parent),
@@ -33,7 +33,6 @@ void AuthorizationWindow::updateWindow() {
         layout_->insertWidget(3, passwordField_);
         layout_->insertWidget(4, authBtn_);
 
-
         QObject::connect(authBtn_, &QPushButton::clicked, this, [=]() {
             auto username = nameField_->text().toStdString();
             auto password = passwordField_->text().toStdString();
@@ -43,9 +42,9 @@ void AuthorizationWindow::updateWindow() {
                     break;
                 } catch (ServerProblemsExceptionAbort &e) {
                     exit(0);
-                } catch (ServerProblemsExceptionReconnect &){
+                } catch (ServerProblemsExceptionReconnect &) {
                     continue;
-                } catch (std::exception &e){
+                } catch (std::exception &e) {
                     std::cout << e.what() << std::endl;
                     break;
                 }

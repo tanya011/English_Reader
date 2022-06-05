@@ -1,4 +1,6 @@
 #include "include/bookRep.h"
+#include <cppconn/prepared_statement.h>
+#include <cppconn/resultset.h>
 #include <filesystem>
 #include <sstream>
 

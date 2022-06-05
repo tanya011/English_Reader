@@ -1,4 +1,5 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
+
 #include <openssl/sha.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -13,33 +14,9 @@
 #include "include/wordSetContentRep.h"
 #include "include/wordSetRep.h"
 
-std::string SHA256(std::string password, std::string salt = "") {
-    if (!salt.empty())
-        for (int i = 0; i < password.size(); i++) {
-            password[i] += salt[i % salt.size()];
-        }
-    auto input = password.c_str();
-    size_t length = password.size();
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_CTX context;
-    if (!SHA256_Init(&context))
-        throw std::runtime_error("SHA256_Init failed");
+std::string SHA256(std::string password, std::string salt = "");
 
-    if (!SHA256_Update(&context, (unsigned char *)input, length))
-        throw std::runtime_error("SHA256_Update failed");
-
-    if (!SHA256_Final(hash, &context))
-        throw std::runtime_error("SHA256_Final failed");
-
-    std::stringstream tmp;
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        tmp << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
-    }
-    std::cout << "HASH: " << tmp.str() << std::endl;
-    return tmp.str();
-}
-
-Config config(CONFIG_PATH);
+inline Config config(CONFIG_PATH);
 
 int main() {
     DBManager dbManagerUserRep;
@@ -73,28 +50,8 @@ int main() {
     WordSetContentRepServ wordSetContentRep(dbManagerWordSetContentRep,
                                             &mutexWordSetContentRep);
 
-#if 0  // =1 on first run to load books
-
-    int id1 = bookRep.addBook(
-            "The Beatles", "Paul Shipton",
-            "/home/murlokich/FrankReader/server/books/Beatles.txt");
-    int id2 = bookRep.addBook("Hatiko", "Nicole Irving",
-                              "/home/murlokich/FrankReader/server/books/book_Hachiko.txt");
-    int id3 = bookRep.addBook("Harry Potter and the Philosopher's Stone",
-                              "Joanne Katheline Rowling",
-                              "/home/murlokich/FrankReader/server/books/Harry_Potter1.txt");
-#endif
-    /*
-        std::thread t([&]() {
-            std::cout << "To add book write 'add <name>, <author>, <path>"
-                      << std::endl;
-            // std::cin>>
-        });
-        t.detach();
-    */
-
-    httplib::SSLServer svr(config.get("PATH_TO_CERT").c_str(), config.get("PATH_TO_KEY").c_str());
-
+    httplib::SSLServer svr(config.get("PATH_TO_CERT").c_str(),
+                           config.get("PATH_TO_KEY").c_str());
 
     svr.Post("/init-user",
              [&](const httplib::Request &req, httplib::Response &res) {
@@ -508,7 +465,33 @@ int main() {
             res.set_content("Error", "text/hplain");
         });
 
-    svr.listen("localhost", 8080);
-    // std::cout << 2;
+    svr.listen(config.get("SERVER_ADDRESS").c_str(),
+               std::stoi(config.get("SERVER_PORT")));
     return 0;
+}
+
+std::string SHA256(std::string password, std::string salt) {
+    if (!salt.empty())
+        for (int i = 0; i < password.size(); i++) {
+            password[i] += salt[i % salt.size()];
+        }
+    auto input = password.c_str();
+    size_t length = password.size();
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX context;
+    if (!SHA256_Init(&context))
+        throw std::runtime_error("SHA256_Init failed");
+
+    if (!SHA256_Update(&context, (unsigned char *)input, length))
+        throw std::runtime_error("SHA256_Update failed");
+
+    if (!SHA256_Final(hash, &context))
+        throw std::runtime_error("SHA256_Final failed");
+
+    std::stringstream tmp;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        tmp << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    }
+    std::cout << "HASH: " << tmp.str() << std::endl;
+    return tmp.str();
 }
