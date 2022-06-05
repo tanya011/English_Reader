@@ -5,6 +5,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QWidget>
+#include <QLabel>
 #include "connectingWindow.h"
 
 class AuthorizationWindow : public QWidget {
@@ -16,6 +17,8 @@ private:
     QVBoxLayout *layout_;
     QPushButton *authBtn_= nullptr;
     QPushButton* exitBtn_= nullptr;
+    QLabel* login;
+    QLabel* password;
 
 public:
     explicit AuthorizationWindow(ConnectingWindow *parent = nullptr);
